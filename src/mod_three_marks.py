@@ -81,7 +81,7 @@ _WINDOW_W, _WINDOW_H = (244, 96)
 _HWINDOW_W, _HWINDOW_H = (244, 144)
 _PCT_WINDOW_W, _PCT_WINDOW_H = (220, 72)
 
-MOD_VERSION = '10.12.1'
+MOD_VERSION = '10.12.2'
 _WG_API_URL = 'https://api.worldoftanks.%s/wot/tanks/mastery/?application_id=%s&distribution=damage&percentile=%s&tank_id=%s'
 _WG_HISTORY_URL = 'https://poliroid.me/gunmarks/api/v2/data/%s/vehicle/%s/%s'
 
@@ -98,7 +98,6 @@ _V3_DEFAULTS = {
     'v3BorderAlpha': 0.28,
     'v3BgColor': '#0B1016',
     'v3BgOpacity': 0.48,
-    'v3Shadow': 0.85,
     'v3StarsPos': 0,
     'v3StarsStyle': 0,
     'v3StarsDivider': False,
@@ -108,10 +107,9 @@ _V3_DEFAULTS = {
     'v3StarOnColor': '#FFFFFF',
     'v3StarOffColor': '#9AA3AE',
     'v3HeaderOrder': 0,
-    'v3PctDecimals': 2,
+    'v3PctDecimals': 1,
     'v3DeltaIcon': 0,
     'v3DeltaColorMode': 0,
-    'v3DeltaBase': 0,
     'v3BarStyle': 0,
     'v3BarScale': 0,
     'v3BarHeight': 4,
@@ -122,15 +120,13 @@ _V3_DEFAULTS = {
     'v3BarCustomColor': '#A7D080',
     'v3ShowDamage': True,
     'v3DamageLabel': 0,
+    'v3DamageCustomLabel': u'Сум. урон',
     'v3DamageFormat': 0,
-    'v3DamageTarget': 0,
     'v3ThousandsSep': 1,
     'v3DamageDynColor': True,
-    'v3AssistMode': 1,
+    'v3AssistMode': 0,
     'v3AssistPlace': 0,
-    'v3AssistAlign': 0,
     'v3AssistHideZero': False,
-    'v3AssistGapHint': False,
     'v3AccentPlus': '#A7D080',
     'v3AccentMinus': '#E57373',
     'v3AccentZero': '#9AA3AE',
@@ -468,6 +464,26 @@ def _cfgColFrom(cfg, key):
     return str(DEFAULT_CONFIG.get(key, '#FFFFFF')).upper()
 
 
+def _cfgStr(key, default=u'', maxLen=24, cfg=None):
+    src = g_config if cfg is None else cfg
+    raw = src.get(key, DEFAULT_CONFIG.get(key, default))
+    try:
+        if raw is None:
+            txt = default
+        elif isinstance(raw, unicode):
+            txt = raw
+        elif isinstance(raw, str):
+            txt = raw.decode('utf-8', 'replace')
+        else:
+            txt = unicode(raw)
+        txt = txt.strip()
+        if maxLen > 0 and len(txt) > maxLen:
+            txt = txt[:maxLen]
+        return txt
+    except Exception:
+        return default
+
+
 def _v3UiPayload():
     return {
         'den': _cfgInt('v3Density', 0, 2),
@@ -481,39 +497,35 @@ def _v3UiPayload():
         'ba': round(_cfgNumber('v3BorderAlpha', 0.0, 1.0), 3),
         'bgc': _cfgColor('v3BgColor'),
         'bgo': round(_cfgNumber('v3BgOpacity', 0.0, 1.0), 3),
-        'shd': round(_cfgNumber('v3Shadow', 0.0, 1.0), 3),
         'sp': _cfgInt('v3StarsPos', 0, 5),
         'ss': _cfgInt('v3StarsStyle', 0, 2),
-        'sd': bool(g_config.get('v3StarsDivider', True)),
+        'sd': bool(g_config.get('v3StarsDivider', False)),
         'sz': _cfgInt('v3StarsSize', 10, 22),
         'sg': _cfgInt('v3StarsGap', 2, 14),
         'sgl': bool(g_config.get('v3StarsGlow', True)),
         'son': _cfgColor('v3StarOnColor'),
         'sof': _cfgColor('v3StarOffColor'),
         'ho': _cfgInt('v3HeaderOrder', 0, 2),
-        'dec': _cfgInt('v3PctDecimals', 0, 2),
+        'dec': _cfgInt('v3PctDecimals', 0, 1),
         'di': _cfgInt('v3DeltaIcon', 0, 3),
         'dc': _cfgInt('v3DeltaColorMode', 0, 2),
-        'db': _cfgInt('v3DeltaBase', 0, 1),
-        'bs': _cfgInt('v3BarStyle', 0, 4),
-        'bsc': _cfgInt('v3BarScale', 0, 2),
+        'bs': _cfgInt('v3BarStyle', 0, 3),
+        'bsc': _cfgInt('v3BarScale', 0, 1),
         'bh': _cfgInt('v3BarHeight', 2, 10),
         'bet': bool(g_config.get('v3BarEndTicks', True)),
         'bcur': bool(g_config.get('v3BarCursor', True)),
         'bmk': bool(g_config.get('v3BarMarks', False)),
-        'bcm': _cfgInt('v3BarColorMode', 0, 3),
+        'bcm': _cfgInt('v3BarColorMode', 0, 2),
         'bcc': _cfgColor('v3BarCustomColor'),
         'dmgOn': bool(g_config.get('v3ShowDamage', True)),
-        'dl': _cfgInt('v3DamageLabel', 0, 3),
+        'dl': _cfgInt('v3DamageLabel', 0, 2),
+        'dlc': _cfgStr('v3DamageCustomLabel', u'Сум. урон', 24),
         'df': _cfgInt('v3DamageFormat', 0, 3),
-        'dt': _cfgInt('v3DamageTarget', 0, 2),
         'sep': _cfgInt('v3ThousandsSep', 0, 2),
         'ddyn': bool(g_config.get('v3DamageDynColor', True)),
-        'am': _cfgInt('v3AssistMode', 0, 6),
+        'am': _cfgInt('v3AssistMode', 0, 2),
         'ap': _cfgInt('v3AssistPlace', 0, 1),
-        'aa': _cfgInt('v3AssistAlign', 0, 1),
         'ahz': bool(g_config.get('v3AssistHideZero', False)),
-        'agh': bool(g_config.get('v3AssistGapHint', False)),
         'up': _cfgColor('v3AccentPlus'),
         'dn': _cfgColor('v3AccentMinus'),
         'zr': _cfgColor('v3AccentZero'),
@@ -2250,69 +2262,48 @@ def _v3FmtNum(n, sepMode):
 
 
 def _v3ResolveAssist(cfg, sample, alt=False):
-    own = max(0, int(sample.get('own', 0) or 0))
     spot = max(0, int(sample.get('spot', 0) or 0))
     track = max(0, int(sample.get('track', 0) or 0))
-    stun = max(0, int(sample.get('stun', 0) or 0))
-    isSpg = bool(sample.get('isSpg', False))
-    maxAst = max(spot, track, stun)
+    maxAst = max(spot, track)
     if maxAst <= 0:
         activeCh = None
-    elif spot >= track and spot >= stun:
+    elif spot >= track:
         activeCh = 'spot'
-    elif track >= stun:
-        activeCh = 'track'
     else:
-        activeCh = 'stun'
+        activeCh = 'track'
 
     altMode = _cfgInt('v3AltMode', 0, 2, cfg)
     altExp = (altMode == 1 and bool(alt))
-    rawMode = _cfgInt('v3AssistMode', 0, 6, cfg)
-    mode = 5 if altExp else rawMode
-    if rawMode == 6 and not altExp:
+    rawMode = _cfgInt('v3AssistMode', 0, 2, cfg)
+    if rawMode == 2 and not altExp:
         return [], activeCh, maxAst, altExp
 
+    mode = 0 if altExp else rawMode
     if mode == 0:
         rows = [('spot', spot), ('track', track)]
-    elif mode == 1:
-        rows = [('spot', spot), ('track', track)]
-        if isSpg or stun > 0:
-            rows.append(('stun', stun))
-    elif mode == 2:
-        rows = [('spot', spot), ('track', track), ('stun', stun)]
-    elif mode == 3:
-        rows = [(activeCh or 'spot', maxAst)]
-    elif mode == 4:
-        rows = [('own', own), (activeCh or 'spot', maxAst)]
     else:
-        rows = [('own', own), ('spot', spot), ('track', track), ('stun', stun)]
+        rows = [(activeCh or 'spot', maxAst)]
 
     if bool(cfg.get('v3AssistHideZero', False)) and not altExp:
         rows = [(ch, val) for ch, val in rows if val > 0]
 
-    showGap = bool(cfg.get('v3AssistGapHint', False)) or altExp
     sep = _cfgInt('v3ThousandsSep', 0, 2, cfg)
     items = []
     for ch, val in rows:
-        isAct = (ch != 'own' and ch == activeCh and val > 0)
-        text = _v3FmtNum(val, sep)
-        if showGap and ch in ('spot', 'track', 'stun') and (not isAct) and maxAst > 0:
-            gap = (maxAst - val) + 1
-            text = text + u' (+%s)' % _v3FmtNum(gap, sep)
-        items.append({'ch': ch, 'val': val, 'active': isAct, 'text': text})
+        isAct = (ch == activeCh and val > 0)
+        items.append({'ch': ch, 'val': val, 'active': isAct, 'text': _v3FmtNum(val, sep)})
     return items, activeCh, maxAst, altExp
 
 
 def _v3DeltaInfo(cfg, sample):
     hasRating = bool(sample.get('hasRating', True))
     pct = float(sample.get('pct', 0.0) or 0.0)
-    dec = _cfgInt('v3PctDecimals', 0, 2, cfg)
+    dec = 0 if _cfgInt('v3PctDecimals', 0, 1, cfg) == 0 else 2
     if not hasRating:
-        pctText = (u'--%', u'--.-%', u'--.--%')[dec]
+        pctText = u'--%' if dec == 0 else u'--.--%'
         return pctText, u'', 'zero', _cfgColFrom(cfg, 'v3AccentZero'), False
     pctText = (u'%.*f%%' % (dec, pct))
-    useSession = (_cfgInt('v3DeltaBase', 0, 1, cfg) == 1)
-    rawDelta = sample.get('sDelta' if useSession else 'delta')
+    rawDelta = sample.get('delta')
     if rawDelta is None:
         return pctText, u'', 'zero', _cfgColFrom(cfg, 'v3AccentZero'), False
     val = float(rawDelta)
@@ -2342,9 +2333,7 @@ def _v3DeltaInfo(cfg, sample):
 
 def _v3TargetInfo(cfg, sample):
     dmg = max(0, int(sample.get('dmg', 0) or 0))
-    tMode = _cfgInt('v3DamageTarget', 0, 2, cfg)
-    key = ('tHold', 'tMark', 'tPlus1')[tMode]
-    tgt = max(0, int(sample.get(key, 0) or 0))
+    tgt = max(0, int(sample.get('tHold', 0) or 0))
     sep = _cfgInt('v3ThousandsSep', 0, 2, cfg)
     dmgStr = _v3FmtNum(dmg, sep)
     tgtStr = _v3FmtNum(tgt, sep) if tgt > 0 else u'\u2014'
@@ -2355,7 +2344,7 @@ def _v3TargetInfo(cfg, sample):
 
 def _v3BarRatio(cfg, sample, dmg, tgt):
     pct = max(0.0, min(100.0, float(sample.get('pct', 0.0) or 0.0)))
-    scale = _cfgInt('v3BarScale', 0, 2, cfg)
+    scale = _cfgInt('v3BarScale', 0, 1, cfg)
     if scale == 1:
         if pct < 65.0:
             return pct / 65.0
@@ -2364,8 +2353,6 @@ def _v3BarRatio(cfg, sample, dmg, tgt):
         if pct < 95.0:
             return (pct - 85.0) / 10.0
         return (pct - 95.0) / 5.0
-    if scale == 2:
-        return min(1.0, float(dmg) / float(tgt)) if tgt > 0 else 0.0
     return pct / 100.0
 
 
@@ -2398,10 +2385,15 @@ def _v3Metrics(cfg, sample=None, alt=False):
     headerMinW = pctW + deltaW + (14 if (showDelta and pctW > 0) else 0) + inlineStarsW
 
     showDmg = bool(cfg.get('v3ShowDamage', True))
-    dmgLblMode = _cfgInt('v3DamageLabel', 0, 3, cfg)
+    dmgLblMode = _cfgInt('v3DamageLabel', 0, 2, cfg)
     dmgFmt = _cfgInt('v3DamageFormat', 0, 3, cfg)
-    dmgLblText = (u'\u041e\u0431\u0449. \u0443\u0440\u043e\u043d', u'\u0421\u0443\u043c. \u0443\u0440\u043e\u043d', u'', u'')[dmgLblMode]
-    lblW = _svgAdvance(dmgLblText, dmgSize) if dmgLblMode in (0, 1) else (dmgSize + 2 if dmgLblMode == 2 else 0)
+    if dmgLblMode == 0:
+        dmgLblText = u'\u0421\u0443\u043c. \u0443\u0440\u043e\u043d'
+    elif dmgLblMode == 1:
+        dmgLblText = _cfgStr('v3DamageCustomLabel', u'\u0421\u0443\u043c. \u0443\u0440\u043e\u043d', 24, cfg)
+    else:
+        dmgLblText = u''
+    lblW = _svgAdvance(dmgLblText, dmgSize) if dmgLblText else 0
     if dmgFmt == 0:
         dmgValStr = dmgStr + u' / ' + tgtStr
     elif dmgFmt == 1:
@@ -2447,15 +2439,15 @@ def _v3Metrics(cfg, sample=None, alt=False):
     headerY = y
     y += headerH
 
-    barStyle = _cfgInt('v3BarStyle', 0, 4, cfg)
+    barStyle = _cfgInt('v3BarStyle', 0, 3, cfg)
     barH = _cfgInt('v3BarHeight', 2, 10, cfg)
     barY = None
     barBlockH = 0
-    if barStyle != 4:
+    if barStyle != 3:
         y += gapRow
         barY = y
-        barBlockH = max(barH, 10 if (barStyle == 0 and bool(cfg.get('v3BarCursor', True))) else barH,
-                        8 if (barStyle in (0, 3) and bool(cfg.get('v3BarEndTicks', True))) else barH)
+        barBlockH = max(barH, 10 if (barStyle in (0, 1) and bool(cfg.get('v3BarCursor', True))) else barH,
+                        8 if (barStyle in (0, 2) and bool(cfg.get('v3BarEndTicks', True))) else barH)
         y += barBlockH
 
     dmgY = None
@@ -2717,18 +2709,10 @@ def _v3AssistIconSvg(ch, x, y, size, color, opacity):
 
 
 def _v3BarColor(cfg, pct, kind, deltaAccent):
-    mode = _cfgInt('v3BarColorMode', 0, 3, cfg)
+    mode = _cfgInt('v3BarColorMode', 0, 2, cfg)
     if mode == 1:
         return deltaAccent
     if mode == 2:
-        if pct >= 95.0:
-            return u'#FFD23C'
-        if pct >= 85.0:
-            return u'#4FD8FF'
-        if pct >= 65.0:
-            return _cfgColFrom(cfg, 'v3AccentPlus')
-        return _cfgColFrom(cfg, 'v3TextMuted')
-    if mode == 3:
         return _cfgColFrom(cfg, 'v3BarCustomColor')
     return _cfgColFrom(cfg, 'v3AccentPlus')
 
@@ -2736,23 +2720,20 @@ def _v3BarColor(cfg, pct, kind, deltaAccent):
 def _v3BarSvg(cfg, m, sample, ratio, barCol):
     bx = float(m['cx'])
     bw = float(m['cw'])
-    barStyle = _cfgInt('v3BarStyle', 0, 4, cfg)
-    if barStyle == 4 or m['barY'] is None:
+    barStyle = _cfgInt('v3BarStyle', 0, 3, cfg)
+    if barStyle == 3 or m['barY'] is None:
         return u''
     bh = float(m['barH'])
     by = float(m['barY']) + (float(m['barBlockH']) - bh) * 0.5
     out = []
-    if barStyle in (1, 2):
+    if barStyle == 1:
         gap = 2.0
-        if barStyle == 1:
-            spans = [(0.0, 20.0), (20.0, 40.0), (40.0, 60.0), (60.0, 80.0), (80.0, 100.0)]
-            weights = [0.2, 0.2, 0.2, 0.2, 0.2]
-        else:
-            spans = [(0.0, 65.0), (65.0, 85.0), (85.0, 95.0), (95.0, 100.0)]
-            weights = [0.65, 0.20, 0.10, 0.05]
+        spans = [(0.0, 65.0), (65.0, 85.0), (85.0, 95.0), (95.0, 100.0)]
+        weights = [0.65, 0.20, 0.10, 0.05]
         usableW = bw - gap * (len(spans) - 1)
         curX = bx
         curPct = max(0.0, min(100.0, ratio * 100.0))
+        cursorTipX = bx
         for idx, (s0, s1) in enumerate(spans):
             sw = usableW * weights[idx]
             segFill = max(0.0, min(1.0, (curPct - s0) / max(1e-6, s1 - s0)))
@@ -2762,10 +2743,17 @@ def _v3BarSvg(cfg, m, sample, ratio, barCol):
                 fw = max(1.0, sw * segFill)
                 out.append(u'<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" rx="1" fill="%s" stroke="#000000" stroke-width="0.6" stroke-opacity="0.60"/>' % (
                     curX, by, fw, bh, barCol))
+                cursorTipX = curX + fw
             curX += sw + gap
+        if bool(cfg.get('v3BarCursor', True)):
+            curH = max(10.0, bh + 6.0)
+            curY = by + (bh - curH) * 0.5
+            tipX = max(bx, min(bx + bw - 2.5, cursorTipX - 1.25))
+            out.append(u'<rect x="%.1f" y="%.1f" width="2.5" height="%.1f" rx="0.8" fill="#FFFFFF" fill-opacity="0.95"/>' % (
+                tipX, curY, curH))
         return u''.join(out)
 
-    # Style 0 (continuous + ticks + cursor) or Style 3 (minimal flat)
+    # Style 0 (continuous + ticks + cursor) or Style 2 (solid)
     trackH = 2.0 if (barStyle == 0 and bh <= 4.0) else bh
     trackY = by + (bh - trackH) * 0.5
     out.append(u'<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" rx="1" fill="#FFFFFF" fill-opacity="0.22"/>' % (
@@ -2777,7 +2765,7 @@ def _v3BarSvg(cfg, m, sample, ratio, barCol):
             bx, tickTop, tickH))
         out.append(u'<rect x="%.1f" y="%.1f" width="1.2" height="%.1f" fill="#FFFFFF" fill-opacity="0.45"/>' % (
             bx + bw - 1.2, tickTop, tickH))
-    if bool(cfg.get('v3BarMarks', False)) and _cfgInt('v3BarScale', 0, 2, cfg) == 0:
+    if bool(cfg.get('v3BarMarks', False)) and _cfgInt('v3BarScale', 0, 1, cfg) == 0:
         for th in (65.0, 85.0, 95.0):
             tx = bx + bw * (th / 100.0)
             out.append(u'<rect x="%.1f" y="%.1f" width="1.0" height="%.1f" fill="#FFFFFF" fill-opacity="0.40"/>' % (
@@ -2802,10 +2790,10 @@ def _v3BuildSvg(cfg, sample, alt=False):
     cx, cw = float(m['cx']), float(m['cw'])
 
     panelOp = _cfgNumFrom(cfg, 'panelOpacity', 0.0, 1.0)
-    shadowOp = _cfgNumFrom(cfg, 'v3Shadow', 0.0, 1.0)
     textMain = _cfgColFrom(cfg, 'v3TextMain')
     textMuted = _cfgColFrom(cfg, 'v3TextMuted')
     frameStyle = _cfgInt('v3FrameStyle', 0, 3, cfg)
+    shadowOp = 0.95 if frameStyle == 3 else 0.85
     rad = _cfgInt('v3Radius', 0, 14, cfg)
     bgCol = _cfgColFrom(cfg, 'v3BgColor')
     bgOp = _cfgNumFrom(cfg, 'v3BgOpacity', 0.0, 1.0)
@@ -2862,7 +2850,7 @@ def _v3BuildSvg(cfg, sample, alt=False):
     dc = _cfgInt('v3DeltaColorMode', 0, 2, cfg)
     delIconCol = m['deltaAccent'] if dc in (0, 1) else textMuted
     delTextCol = m['deltaAccent'] if dc == 0 else (textMain if dc == 1 else textMuted)
-    rawDelta = sample.get('sDelta' if _cfgInt('v3DeltaBase', 0, 1, cfg) == 1 else 'delta')
+    rawDelta = sample.get('delta')
     down = (rawDelta is not None and float(rawDelta) < 0.0)
 
     def drawDeltaBlock(xLeft):
@@ -2908,11 +2896,9 @@ def _v3BuildSvg(cfg, sample, alt=False):
     # 5. Damage row
     if m['dmgY'] is not None:
         dy = float(m['dmgY']) + float(m['dmgSize']) * 0.92
-        if m['dmgLblMode'] in (0, 1):
+        if m['dmgLblText']:
             parts.append(_svgText(cx, dy, m['dmgLblText'], textMuted, m['dmgSize'],
                                   anchor=u'start', shadow=True, shadowOp=shadowOp))
-        elif m['dmgLblMode'] == 2:
-            parts.append(_v3AssistIconSvg('own', cx, float(m['dmgY']) + 1.0, m['dmgSize'], textMuted, 0.9))
 
         dynCol = bool(cfg.get('v3DamageDynColor', True))
         if dynCol:
@@ -2948,16 +2934,11 @@ def _v3BuildSvg(cfg, sample, alt=False):
         icSz = float(m['astIconSize'])
         items = m['astItems']
         widths = m['astWidths']
-        align = _cfgInt('v3AssistAlign', 0, 1, cfg)
         baseX = cx if m['astInside'] else float(winW - m['cw']) * 0.5
         baseW = cw if m['astInside'] else float(max(cw, m['astRowMinW']))
-        if align == 1 and len(items) > 1:
-            gap = (baseW - sum(widths)) / float(len(items) - 1)
-            curX = baseX
-        else:
-            gap = float(m['astItemGap'])
-            totalAstW = sum(widths) + gap * max(0, len(items) - 1)
-            curX = baseX + (baseW - totalAstW) * 0.5
+        gap = float(m['astItemGap'])
+        totalAstW = sum(widths) + gap * max(0, len(items) - 1)
+        curX = baseX + (baseW - totalAstW) * 0.5
         plusCol = _cfgColFrom(cfg, 'v3AccentPlus')
         for idx, it in enumerate(items):
             col = plusCol if it['active'] else textMuted
@@ -3193,27 +3174,23 @@ _MENU_V3_INT = (
     ('v3StarsSize', 10, 22),
     ('v3StarsGap', 2, 14),
     ('v3HeaderOrder', 0, 2),
-    ('v3PctDecimals', 0, 2),
+    ('v3PctDecimals', 0, 1),
     ('v3DeltaIcon', 0, 3),
     ('v3DeltaColorMode', 0, 2),
-    ('v3DeltaBase', 0, 1),
-    ('v3BarStyle', 0, 4),
-    ('v3BarScale', 0, 2),
+    ('v3BarStyle', 0, 3),
+    ('v3BarScale', 0, 1),
     ('v3BarHeight', 2, 10),
-    ('v3BarColorMode', 0, 3),
-    ('v3DamageLabel', 0, 3),
+    ('v3BarColorMode', 0, 2),
+    ('v3DamageLabel', 0, 2),
     ('v3DamageFormat', 0, 3),
-    ('v3DamageTarget', 0, 2),
     ('v3ThousandsSep', 0, 2),
-    ('v3AssistMode', 0, 6),
+    ('v3AssistMode', 0, 2),
     ('v3AssistPlace', 0, 1),
-    ('v3AssistAlign', 0, 1),
 )
 _MENU_V3_FLOAT = (
     ('v3CornerAlpha', 0.0, 1.0),
     ('v3BorderAlpha', 0.0, 1.0),
     ('v3BgOpacity', 0.0, 1.0),
-    ('v3Shadow', 0.0, 1.0),
 )
 _MENU_V3_BOOL = (
     'v3HideInSniper',
@@ -3225,8 +3202,8 @@ _MENU_V3_BOOL = (
     'v3ShowDamage',
     'v3DamageDynColor',
     'v3AssistHideZero',
-    'v3AssistGapHint',
 )
+_MENU_V3_STR = ('v3DamageCustomLabel',)
 _MENU_V3_COLORS = (
     'v3CornerColor',
     'v3BgColor',
@@ -3242,7 +3219,7 @@ _MENU_V3_COLORS = (
 )
 _MENU_ALL_KEYS = (
     ('previewState', 'battlePanelVariant') +
-    _MENU_BOOL + _MENU_V3_BOOL +
+    _MENU_BOOL + _MENU_V3_BOOL + _MENU_V3_STR +
     _MENU_COLORS + _MENU_V3_COLORS +
     tuple(n for n, _l, _h in (_MENU_NUM + _MENU_V3_INT + _MENU_V3_FLOAT))
 )
@@ -3285,6 +3262,11 @@ def _menuColorValue(raw):
 def _menuConvert(key, raw):
     if key in _MENU_BOOL or key in _MENU_V3_BOOL:
         return bool(raw)
+    if key in _MENU_V3_STR:
+        if isinstance(raw, basestring):
+            text = raw.decode('utf-8', 'replace') if isinstance(raw, str) else raw
+            return text.replace(u'\r', u' ').replace(u'\n', u' ')[:24]
+        return None
     if key in _MENU_COLORS or key in _MENU_V3_COLORS:
         return _menuColorValue(raw)
     for name, low, high in _MENU_V3_INT:
@@ -3311,6 +3293,8 @@ def _menuValues():
         values[name] = _cfgInt(name, low, high)
     for name in _MENU_BOOL + _MENU_V3_BOOL:
         values[name] = bool(g_config.get(name, DEFAULT_CONFIG.get(name)))
+    for name in _MENU_V3_STR:
+        values[name] = _cfgStr(name, DEFAULT_CONFIG.get(name, u''), 24)
     for name in _MENU_COLORS + _MENU_V3_COLORS:
         values[name] = _cfgColor(name)
     values['battlePanelVariant'] = _cfgInt('battlePreset', 0, 2)
@@ -3327,6 +3311,8 @@ def _menuDefaults():
         values[name] = int(DEFAULT_CONFIG[name])
     for name in _MENU_BOOL + _MENU_V3_BOOL:
         values[name] = bool(DEFAULT_CONFIG[name])
+    for name in _MENU_V3_STR:
+        values[name] = unicode(DEFAULT_CONFIG[name])
     for name in _MENU_COLORS + _MENU_V3_COLORS:
         values[name] = str(DEFAULT_CONFIG[name]).upper()
     values['battlePanelVariant'] = int(DEFAULT_CONFIG.get('battlePreset', 2))
@@ -3368,7 +3354,7 @@ def _applyMenuSettings(settings, save):
             if g_config.get('battlePercentOnly') != onlyPct:
                 g_config['battlePercentOnly'] = onlyPct
                 changed = True
-    applyKeys = (_MENU_BOOL + _MENU_V3_BOOL + _MENU_COLORS + _MENU_V3_COLORS +
+    applyKeys = (_MENU_BOOL + _MENU_V3_BOOL + _MENU_V3_STR + _MENU_COLORS + _MENU_V3_COLORS +
                  tuple(n for n, _l, _h in (_MENU_NUM + _MENU_V3_INT + _MENU_V3_FLOAT)))
     for key in applyKeys:
         if key not in settings:
@@ -3618,6 +3604,8 @@ def _menuTemplate(tpl, ver, showV3=True):
             return u'Вкл' if bool(val) else u'Выкл'
         if kind == 'color':
             return unicode(val).upper()
+        if kind == 'str':
+            return unicode(val) if val is not None else u''
         if kind == 'choice' and labels:
             if key == 'battlePanelVariant':
                 idx = int(DEFAULT_CONFIG.get('battlePreset', 2))
@@ -3749,6 +3737,19 @@ def _menuTemplate(tpl, ver, showV3=True):
         except Exception:
             return radio(text, key, labels, head, body, inline=False)
 
+    def textInput(text, key, head, body, maxLen=24, width=14):
+        tText = tip(head, body, defText(key, 'str'))
+        fn = getattr(tpl, 'createInput', None) or getattr(tpl, 'createTextInput', None)
+        if fn is not None:
+            ctl = _ctl(fn, text, key, values[key], tooltip=tText)
+        else:
+            ctl = {'type': 'TextInput', 'text': text, 'varName': key, 'value': values[key], 'tooltip': tText}
+        if isinstance(ctl, dict):
+            ctl['maxLength'] = int(maxLen)
+            if new and width:
+                ctl['width'] = width
+        return ctl
+
     def actionBtn(varName, btnText, labelText, head, body, width=148):
         fn = getattr(tpl, 'createActionButton', None)
         if fn is not None:
@@ -3840,7 +3841,7 @@ def _menuTemplate(tpl, ver, showV3=True):
             vis(dropdown(u'Режим клавиши Alt', 'v3AltMode',
                          [u'Обычный', u'Расширять по Alt', u'Прятать по Alt'],
                          u'Поведение по Alt',
-                         u'«Расширять по Alt» временно показывает свой урон, все 3 канала ассиста и отставание (+N).'),
+                         u'«Расширять по Alt» временно показывает оба канала ассиста (засвет и гусеницы).'),
                 'battlePanelVariant', 2),
             vis(check(u'Скрывать в снайперском прицеле', 'v3HideInSniper',
                       u'Снайперский режим',
@@ -3884,9 +3885,6 @@ def _menuTemplate(tpl, ver, showV3=True):
         visAll(slider(u'Непрозрачность контура', 'v3BorderAlpha', 0.0, 1.0, 0.02, f2,
                       u'Тонкий периметр', u'Непрозрачность тонкой линии рамки по периметру.'),
                (('battlePanelVariant', 2), ('v3FrameStyle', [0, 2]))),
-        vis(slider(u'Тень текста', 'v3Shadow', 0.0, 1.0, 0.05, f2,
-                   u'Тень текста', u'Особенно полезна в режиме «Без рамки (HUD)».'),
-            'battlePanelVariant', 2),
         vis(label(u'<b>Звёзды отметок</b>'), 'battlePanelVariant', 2),
         vis(dropdown(u'Расположение звёзд', 'v3StarsPos',
                      [u'Сверху (горизонтально)', u'Снизу (горизонтально)',
@@ -3925,8 +3923,8 @@ def _menuTemplate(tpl, ver, showV3=True):
                      u'Позволяет переключить шапку с левого % (Тактический) на правый % (зеркальный минимализм) или по центру.'),
             'battlePanelVariant', 2),
         vis(dropdown(u'Точность процента', 'v3PctDecimals',
-                     [u'Целые (79%)', u'1 знак (78.9%)', u'2 знака (78.94%)'],
-                     u'Знаки после запятой', u'Сколько десятичных знаков показывать у процента и дельты.'),
+                     [u'Целые (79%)', u'2 знака (78.94%)'],
+                     u'Знаки после запятой', u'Целый процент или 2 знака после запятой (стандарт).'),
             'battlePanelVariant', 2),
         vis(dropdown(u'Значок дельты', 'v3DeltaIcon',
                      [u'Треугольники (▲ / ▼)', u'Стрелки (↗ / ↘)',
@@ -3941,67 +3939,56 @@ def _menuTemplate(tpl, ver, showV3=True):
                         u'Окраска дельты',
                         u'Полная подсветка либо минималистичный стиль с цветной стрелкой и белым числом.'),
                (('battlePanelVariant', 2), ('v3DeltaIcon', 3, '!='))),
-        visAll(dropdown(u'База для дельты', 'v3DeltaBase',
-                        [u'За текущий бой', u'За игровую сессию'],
-                        u'Точка отсчёта дельты',
-                        u'Сравнение с началом текущего боя или с первым входом в бой на этом танке за сессию.'),
-               (('battlePanelVariant', 2), ('v3DeltaIcon', 3, '!='))),
         vis(label(u'<b>Полоска прогресса</b>'), 'battlePanelVariant', 2),
         vis(dropdown(u'Стиль полоски', 'v3BarStyle',
                      [u'Тактическая (трек + курсор)',
-                      u'Сегменты 5 × 20%',
                       u'Пороги 65 / 85 / 95 / 100%',
                       u'Сплошная',
                       u'Без полоски'],
                      u'Стиль полоски прогресса',
-                     u'Тактическая: тонкий трек с засечками | — | и ярким маркером. Сегменты 5 × 20%: как на минималистичном HUD.'),
+                     u'Тактическая: тонкий трек с засечками | — | и ярким маркером. Пороги: 4 сегмента 65 / 85 / 95 / 100%.'),
             'battlePanelVariant', 2),
         visAll(dropdown(u'Масштаб полоски', 'v3BarScale',
-                        [u'0 — 100%', u'До следующей отметки', u'По урону к цели'],
+                        [u'0 — 100%', u'До следующей отметки'],
                         u'Шкала полоски',
-                        u'От общего % (0–100), внутри текущего интервала до следующей отметки или по отношению к нужному урону.'),
-               (('battlePanelVariant', 2), ('v3BarStyle', 4, '!='))),
+                        u'От общего % (0–100) или внутри текущего интервала до следующей отметки.'),
+               (('battlePanelVariant', 2), ('v3BarStyle', 3, '!='))),
         visAll(slider(u'Высота полоски (px)', 'v3BarHeight', 2, 10, 1, f0,
                       u'Толщина полоски', u'Высота заполненной линии прогресса.'),
-               (('battlePanelVariant', 2), ('v3BarStyle', 4, '!='))),
+               (('battlePanelVariant', 2), ('v3BarStyle', 3, '!='))),
         visAll(dropdown(u'Цвет полоски', 'v3BarColorMode',
                         [u'Тактический зелёный',
                          u'По изменению (+ / − / 0)',
-                         u'По порогу отметки (65 / 85 / 95%)',
                          u'Свой цвет'],
                         u'Цвет полоски',
                         u'Определяет логику окрашивания заполненной части полоски.'),
-               (('battlePanelVariant', 2), ('v3BarStyle', 4, '!='))),
+               (('battlePanelVariant', 2), ('v3BarStyle', 3, '!='))),
         visAll(check(u'Крайние засечки | — |', 'v3BarEndTicks',
                      u'Засечки по краям', u'Вертикальные ограничители | в начале и в конце полоски.'),
-               (('battlePanelVariant', 2), ('v3BarStyle', [0, 3]))),
+               (('battlePanelVariant', 2), ('v3BarStyle', [0, 2]))),
         visAll(check(u'Вертикальный курсор на значении', 'v3BarCursor',
                      u'Маркер-курсор', u'Яркая светлая риска точно на текущем заполнении полоски.'),
-               (('battlePanelVariant', 2), ('v3BarStyle', 0))),
+               (('battlePanelVariant', 2), ('v3BarStyle', [0, 1]))),
         visAll(check(u'Риски порогов 65 / 85 / 95%', 'v3BarMarks',
                      u'Отметки 65 / 85 / 95%', u'Тонкие деления на полоске в точках получения 1, 2 и 3 отметок (при шкале 0–100%).'),
-               (('battlePanelVariant', 2), ('v3BarStyle', [0, 3]), ('v3BarScale', 0))),
+               (('battlePanelVariant', 2), ('v3BarStyle', [0, 2]), ('v3BarScale', 0))),
     ]
 
     tabDmgAssist = [
         vis(label(u'<b>Строка урона</b>'), 'battlePanelVariant', 2),
         vis(check(u'Показывать строку урона', 'v3ShowDamage',
-                  u'Строка урона', u'Включает или убирает строку «Общ. урон / Нужно».'),
+                  u'Строка урона', u'Включает или убирает строку «Набито / Нужно».'),
             'battlePanelVariant', 2),
         visAll(dropdown(u'Подпись строки урона', 'v3DamageLabel',
-                        [u'Общ. урон', u'Сум. урон', u'Иконка прицела', u'Без подписи'],
-                        u'Подпись слева', u'Текст или иконка слева от чисел урона.'),
+                        [u'Сум. урон', u'Своя подпись', u'Без подписи'],
+                        u'Подпись слева', u'Текст слева от чисел урона: «Сум. урон», своя надпись или без подписи.'),
                (('battlePanelVariant', 2), ('v3ShowDamage', True))),
+        visAll(textInput(u'Своя подпись урона', 'v3DamageCustomLabel',
+                         u'Своя надпись', u'Произвольный текст слева от чисел урона (до 24 символов).'),
+               (('battlePanelVariant', 2), ('v3ShowDamage', True), ('v3DamageLabel', 1))),
         visAll(dropdown(u'Формат чисел урона', 'v3DamageFormat',
                         [u'Набито / Нужно', u'Набито (осталось)', u'Только набито', u'Только осталось'],
                         u'Формат значений', u'Как показывать набранный урон и целевое значение.'),
-               (('battlePanelVariant', 2), ('v3ShowDamage', True))),
-        visAll(dropdown(u'Целевой порог («Нужно»)', 'v3DamageTarget',
-                        [u'Прогнозное среднее (как в Варианте 1/2)',
-                         u'Порог следующей отметки (65 / 85 / 95%)',
-                         u'Текущее среднее (удержание)'],
-                        u'Цель расчёта',
-                        u'Прогнозное среднее (как в Варианте 1/2), порог следующей отметки или текущее среднее (удержание).'),
                (('battlePanelVariant', 2), ('v3ShowDamage', True))),
         vis(dropdown(u'Разделитель тысяч', 'v3ThousandsSep',
                      [u'Пробел (3 308)', u'Запятая (3,308)', u'Без разделителя (3308)'],
@@ -4011,33 +3998,21 @@ def _menuTemplate(tpl, ver, showV3=True):
                      u'Динамический цвет урона',
                      u'Подсвечивает набранный урон тактическим зелёным при достижении цели или росте, коралловым при падении.'),
                (('battlePanelVariant', 2), ('v3ShowDamage', True))),
-        vis(label(u'<b>Каналы ассиста (Свой + max(Засвет, Гусли, Стан))</b>'), 'battlePanelVariant', 2),
+        vis(label(u'<b>Каналы ассиста (Засвет и Гусеницы)</b>'), 'battlePanelVariant', 2),
         vis(dropdown(u'Отображаемые каналы', 'v3AssistMode',
                      [u'Засвет + Гусеницы',
-                      u'Засвет + Гусеницы + Стан (авто)',
-                      u'Засвет + Гусеницы + Стан (всегда)',
                       u'Только активный канал',
-                      u'Свой урон + активный ассист',
-                      u'Подробно (Свой + все 3)',
                       u'Выключено'],
                      u'Режим ассиста',
-                     u'Активный канал (максимальный среди засвета, гусениц и стана) автоматически подсвечивается зелёным.'),
+                     u'Активный канал (максимальный среди засвета и гусениц) автоматически подсвечивается зелёным.'),
             'battlePanelVariant', 2),
         visAll(dropdown(u'Место строки ассиста', 'v3AssistPlace',
                         [u'Внутри снизу', u'Под панелью'],
                         u'Расположение ассиста', u'Внутри тактической рамки или отдельной строкой под ней.'),
-               (('battlePanelVariant', 2), ('v3AssistMode', 6, '!='))),
-        visAll(dropdown(u'Выравнивание каналов', 'v3AssistAlign',
-                        [u'По центру', u'По краям'],
-                        u'Выравнивание ассиста', u'Компактно по центру или равномерно по ширине панели.'),
-               (('battlePanelVariant', 2), ('v3AssistMode', 6, '!='))),
+               (('battlePanelVariant', 2), ('v3AssistMode', 2, '!='))),
         visAll(check(u'Скрывать нулевые каналы', 'v3AssistHideZero',
                      u'Скрывать нули', u'Прячет каналы со значением 0, чтобы виджет был компактнее.'),
-               (('battlePanelVariant', 2), ('v3AssistMode', 6, '!='))),
-        visAll(check(u'Подсказка отставания (+N до перехвата)', 'v3AssistGapHint',
-                     u'Отставание канала',
-                     u'Показывает у неактивных каналов, сколько урона не хватает, чтобы перехватить лидерство.'),
-               (('battlePanelVariant', 2), ('v3AssistMode', 6, '!='))),
+               (('battlePanelVariant', 2), ('v3AssistMode', 2, '!='))),
     ]
 
     tabColorsV3 = [
@@ -4056,7 +4031,7 @@ def _menuTemplate(tpl, ver, showV3=True):
             'battlePanelVariant', 2),
         visAll(color(u'Свой цвет полоски', 'v3BarCustomColor',
                      u'Используется, когда цвет полоски выставлен в «Свой цвет».'),
-               (('battlePanelVariant', 2), ('v3BarColorMode', 3))),
+               (('battlePanelVariant', 2), ('v3BarColorMode', 2))),
         vis(label(u'<b>Рамка, текст и звёзды</b>'), 'battlePanelVariant', 2),
         vis(color(u'Основной текст (процент и числа)', 'v3TextMain',
                   u'Цвет крупного процента и основных значений.'),
@@ -4846,25 +4821,6 @@ def _sniperActive():
         return False
 
 
-def _v3NextThreshold(intCD, mark, rating, ema):
-    """Только чтение порога 65 / 85 / 95 / 100 для отображения цели в Варианте 3."""
-    try:
-        idx = 0 if rating < 65.0 else (1 if rating < 85.0 else (2 if rating < 95.0 else 3))
-        curve = _curveFor(intCD)
-        if curve and mark is not None and mark.avg > 0:
-            limits = _serverCurve(mark, curve)[0].thresholds()
-            if limits and idx < len(limits) and limits[idx] > 0:
-                return int(round(limits[idx]))
-        if rating > 0 and ema > 0 and idx < 3:
-            thrKey = (65, 85, 95)[idx]
-            val = _calcStatistics(rating, ema).get(thrKey)
-            if val:
-                return int(round(val))
-    except Exception:
-        pass
-    return 0
-
-
 class _BattleController(object):
 
     TICK = 0.05
@@ -5189,9 +5145,6 @@ class _BattleController(object):
         parts = self._parts() or {}
         if preset == 2:
             tHold = int(round(projEma))
-            tMark = _v3NextThreshold(self._intCD, mark, self._shownPct, self._ema) if (
-                hasRating and _cfgInt('v3DamageTarget', 0, 2) == 1) else 0
-            tPlus1 = int(round(self._ema)) if self._ema > 0 else int(round(projEma))
             if parts.get('src') == 'feedback':
                 own = int(parts.get('damage', 0) or 0)
                 spot = int(parts.get('radio', 0) or 0)
@@ -5211,8 +5164,8 @@ class _BattleController(object):
                 'sDelta': round(sDelta, 2) if sDelta is not None else None,
                 'dmg': int(dmg),
                 'tHold': int(tHold),
-                'tMark': int(tMark),
-                'tPlus1': int(tPlus1),
+                'tMark': 0,
+                'tPlus1': 0,
                 'own': max(0, own),
                 'spot': max(0, spot),
                 'track': max(0, track),

@@ -26,13 +26,13 @@
         onlyPct: true, alpha: 1
     };
     var DEF_V3 = {
-        den: 1, mw: 0, anc: 0, alt: 1, hs: false,
-        fs: 0, rad: 5, cc: '#FFFFFF', ca: 0.90, ba: 0.28, bg: '#0B1016', bga: 0.48, sh: 0.85,
+        den: 1, minW: 0, anc: 0, alt: 1, hs: false,
+        fs: 0, rad: 5, cc: '#FFFFFF', ca: 0.90, ba: 0.28, bgc: '#0B1016', bgo: 0.48,
         sp: 0, ss: 0, sd: false, sz: 15, sg: 6, sgl: true, son: '#FFFFFF', sof: '#9AA3AE',
-        ho: 0, dec: 2, di: 0, dc: 0, db: 0,
+        ho: 0, dec: 1, di: 0, dc: 0,
         bs: 0, bsc: 0, bh: 4, bet: true, bcur: true, bmk: false, bcm: 0, bcc: '#A7D080',
-        dmgOn: true, dl: 0, df: 0, dt: 0, sep: 1, ddyn: true,
-        am: 1, ap: 0, aa: 0, ahz: false, agh: false,
+        dmgOn: true, dl: 0, dlc: '\u0421\u0443\u043c. \u0443\u0440\u043e\u043d', df: 0, sep: 1, ddyn: true,
+        am: 0, ap: 0, ahz: false,
         up: '#A7D080', dn: '#E57373', zr: '#9AA3AE', big: '#B07CFF', tm: '#FFFFFF', tmu: '#B8BDC4'
     };
     var V3_TRACK_RUNS = [
@@ -372,39 +372,25 @@
     }
 
     function v3ResolveAssist(v, d) {
-        var own = Math.max(0, Math.round(num(d.own, 0)));
         var spot = Math.max(0, Math.round(num(d.spot, 0)));
         var track = Math.max(0, Math.round(num(d.track, 0)));
-        var stun = Math.max(0, Math.round(num(d.stun, 0)));
-        var isSpg = !!d.isSpg;
-        var maxAst = Math.max(spot, track, stun);
+        var maxAst = Math.max(spot, track);
         var activeCh = null;
         if (maxAst > 0) {
-            if (spot >= track && spot >= stun) activeCh = 'spot';
-            else if (track >= stun) activeCh = 'track';
-            else activeCh = 'stun';
+            activeCh = (spot >= track) ? 'spot' : 'track';
         }
         var altMode = v3Int(v, 'alt', 0, 2);
         var altExp = (altMode === 1 && !!d.alt);
-        var rawMode = v3Int(v, 'am', 0, 6);
-        var mode = altExp ? 5 : rawMode;
-        if (rawMode === 6 && !altExp) {
+        var rawMode = v3Int(v, 'am', 0, 2);
+        var mode = altExp ? 0 : rawMode;
+        if (rawMode === 2 && !altExp) {
             return { items: [], activeCh: activeCh, maxAst: maxAst, altExp: altExp };
         }
         var rows;
         if (mode === 0) {
             rows = [['spot', spot], ['track', track]];
-        } else if (mode === 1) {
-            rows = [['spot', spot], ['track', track]];
-            if (isSpg || stun > 0) rows.push(['stun', stun]);
-        } else if (mode === 2) {
-            rows = [['spot', spot], ['track', track], ['stun', stun]];
-        } else if (mode === 3) {
-            rows = [[activeCh || 'spot', maxAst]];
-        } else if (mode === 4) {
-            rows = [['own', own], [activeCh || 'spot', maxAst]];
         } else {
-            rows = [['own', own], ['spot', spot], ['track', track], ['stun', stun]];
+            rows = [[activeCh || 'spot', maxAst]];
         }
         if (v.ahz && !altExp) {
             var filtered = [];
@@ -413,18 +399,13 @@
             }
             rows = filtered;
         }
-        var showGap = !!v.agh || altExp;
         var sep = v3Int(v, 'sep', 0, 2);
         var items = [];
         for (var i = 0; i < rows.length; i += 1) {
             var ch = rows[i][0];
             var val = rows[i][1];
-            var isAct = (ch !== 'own' && ch === activeCh && val > 0);
-            var text = v3FmtNum(val, sep);
-            if (showGap && (ch === 'spot' || ch === 'track' || ch === 'stun') && !isAct && maxAst > 0) {
-                text += ' (+' + v3FmtNum((maxAst - val) + 1, sep) + ')';
-            }
-            items.push({ ch: ch, val: val, active: isAct, text: text });
+            var isAct = (ch === activeCh && val > 0);
+            items.push({ ch: ch, val: val, active: isAct, text: v3FmtNum(val, sep) });
         }
         return { items: items, activeCh: activeCh, maxAst: maxAst, altExp: altExp };
     }
@@ -432,10 +413,11 @@
     function v3DeltaInfo(v, d, u) {
         var hasRating = (d.hasRating !== false);
         var pct = num(d.pct, 0);
-        var dec = v3Int(v, 'dec', 0, 2);
+        var decIdx = v3Int(v, 'dec', 0, 1);
+        var dec = (decIdx === 0) ? 0 : 2;
         if (!hasRating) {
             return {
-                pctText: dec === 0 ? '--%' : (dec === 1 ? '--.-%' : '--.--%'),
+                pctText: dec === 0 ? '--%' : '--.--%',
                 deltaText: '',
                 kind: 'zero',
                 accent: v.zr,
@@ -444,8 +426,7 @@
             };
         }
         var pctText = pct.toFixed(dec) + '%';
-        var useSess = (v3Int(v, 'db', 0, 1) === 1);
-        var rawDelta = useSess ? d.sDelta : d.delta;
+        var rawDelta = d.delta;
         if (rawDelta === undefined || rawDelta === null || !isFinite(Number(rawDelta))) {
             return {
                 pctText: pctText,
@@ -481,9 +462,7 @@
 
     function v3TargetInfo(v, d) {
         var dmg = Math.max(0, Math.round(num(d.dmg, 0)));
-        var tMode = v3Int(v, 'dt', 0, 2);
-        var key = tMode === 0 ? 'tHold' : (tMode === 1 ? 'tMark' : 'tPlus1');
-        var tgt = Math.max(0, Math.round(num(d[key], 0)));
+        var tgt = Math.max(0, Math.round(num(d.tHold, 0)));
         var sep = v3Int(v, 'sep', 0, 2);
         var dmgStr = v3FmtNum(dmg, sep);
         var tgtStr = tgt > 0 ? v3FmtNum(tgt, sep) : '\u2014';
@@ -494,15 +473,12 @@
 
     function v3BarRatio(v, d, dmg, tgt) {
         var pct = clamp(num(d.bar !== undefined ? d.bar : d.pct, 0), 0, 100);
-        var scale = v3Int(v, 'bsc', 0, 2);
+        var scale = v3Int(v, 'bsc', 0, 1);
         if (scale === 1) {
             if (pct < 65) return pct / 65;
             if (pct < 85) return (pct - 65) / 20;
             if (pct < 95) return (pct - 85) / 10;
             return (pct - 95) / 5;
-        }
-        if (scale === 2) {
-            return tgt > 0 ? Math.min(1, dmg / tgt) : 0;
         }
         return pct / 100;
     }
@@ -634,22 +610,7 @@
             }
             return out.join('');
         }
-        if (ch === 'stun') {
-            var rays = [];
-            for (var j = 0; j < 6; j += 1) {
-                var ang = j * Math.PI / 3;
-                rays.push('M ' + (cx + 2.2 * Math.cos(ang)).toFixed(1) + ' ' + (cy + 2.2 * Math.sin(ang)).toFixed(1) +
-                    ' L ' + (cx + 5.8 * Math.cos(ang)).toFixed(1) + ' ' + (cy + 5.8 * Math.sin(ang)).toFixed(1));
-            }
-            return '<circle cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="2.0" fill="none" stroke="' + color + '" stroke-width="1.4" stroke-opacity="' + opacity.toFixed(2) + '"/>' +
-                '<path d="' + rays.join(' ') + '" fill="none" stroke="' + color + '" stroke-width="1.35" stroke-linecap="round" stroke-opacity="' + opacity.toFixed(2) + '"/>';
-        }
-        return '<circle cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="4.6" fill="none" stroke="' + color + '" stroke-width="1.3" stroke-opacity="' + opacity.toFixed(2) + '"/>' +
-            '<path d="M ' + cx.toFixed(1) + ' ' + (cy - 6.5).toFixed(1) + ' V ' + (cy - 2.6).toFixed(1) +
-            ' M ' + cx.toFixed(1) + ' ' + (cy + 2.6).toFixed(1) + ' V ' + (cy + 6.5).toFixed(1) +
-            ' M ' + (cx - 6.5).toFixed(1) + ' ' + cy.toFixed(1) + ' H ' + (cx - 2.6).toFixed(1) +
-            ' M ' + (cx + 2.6).toFixed(1) + ' ' + cy.toFixed(1) + ' H ' + (cx + 6.5).toFixed(1) +
-            '" fill="none" stroke="' + color + '" stroke-width="1.3" stroke-linecap="round" stroke-opacity="' + opacity.toFixed(2) + '"/>';
+        return '';
     }
 
     function v3AssistIconUri(ch, size, color, opacity) {
@@ -663,15 +624,9 @@
     }
 
     function v3BarColor(v, pct, deltaAccent) {
-        var mode = v3Int(v, 'bcm', 0, 3);
+        var mode = v3Int(v, 'bcm', 0, 2);
         if (mode === 1) return deltaAccent;
-        if (mode === 2) {
-            if (pct >= 95) return '#FFD23C';
-            if (pct >= 85) return '#4FD8FF';
-            if (pct >= 65) return v.up;
-            return v.tmu;
-        }
-        if (mode === 3) return v.bcc;
+        if (mode === 2) return v.bcc;
         return v.up;
     }
 
@@ -700,10 +655,15 @@
         var headerMinW = pctW + deltaW + ((dInfo.showDelta && pctW > 0) ? 14 : 0) + inlineStarsW;
 
         var showDmg = !!v.dmgOn;
-        var dmgLblMode = v3Int(v, 'dl', 0, 3);
+        var dmgLblMode = v3Int(v, 'dl', 0, 2);
         var dmgFmt = v3Int(v, 'df', 0, 3);
-        var dmgLblText = ['\u041e\u0431\u0449. \u0443\u0440\u043e\u043d', '\u0421\u0443\u043c. \u0443\u0440\u043e\u043d', '', ''][dmgLblMode];
-        var lblW = (dmgLblMode === 0 || dmgLblMode === 1) ? v3Advance(dmgLblText, dmgSize) : (dmgLblMode === 2 ? dmgSize + 2 : 0);
+        var dmgLblText = '';
+        if (dmgLblMode === 0) {
+            dmgLblText = '\u0421\u0443\u043c. \u0443\u0440\u043e\u043d';
+        } else if (dmgLblMode === 1) {
+            dmgLblText = String(v.dlc || '').replace(/[\r\n]/g, ' ').slice(0, 24);
+        }
+        var lblW = dmgLblText ? v3Advance(dmgLblText, dmgSize) : 0;
         var dmgValStr;
         if (dmgFmt === 0) dmgValStr = tInfo.dmgStr + ' / ' + tInfo.tgtStr;
         else if (dmgFmt === 1) dmgValStr = tInfo.dmgStr + ' (' + tInfo.remStr + ')';
@@ -724,7 +684,7 @@
         var astInside = (v3Int(v, 'ap', 0, 1) === 0);
 
         var barMinW = [156, 178, 200][den];
-        var minWOpt = v3Int(v, 'mw', 0, 360);
+        var minWOpt = v3Int(v, 'minW', 0, 360);
         var minContentW = minWOpt > 0 ? Math.max(0, minWOpt - 2 * padX) : 0;
         var radius = v3Int(v, 'rad', 0, 14);
         var minBracket = Math.max(12, radius + 8);
@@ -751,14 +711,14 @@
         var headerY = y;
         y += headerH;
 
-        var barStyle = v3Int(v, 'bs', 0, 4);
+        var barStyle = v3Int(v, 'bs', 0, 3);
         var barH = v3Int(v, 'bh', 2, 10);
         var barY = null, barBlockH = 0;
-        if (barStyle !== 4) {
+        if (barStyle !== 3) {
             y += gapRow;
             barY = y;
-            barBlockH = Math.max(barH, (barStyle === 0 && v.bcur) ? 10 : barH,
-                ((barStyle === 0 || barStyle === 3) && v.bet) ? 8 : barH);
+            barBlockH = Math.max(barH, ((barStyle === 0 || barStyle === 1) && v.bcur) ? 10 : barH,
+                ((barStyle === 0 || barStyle === 2) && v.bet) ? 8 : barH);
             y += barBlockH;
         }
 
@@ -883,15 +843,15 @@
         var barCur = document.createElement('div');
         barCur.className = 'v3-bar-cur';
         barWrap.appendChild(barFill);
-        barWrap.appendChild(barCur);
         var segFills = [];
-        for (var i = 0; i < 5; i += 1) {
+        for (var i = 0; i < 4; i += 1) {
             var sf = document.createElement('div');
             sf.className = 'v3-seg-fill';
             sf.style.display = 'none';
             barWrap.appendChild(sf);
             segFills.push(sf);
         }
+        barWrap.appendChild(barCur);
         elV3.appendChild(barWrap);
 
         var dmgRow = document.createElement('div');
@@ -960,16 +920,16 @@
 
         var fs = v3Int(v, 'fs', 0, 3);
         var rad = v3Int(v, 'rad', 0, 14);
-        var bga = clamp(num(v.bga, 0.48), 0, 1);
+        var bga = clamp(num(v.bgo, 0.48), 0, 1);
         var ca = clamp(num(v.ca, 0.90), 0, 1);
         var ba = clamp(num(v.ba, 0.28), 0, 1);
-        var sh = clamp(num(v.sh, 0.85), 0, 1);
-        var txtShadow = sh > 0.01 ? ('0 1px 2px rgba(0,0,0,' + sh.toFixed(2) + ')') : 'none';
+        var sh = (fs === 3) ? 0.95 : 0.85;
+        var txtShadow = '0 1px 2px rgba(0,0,0,' + sh.toFixed(2) + ')';
 
         var parts = [];
         if (fs !== 3) {
             if (bga > 0.01) {
-                parts.push('<rect x="' + m.fx.toFixed(1) + '" y="' + m.fy.toFixed(1) + '" width="' + m.fw.toFixed(1) + '" height="' + m.fh.toFixed(1) + '" rx="' + rad + '" fill="' + v.bg + '" fill-opacity="' + bga.toFixed(3) + '"/>');
+                parts.push('<rect x="' + m.fx.toFixed(1) + '" y="' + m.fy.toFixed(1) + '" width="' + m.fw.toFixed(1) + '" height="' + m.fh.toFixed(1) + '" rx="' + rad + '" fill="' + v.bgc + '" fill-opacity="' + bga.toFixed(3) + '"/>');
             }
             if ((fs === 0 || fs === 2) && ba > 0.01) {
                 var gapSide = null, g0 = 0, g1 = 0;
@@ -1005,9 +965,6 @@
             for (var ii = 0; ii < 3; ii += 1) {
                 parts.push(v3StarSvg(isx0 + ii * (m.starSize + m.starGap), iscy, starR, ii < marks, starStyle, v.son, v.sof, !!v.sgl));
             }
-        }
-        if (m.dmgY !== null && m.dmgLblMode === 2) {
-            parts.push(v3AssistIconInner('own', m.cx, m.dmgY + 1, m.dmgSize, v.tmu, 0.9));
         }
 
         /* Header DOM */
@@ -1050,7 +1007,7 @@
         var barPctVal = clamp(num(d.pct, 0), 0, 100);
         var ratio = v3BarRatio(v, d, m.tInfo.dmg, m.tInfo.tgt);
         var barCol = v3BarColor(v, barPctVal, m.dInfo.accent);
-        if (m.barStyle !== 4 && m.barY !== null) {
+        if (m.barStyle !== 3 && m.barY !== null) {
             var bx = m.cx, bw = m.cw, bh = m.barH;
             var by = m.barY + (m.barBlockH - bh) * 0.5;
             dom.barWrap.style.display = 'block';
@@ -1059,41 +1016,48 @@
             dom.barWrap.style.width = bw + 'px';
             dom.barWrap.style.height = bh + 'px';
 
-            if (m.barStyle === 1 || m.barStyle === 2) {
+            if (m.barStyle === 1) {
                 dom.barFill.style.display = 'none';
-                dom.barCur.style.display = 'none';
                 var segGap = 2;
-                var spans = (m.barStyle === 1)
-                    ? [[0, 20], [20, 40], [40, 60], [60, 80], [80, 100]]
-                    : [[0, 65], [65, 85], [85, 95], [95, 100]];
-                var weights = (m.barStyle === 1) ? [0.2, 0.2, 0.2, 0.2, 0.2] : [0.65, 0.20, 0.10, 0.05];
+                var spans = [[0, 65], [65, 85], [85, 95], [95, 100]];
+                var weights = [0.65, 0.20, 0.10, 0.05];
                 var usableW = bw - segGap * (spans.length - 1);
                 var segX = bx;
                 var curPct = clamp(ratio * 100, 0, 100);
-                for (var sIdx = 0; sIdx < 5; sIdx += 1) {
+                var curFillX = 0;
+                for (var sIdx = 0; sIdx < spans.length; sIdx += 1) {
                     var sf = dom.segFills[sIdx];
-                    if (sIdx < spans.length) {
-                        var sw = usableW * weights[sIdx];
-                        var s0 = spans[sIdx][0], s1 = spans[sIdx][1];
-                        var segFill = clamp((curPct - s0) / Math.max(1e-6, s1 - s0), 0, 1);
-                        parts.push('<rect x="' + segX.toFixed(1) + '" y="' + by.toFixed(1) + '" width="' + sw.toFixed(1) + '" height="' + bh.toFixed(1) + '" rx="1" fill="#0B1016" fill-opacity="0.55" stroke="#FFFFFF" stroke-width="0.7" stroke-opacity="0.32"/>');
-                        if (segFill > 0.005) {
-                            var sfw = Math.max(1, sw * segFill);
-                            sf.style.display = 'block';
-                            sf.style.left = (segX - bx).toFixed(1) + 'px';
-                            sf.style.width = sfw.toFixed(1) + 'px';
-                            sf.style.height = bh + 'px';
-                            sf.style.backgroundColor = barCol;
-                        } else {
-                            sf.style.display = 'none';
-                        }
-                        segX += sw + segGap;
+                    var sw = usableW * weights[sIdx];
+                    var s0 = spans[sIdx][0], s1 = spans[sIdx][1];
+                    var segFill = clamp((curPct - s0) / Math.max(1e-6, s1 - s0), 0, 1);
+                    parts.push('<rect x="' + segX.toFixed(1) + '" y="' + by.toFixed(1) + '" width="' + sw.toFixed(1) + '" height="' + bh.toFixed(1) + '" rx="1" fill="#0B1016" fill-opacity="0.55" stroke="#FFFFFF" stroke-width="0.7" stroke-opacity="0.32"/>');
+                    if (segFill > 0.005) {
+                        var sfw = Math.max(1, sw * segFill);
+                        sf.style.display = 'block';
+                        sf.style.left = (segX - bx).toFixed(1) + 'px';
+                        sf.style.width = sfw.toFixed(1) + 'px';
+                        sf.style.height = bh + 'px';
+                        sf.style.backgroundColor = barCol;
                     } else {
                         sf.style.display = 'none';
                     }
+                    if (curPct > s0) {
+                        curFillX = (segX - bx) + sw * segFill;
+                    }
+                    segX += sw + segGap;
+                }
+                if (v.bcur) {
+                    var segCurH = Math.max(10, bh + 6);
+                    var segCurX = clamp(curFillX - 1.25, 0, Math.max(0, bw - 2.5));
+                    dom.barCur.style.display = 'block';
+                    dom.barCur.style.left = segCurX.toFixed(1) + 'px';
+                    dom.barCur.style.top = ((bh - segCurH) * 0.5).toFixed(1) + 'px';
+                    dom.barCur.style.height = segCurH + 'px';
+                } else {
+                    dom.barCur.style.display = 'none';
                 }
             } else {
-                for (var hi = 0; hi < 5; hi += 1) dom.segFills[hi].style.display = 'none';
+                for (var hi = 0; hi < dom.segFills.length; hi += 1) dom.segFills[hi].style.display = 'none';
                 var trackH = (m.barStyle === 0 && bh <= 4) ? 2 : bh;
                 var trackY = by + (bh - trackH) * 0.5;
                 parts.push('<rect x="' + bx.toFixed(1) + '" y="' + trackY.toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + trackH.toFixed(1) + '" rx="1" fill="#FFFFFF" fill-opacity="0.22"/>');
@@ -1103,7 +1067,7 @@
                     parts.push('<rect x="' + bx.toFixed(1) + '" y="' + tickTop.toFixed(1) + '" width="1.2" height="' + tickH.toFixed(1) + '" fill="#FFFFFF" fill-opacity="0.45"/>');
                     parts.push('<rect x="' + (bx + bw - 1.2).toFixed(1) + '" y="' + tickTop.toFixed(1) + '" width="1.2" height="' + tickH.toFixed(1) + '" fill="#FFFFFF" fill-opacity="0.45"/>');
                 }
-                if (v.bmk && v3Int(v, 'bsc', 0, 2) === 0) {
+                if (v.bmk && v3Int(v, 'bsc', 0, 1) === 0) {
                     var ths = [65, 85, 95];
                     for (var ti = 0; ti < ths.length; ti += 1) {
                         var tx = bx + bw * (ths[ti] / 100);
@@ -1141,7 +1105,7 @@
             dom.dmgRow.style.top = m.dmgY + 'px';
             dom.dmgRow.style.width = m.cw + 'px';
             dom.dmgRow.style.height = m.dmgH + 'px';
-            if (m.dmgLblMode === 0 || m.dmgLblMode === 1) {
+            if (m.dmgLblText) {
                 dom.dmgLbl.style.display = 'block';
                 dom.dmgLbl.textContent = m.dmgLblText;
                 dom.dmgLbl.style.color = v.tmu;
@@ -1186,16 +1150,14 @@
 
         /* Assist row DOM */
         if (m.ast.items.length && m.astY !== null) {
-            var align = v3Int(v, 'aa', 0, 1);
             var baseX = m.astInside ? m.cx : (winW - Math.max(m.cw, m.astRowMinW)) * 0.5;
             var baseW = m.astInside ? m.cw : Math.max(m.cw, m.astRowMinW);
-            var spread = (align === 1 && m.ast.items.length > 1);
             dom.astRow.style.display = 'flex';
             dom.astRow.style.left = baseX.toFixed(1) + 'px';
             dom.astRow.style.top = m.astY + 'px';
             dom.astRow.style.width = baseW.toFixed(1) + 'px';
             dom.astRow.style.height = m.astH + 'px';
-            dom.astRow.style.justifyContent = spread ? 'space-between' : 'center';
+            dom.astRow.style.justifyContent = 'center';
             for (var ka = 0; ka < 4; ka += 1) {
                 var itemDom = dom.astItems[ka];
                 if (ka < m.ast.items.length) {
@@ -1203,7 +1165,7 @@
                     var col = it.active ? v.up : v.tmu;
                     var iop = it.active ? 1.0 : 0.82;
                     itemDom.box.style.display = 'flex';
-                    itemDom.box.style.marginLeft = (ka > 0 && !spread) ? (m.astItemGap + 'px') : '0px';
+                    itemDom.box.style.marginLeft = (ka > 0) ? (m.astItemGap + 'px') : '0px';
                     itemDom.ico.style.width = m.astIconSize + 'px';
                     itemDom.ico.style.height = m.astIconSize + 'px';
                     itemDom.ico.src = v3AssistIconUri(it.ch, m.astIconSize, col, iop);
