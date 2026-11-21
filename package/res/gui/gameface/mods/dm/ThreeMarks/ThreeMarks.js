@@ -31,7 +31,7 @@
         sp: 0, ss: 0, sd: false, sz: 15, sg: 6, sgl: true, son: '#FFFFFF', sof: '#9AA3AE',
         ho: 0, dec: 1, di: 0, dc: 0,
         bs: 0, bsc: 0, bh: 4, bet: true, bcur: true, bmk: false, bcm: 0, bcc: '#A7D080',
-        dmgOn: true, dl: 0, dlc: '\u0421\u0443\u043c. \u0443\u0440\u043e\u043d', df: 0, sep: 1, ddyn: true,
+        dmgOn: true, dl: 0, dlc: '\u0421\u0443\u043c. \u0443\u0440\u043e\u043d', sep: 1, ddyn: true,
         am: 0, ap: 0, ahz: false,
         up: '#A7D080', dn: '#E57373', zr: '#9AA3AE', big: '#B07CFF', tm: '#FFFFFF', tmu: '#B8BDC4'
     };
@@ -656,7 +656,6 @@
 
         var showDmg = !!v.dmgOn;
         var dmgLblMode = v3Int(v, 'dl', 0, 2);
-        var dmgFmt = v3Int(v, 'df', 0, 3);
         var dmgLblText = '';
         if (dmgLblMode === 0) {
             dmgLblText = '\u0421\u0443\u043c. \u0443\u0440\u043e\u043d';
@@ -664,11 +663,7 @@
             dmgLblText = String(v.dlc || '').replace(/[\r\n]/g, ' ').slice(0, 24);
         }
         var lblW = dmgLblText ? v3Advance(dmgLblText, dmgSize) : 0;
-        var dmgValStr;
-        if (dmgFmt === 0) dmgValStr = tInfo.dmgStr + ' / ' + tInfo.tgtStr;
-        else if (dmgFmt === 1) dmgValStr = tInfo.dmgStr + ' (' + tInfo.remStr + ')';
-        else if (dmgFmt === 2) dmgValStr = tInfo.dmgStr;
-        else dmgValStr = tInfo.remStr;
+        var dmgValStr = tInfo.dmgStr + ' / ' + tInfo.tgtStr;
         var dmgRowMinW = showDmg ? (lblW + (lblW > 0 ? 12 : 0) + v3Advance(dmgValStr, dmgSize)) : 0;
 
         var astIconSize = Math.max(14, astSize + 1);
@@ -717,7 +712,7 @@
         if (barStyle !== 3) {
             y += gapRow;
             barY = y;
-            barBlockH = Math.max(barH, ((barStyle === 0 || barStyle === 1) && v.bcur) ? 10 : barH,
+            barBlockH = Math.max(barH, v.bcur ? 10 : barH,
                 ((barStyle === 0 || barStyle === 2) && v.bet) ? 8 : barH);
             y += barBlockH;
         }
@@ -805,7 +800,7 @@
             dInfo: dInfo, tInfo: tInfo, ast: ast,
             barStyle: barStyle, barY: barY !== null ? (fy + barY) : null, barH: barH, barBlockH: barBlockH,
             dmgY: dmgY !== null ? (fy + dmgY) : null, dmgH: dmgH, dmgSize: dmgSize,
-            dmgLblText: dmgLblText, dmgLblMode: dmgLblMode, dmgFmt: dmgFmt,
+            dmgLblText: dmgLblText, dmgLblMode: dmgLblMode,
             astY: astInside ? (astY !== null ? (fy + astY) : null) : astBelowY,
             astH: astH, astSize: astSize, astIconSize: astIconSize,
             astItemGap: astItemGap, astWidths: astWidths, astRowMinW: astRowMinW, astInside: astInside,
@@ -970,7 +965,7 @@
         /* Header DOM */
         var ho = v3Int(v, 'ho', 0, 2);
         var di = v3Int(v, 'di', 0, 3);
-        var dc = v3Int(v, 'dc', 0, 2);
+        var dc = v3Int(v, 'dc', 0, 1);
         var hdrW = m.cw - (m.starsPos === 4 ? (m.starsSpan + 8) : 0);
         dom.hdr.style.left = m.cx + 'px';
         dom.hdr.style.top = m.headerY + 'px';
@@ -985,8 +980,8 @@
         dom.pct.style.textShadow = txtShadow;
 
         if (m.dInfo.showDelta) {
-            var delIconCol = (dc === 0 || dc === 1) ? m.dInfo.accent : v.tmu;
-            var delTextCol = (dc === 0) ? m.dInfo.accent : (dc === 1 ? v.tm : v.tmu);
+            var delIconCol = (dc === 0) ? m.dInfo.accent : v.tmu;
+            var delTextCol = (dc === 0) ? m.dInfo.accent : v.tmu;
             dom.delWrap.style.display = 'flex';
             dom.delWrap.style.marginLeft = (ho === 2) ? '10px' : '0px';
             if (di === 0 || di === 1) {
@@ -1083,7 +1078,7 @@
                 } else {
                     dom.barFill.style.display = 'none';
                 }
-                if (m.barStyle === 0 && v.bcur) {
+                if (v.bcur) {
                     var curH = Math.max(10, bh + 6);
                     var curRelX = clamp(fillW - 1.25, 0, Math.max(0, bw - 2.5));
                     dom.barCur.style.display = 'block';
@@ -1118,32 +1113,16 @@
                 ? ((m.tInfo.tgt > 0 && m.tInfo.dmg >= m.tInfo.tgt) || m.dInfo.kind === 'plus' || m.dInfo.kind === 'big'
                     ? v.up : (m.dInfo.kind === 'minus' ? v.dn : v.tm))
                 : v.tm;
-            if (m.dmgFmt === 0 || m.dmgFmt === 1) {
-                dom.dmgMain.style.display = 'block';
-                dom.dmgMain.textContent = m.tInfo.dmgStr;
-                dom.dmgMain.style.color = dmgCol;
-                dom.dmgMain.style.fontSize = m.dmgSize + 'px';
-                dom.dmgMain.style.textShadow = txtShadow;
-                dom.dmgSec.style.display = 'block';
-                dom.dmgSec.textContent = (m.dmgFmt === 0) ? (' / ' + m.tInfo.tgtStr) : (' (' + m.tInfo.remStr + ')');
-                dom.dmgSec.style.color = v.tmu;
-                dom.dmgSec.style.fontSize = m.dmgSize + 'px';
-                dom.dmgSec.style.textShadow = txtShadow;
-            } else if (m.dmgFmt === 2) {
-                dom.dmgMain.style.display = 'block';
-                dom.dmgMain.textContent = m.tInfo.dmgStr;
-                dom.dmgMain.style.color = dmgCol;
-                dom.dmgMain.style.fontSize = m.dmgSize + 'px';
-                dom.dmgMain.style.textShadow = txtShadow;
-                dom.dmgSec.style.display = 'none';
-            } else {
-                dom.dmgMain.style.display = 'none';
-                dom.dmgSec.style.display = 'block';
-                dom.dmgSec.textContent = m.tInfo.remStr;
-                dom.dmgSec.style.color = v.tmu;
-                dom.dmgSec.style.fontSize = m.dmgSize + 'px';
-                dom.dmgSec.style.textShadow = txtShadow;
-            }
+            dom.dmgMain.style.display = 'block';
+            dom.dmgMain.textContent = m.tInfo.dmgStr;
+            dom.dmgMain.style.color = dmgCol;
+            dom.dmgMain.style.fontSize = m.dmgSize + 'px';
+            dom.dmgMain.style.textShadow = txtShadow;
+            dom.dmgSec.style.display = 'block';
+            dom.dmgSec.textContent = ' / ' + m.tInfo.tgtStr;
+            dom.dmgSec.style.color = v.tmu;
+            dom.dmgSec.style.fontSize = m.dmgSize + 'px';
+            dom.dmgSec.style.textShadow = txtShadow;
         } else {
             dom.dmgRow.style.display = 'none';
         }

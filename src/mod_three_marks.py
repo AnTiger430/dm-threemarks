@@ -81,7 +81,7 @@ _WINDOW_W, _WINDOW_H = (244, 96)
 _HWINDOW_W, _HWINDOW_H = (244, 144)
 _PCT_WINDOW_W, _PCT_WINDOW_H = (220, 72)
 
-MOD_VERSION = '10.12.2'
+MOD_VERSION = '10.12.3'
 _WG_API_URL = 'https://api.worldoftanks.%s/wot/tanks/mastery/?application_id=%s&distribution=damage&percentile=%s&tank_id=%s'
 _WG_HISTORY_URL = 'https://poliroid.me/gunmarks/api/v2/data/%s/vehicle/%s/%s'
 
@@ -121,7 +121,6 @@ _V3_DEFAULTS = {
     'v3ShowDamage': True,
     'v3DamageLabel': 0,
     'v3DamageCustomLabel': u'Сум. урон',
-    'v3DamageFormat': 0,
     'v3ThousandsSep': 1,
     'v3DamageDynColor': True,
     'v3AssistMode': 0,
@@ -508,7 +507,7 @@ def _v3UiPayload():
         'ho': _cfgInt('v3HeaderOrder', 0, 2),
         'dec': _cfgInt('v3PctDecimals', 0, 1),
         'di': _cfgInt('v3DeltaIcon', 0, 3),
-        'dc': _cfgInt('v3DeltaColorMode', 0, 2),
+        'dc': _cfgInt('v3DeltaColorMode', 0, 1),
         'bs': _cfgInt('v3BarStyle', 0, 3),
         'bsc': _cfgInt('v3BarScale', 0, 1),
         'bh': _cfgInt('v3BarHeight', 2, 10),
@@ -520,7 +519,6 @@ def _v3UiPayload():
         'dmgOn': bool(g_config.get('v3ShowDamage', True)),
         'dl': _cfgInt('v3DamageLabel', 0, 2),
         'dlc': _cfgStr('v3DamageCustomLabel', u'Сум. урон', 24),
-        'df': _cfgInt('v3DamageFormat', 0, 3),
         'sep': _cfgInt('v3ThousandsSep', 0, 2),
         'ddyn': bool(g_config.get('v3DamageDynColor', True)),
         'am': _cfgInt('v3AssistMode', 0, 2),
@@ -2386,7 +2384,6 @@ def _v3Metrics(cfg, sample=None, alt=False):
 
     showDmg = bool(cfg.get('v3ShowDamage', True))
     dmgLblMode = _cfgInt('v3DamageLabel', 0, 2, cfg)
-    dmgFmt = _cfgInt('v3DamageFormat', 0, 3, cfg)
     if dmgLblMode == 0:
         dmgLblText = u'\u0421\u0443\u043c. \u0443\u0440\u043e\u043d'
     elif dmgLblMode == 1:
@@ -2394,14 +2391,7 @@ def _v3Metrics(cfg, sample=None, alt=False):
     else:
         dmgLblText = u''
     lblW = _svgAdvance(dmgLblText, dmgSize) if dmgLblText else 0
-    if dmgFmt == 0:
-        dmgValStr = dmgStr + u' / ' + tgtStr
-    elif dmgFmt == 1:
-        dmgValStr = dmgStr + u' (%s)' % remStr
-    elif dmgFmt == 2:
-        dmgValStr = dmgStr
-    else:
-        dmgValStr = remStr
+    dmgValStr = dmgStr + u' / ' + tgtStr
     dmgRowMinW = (lblW + (12 if lblW > 0 else 0) + _svgAdvance(dmgValStr, dmgSize)) if showDmg else 0
 
     astIconSize = max(14, astSize + 1)
@@ -2446,7 +2436,7 @@ def _v3Metrics(cfg, sample=None, alt=False):
     if barStyle != 3:
         y += gapRow
         barY = y
-        barBlockH = max(barH, 10 if (barStyle in (0, 1) and bool(cfg.get('v3BarCursor', True))) else barH,
+        barBlockH = max(barH, 10 if bool(cfg.get('v3BarCursor', True)) else barH,
                         8 if (barStyle in (0, 2) and bool(cfg.get('v3BarEndTicks', True))) else barH)
         y += barBlockH
 
@@ -2547,7 +2537,7 @@ def _v3Metrics(cfg, sample=None, alt=False):
         'barY': (fy + barY) if barY is not None else None, 'barH': barH, 'barBlockH': barBlockH,
         'dmgY': (fy + dmgY) if dmgY is not None else None, 'dmgH': dmgH, 'dmgSize': dmgSize,
         'dmg': dmg, 'tgt': tgt, 'dmgStr': dmgStr, 'tgtStr': tgtStr, 'remStr': remStr,
-        'dmgLblText': dmgLblText, 'dmgLblMode': dmgLblMode, 'dmgFmt': dmgFmt, 'dmgValStr': dmgValStr,
+        'dmgLblText': dmgLblText, 'dmgLblMode': dmgLblMode, 'dmgValStr': dmgValStr,
         'astY': (fy + astY) if astInside and astY is not None else astBelowY,
         'astH': astH, 'astSize': astSize, 'astIconSize': astIconSize,
         'astItemGap': astItemGap, 'astItems': astItems, 'astWidths': astWidths,
@@ -2774,7 +2764,7 @@ def _v3BarSvg(cfg, m, sample, ratio, barCol):
     if fillW > 0.5:
         out.append(u'<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" rx="1" fill="%s"/>' % (
             bx, by, fillW, bh, barCol))
-    if barStyle == 0 and bool(cfg.get('v3BarCursor', True)):
+    if bool(cfg.get('v3BarCursor', True)):
         curH = max(10.0, bh + 6.0)
         curY = by + (bh - curH) * 0.5
         curX = max(bx, min(bx + bw - 2.5, bx + fillW - 1.25))
@@ -2847,9 +2837,9 @@ def _v3BuildSvg(cfg, sample, alt=False):
     delBaseY = hy + float(m['pctSize']) * 0.84
     ho = _cfgInt('v3HeaderOrder', 0, 2, cfg)
     di = _cfgInt('v3DeltaIcon', 0, 3, cfg)
-    dc = _cfgInt('v3DeltaColorMode', 0, 2, cfg)
-    delIconCol = m['deltaAccent'] if dc in (0, 1) else textMuted
-    delTextCol = m['deltaAccent'] if dc == 0 else (textMain if dc == 1 else textMuted)
+    dc = _cfgInt('v3DeltaColorMode', 0, 1, cfg)
+    delIconCol = m['deltaAccent'] if dc == 0 else textMuted
+    delTextCol = m['deltaAccent'] if dc == 0 else textMuted
     rawDelta = sample.get('delta')
     down = (rawDelta is not None and float(rawDelta) < 0.0)
 
@@ -2906,26 +2896,12 @@ def _v3BuildSvg(cfg, sample, alt=False):
                 _cfgColFrom(cfg, 'v3AccentMinus') if m['kind'] == 'minus' else textMain)
         else:
             dmgCol = textMain
-        if m['dmgFmt'] == 0:
-            rightTxt = u' / ' + m['tgtStr']
-            wRight = _svgAdvance(rightTxt, m['dmgSize'])
-            parts.append(_svgText(cx + cw - wRight, dy, m['dmgStr'], dmgCol, m['dmgSize'],
-                                  anchor=u'end', shadow=True, shadowOp=shadowOp))
-            parts.append(_svgText(cx + cw, dy, rightTxt, textMuted, m['dmgSize'],
-                                  anchor=u'end', shadow=True, shadowOp=shadowOp))
-        elif m['dmgFmt'] == 1:
-            rightTxt = u' (%s)' % m['remStr']
-            wRight = _svgAdvance(rightTxt, m['dmgSize'])
-            parts.append(_svgText(cx + cw - wRight, dy, m['dmgStr'], dmgCol, m['dmgSize'],
-                                  anchor=u'end', shadow=True, shadowOp=shadowOp))
-            parts.append(_svgText(cx + cw, dy, rightTxt, textMuted, m['dmgSize'],
-                                  anchor=u'end', shadow=True, shadowOp=shadowOp))
-        elif m['dmgFmt'] == 2:
-            parts.append(_svgText(cx + cw, dy, m['dmgStr'], dmgCol, m['dmgSize'],
-                                  anchor=u'end', shadow=True, shadowOp=shadowOp))
-        else:
-            parts.append(_svgText(cx + cw, dy, m['remStr'], textMuted, m['dmgSize'],
-                                  anchor=u'end', shadow=True, shadowOp=shadowOp))
+        rightTxt = u' / ' + m['tgtStr']
+        wRight = _svgAdvance(rightTxt, m['dmgSize'])
+        parts.append(_svgText(cx + cw - wRight, dy, m['dmgStr'], dmgCol, m['dmgSize'],
+                              anchor=u'end', shadow=True, shadowOp=shadowOp))
+        parts.append(_svgText(cx + cw, dy, rightTxt, textMuted, m['dmgSize'],
+                              anchor=u'end', shadow=True, shadowOp=shadowOp))
 
     # 6. Assist row
     if m['astItems'] and m['astY'] is not None:
@@ -3176,13 +3152,12 @@ _MENU_V3_INT = (
     ('v3HeaderOrder', 0, 2),
     ('v3PctDecimals', 0, 1),
     ('v3DeltaIcon', 0, 3),
-    ('v3DeltaColorMode', 0, 2),
+    ('v3DeltaColorMode', 0, 1),
     ('v3BarStyle', 0, 3),
     ('v3BarScale', 0, 1),
     ('v3BarHeight', 2, 10),
     ('v3BarColorMode', 0, 2),
     ('v3DamageLabel', 0, 2),
-    ('v3DamageFormat', 0, 3),
     ('v3ThousandsSep', 0, 2),
     ('v3AssistMode', 0, 2),
     ('v3AssistPlace', 0, 1),
@@ -3737,7 +3712,7 @@ def _menuTemplate(tpl, ver, showV3=True):
         except Exception:
             return radio(text, key, labels, head, body, inline=False)
 
-    def textInput(text, key, head, body, maxLen=24, width=14):
+    def textInput(text, key, head, body, maxLen=24, width=240):
         tText = tip(head, body, defText(key, 'str'))
         fn = getattr(tpl, 'createInput', None) or getattr(tpl, 'createTextInput', None)
         if fn is not None:
@@ -3746,8 +3721,8 @@ def _menuTemplate(tpl, ver, showV3=True):
             ctl = {'type': 'TextInput', 'text': text, 'varName': key, 'value': values[key], 'tooltip': tText}
         if isinstance(ctl, dict):
             ctl['maxLength'] = int(maxLen)
-            if new and width:
-                ctl['width'] = width
+            if width:
+                ctl['width'] = int(width)
         return ctl
 
     def actionBtn(varName, btnText, labelText, head, body, width=148):
@@ -3934,10 +3909,9 @@ def _menuTemplate(tpl, ver, showV3=True):
             'battlePanelVariant', 2),
         visAll(dropdown(u'Цвет дельты', 'v3DeltaColorMode',
                         [u'По изменению (иконка и текст)',
-                         u'Только иконка цветная (текст белый)',
                          u'Нейтральный (приглушённый)'],
                         u'Окраска дельты',
-                        u'Полная подсветка либо минималистичный стиль с цветной стрелкой и белым числом.'),
+                        u'Подсветка значка и числа цветом изменения (+ / − / 0) либо нейтральный приглушённый цвет.'),
                (('battlePanelVariant', 2), ('v3DeltaIcon', 3, '!='))),
         vis(label(u'<b>Полоска прогресса</b>'), 'battlePanelVariant', 2),
         vis(dropdown(u'Стиль полоски', 'v3BarStyle',
@@ -3968,7 +3942,7 @@ def _menuTemplate(tpl, ver, showV3=True):
                (('battlePanelVariant', 2), ('v3BarStyle', [0, 2]))),
         visAll(check(u'Вертикальный курсор на значении', 'v3BarCursor',
                      u'Маркер-курсор', u'Яркая светлая риска точно на текущем заполнении полоски.'),
-               (('battlePanelVariant', 2), ('v3BarStyle', [0, 1]))),
+               (('battlePanelVariant', 2), ('v3BarStyle', 3, '!='))),
         visAll(check(u'Риски порогов 65 / 85 / 95%', 'v3BarMarks',
                      u'Отметки 65 / 85 / 95%', u'Тонкие деления на полоске в точках получения 1, 2 и 3 отметок (при шкале 0–100%).'),
                (('battlePanelVariant', 2), ('v3BarStyle', [0, 2]), ('v3BarScale', 0))),
@@ -3986,10 +3960,6 @@ def _menuTemplate(tpl, ver, showV3=True):
         visAll(textInput(u'Своя подпись урона', 'v3DamageCustomLabel',
                          u'Своя надпись', u'Произвольный текст слева от чисел урона (до 24 символов).'),
                (('battlePanelVariant', 2), ('v3ShowDamage', True), ('v3DamageLabel', 1))),
-        visAll(dropdown(u'Формат чисел урона', 'v3DamageFormat',
-                        [u'Набито / Нужно', u'Набито (осталось)', u'Только набито', u'Только осталось'],
-                        u'Формат значений', u'Как показывать набранный урон и целевое значение.'),
-               (('battlePanelVariant', 2), ('v3ShowDamage', True))),
         vis(dropdown(u'Разделитель тысяч', 'v3ThousandsSep',
                      [u'Пробел (3 308)', u'Запятая (3,308)', u'Без разделителя (3308)'],
                      u'Формат тысяч', u'Единый разделитель для всех чисел урона и ассиста в Варианте 3.'),
