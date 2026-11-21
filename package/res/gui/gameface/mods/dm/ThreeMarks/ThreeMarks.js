@@ -26,13 +26,14 @@
         onlyPct: true, alpha: 1
     };
     var DEF_V3 = {
-        den: 1, minW: 0, anc: 0, alt: 1, hs: false,
+        den: 1, minW: 0, anc: 0, hs: false,
         fs: 0, rad: 5, cc: '#FFFFFF', ca: 0.90, ba: 0.28, bgc: '#0B1016', bgo: 0.48,
         sp: 0, ss: 0, sd: false, sz: 15, sg: 6, sgl: true, son: '#FFFFFF', sof: '#9AA3AE',
         ho: 0, dec: 1, di: 0, dc: 0,
         bs: 0, bsc: 0, bh: 4, bet: true, bcur: true, bmk: false, bcm: 0, bcc: '#A7D080',
         dmgOn: true, dl: 0, dlc: '\u0421\u0443\u043c. \u0443\u0440\u043e\u043d', sep: 1, ddyn: true,
-        am: 0, ap: 0, ahz: false,
+        ash: 0, am: 0, ap: 0, ahz: false,
+        tsh: 0, tmm: 0, tp: 0,
         up: '#A7D080', dn: '#E57373', zr: '#9AA3AE', big: '#B07CFF', tm: '#FFFFFF', tmu: '#B8BDC4'
     };
     var V3_TRACK_RUNS = [
@@ -379,13 +380,14 @@
         if (maxAst > 0) {
             activeCh = (spot >= track) ? 'spot' : 'track';
         }
-        var altMode = v3Int(v, 'alt', 0, 2);
-        var altExp = (altMode === 1 && !!d.alt);
-        var rawMode = v3Int(v, 'am', 0, 2);
-        var mode = altExp ? 0 : rawMode;
-        if (rawMode === 2 && !altExp) {
-            return { items: [], activeCh: activeCh, maxAst: maxAst, altExp: altExp };
+        var alt = !!d.alt;
+        var showMode = v3Int(v, 'ash', 0, 4);
+        var rawMode = v3Int(v, 'am', 0, 1);
+        if (showMode === 4 || (showMode === 1 && !alt) || (showMode === 2 && alt)) {
+            return { items: [], activeCh: activeCh, maxAst: maxAst, altExp: false };
         }
+        var altExp = (showMode === 3 && alt);
+        var mode = (rawMode === 0 || altExp) ? 0 : 1;
         var rows;
         if (mode === 0) {
             rows = [['spot', spot], ['track', track]];
@@ -408,6 +410,48 @@
             items.push({ ch: ch, val: val, active: isAct, text: v3FmtNum(val, sep) });
         }
         return { items: items, activeCh: activeCh, maxAst: maxAst, altExp: altExp };
+    }
+
+    function v3ResolveTempo(v, d) {
+        var alt = !!d.alt;
+        var showMode = v3Int(v, 'tsh', 0, 4);
+        var rawMode = v3Int(v, 'tmm', 0, 2);
+        if (showMode === 4 || (showMode === 1 && !alt) || (showMode === 2 && alt)) {
+            return [];
+        }
+        var pct = num(d.pct, 0);
+        var tNextPct = Math.round(num(d.tNextPct, 0)) || (pct < 65 ? 65 : (pct < 85 ? 85 : (pct < 95 ? 95 : 100)));
+        var tNext = Math.max(0, Math.round(num(d.tNext, 0)));
+        var t95 = Math.max(0, Math.round(num(d.t95, 0)));
+        var dmg = Math.max(0, Math.round(num(d.dmg, 0)));
+        var altExp = (showMode === 3 && alt);
+        var mode = altExp ? 0 : rawMode;
+        var pairs;
+        if (mode === 1) {
+            pairs = [[tNextPct, tNext]];
+        } else if (mode === 2) {
+            pairs = [[95, t95]];
+        } else {
+            if (tNextPct === 95) {
+                pairs = [[95, t95 > 0 ? t95 : tNext]];
+            } else if (tNextPct < 95) {
+                pairs = [[tNextPct, tNext], [95, t95]];
+            } else {
+                pairs = [[95, t95], [100, tNext]];
+            }
+        }
+        var sep = v3Int(v, 'sep', 0, 2);
+        var items = [];
+        for (var i = 0; i < pairs.length; i += 1) {
+            var pLbl = pairs[i][0];
+            var val = pairs[i][1];
+            var valStr = val > 0 ? v3FmtNum(val, sep) : '\u2014';
+            var lbl = pLbl + '%:';
+            var text = lbl + ' ' + valStr;
+            var done = (val > 0 && dmg >= val);
+            items.push({ pct: pLbl, val: val, done: done, lbl: lbl, valStr: valStr, text: text });
+        }
+        return items;
     }
 
     function v3DeltaInfo(v, d, u) {
@@ -623,6 +667,23 @@
         return v3IconCache[key];
     }
 
+    function v3TempoStarUri(size, color, opacity) {
+        var s = Math.round(size);
+        var key = 'ts|' + s + '|' + color + '|' + opacity.toFixed(2);
+        if (v3IconCache[key]) return v3IconCache[key];
+        var cx = s * 0.5, cy = s * 0.5, r = s * 0.42, inner = r * 0.42;
+        var pts = [];
+        for (var i = 0; i < 10; i += 1) {
+            var ang = -Math.PI * 0.5 + i * Math.PI * 0.2;
+            var rad = (i % 2 === 0) ? r : inner;
+            pts.push((cx + rad * Math.cos(ang)).toFixed(2) + ',' + (cy + rad * Math.sin(ang)).toFixed(2));
+        }
+        var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="' + s + '" height="' + s + '" viewBox="0 0 ' + s + ' ' + s + '">' +
+            '<polygon points="' + pts.join(' ') + '" fill="' + color + '" fill-opacity="' + opacity.toFixed(3) + '"/></svg>';
+        v3IconCache[key] = svgUri(svg);
+        return v3IconCache[key];
+    }
+
     function v3BarColor(v, pct, deltaAccent) {
         var mode = v3Int(v, 'bcm', 0, 2);
         if (mode === 1) return deltaAccent;
@@ -639,6 +700,7 @@
         var dInfo = v3DeltaInfo(v, d, u);
         var tInfo = v3TargetInfo(v, d);
         var ast = v3ResolveAssist(v, d);
+        var thr = v3ResolveTempo(v, d);
 
         var frameStyle = v3Int(v, 'fs', 0, 3);
         var starsPos = v3Int(v, 'sp', 0, 5);
@@ -678,6 +740,18 @@
         var astRowMinW = astWidths.length ? (sumAstW + Math.max(0, astWidths.length - 1) * astItemGap) : 0;
         var astInside = (v3Int(v, 'ap', 0, 1) === 0);
 
+        var thrIconSize = Math.max(14, astSize + 1);
+        var thrItemGap = 16;
+        var thrWidths = [];
+        var sumThrW = 0;
+        for (var ti = 0; ti < thr.length; ti += 1) {
+            var tw = thrIconSize + 5 + v3Advance(thr[ti].text, astSize);
+            thrWidths.push(tw);
+            sumThrW += tw;
+        }
+        var thrRowMinW = thrWidths.length ? (sumThrW + Math.max(0, thrWidths.length - 1) * thrItemGap) : 0;
+        var thrInside = (v3Int(v, 'tp', 0, 1) === 0);
+
         var barMinW = [156, 178, 200][den];
         var minWOpt = v3Int(v, 'minW', 0, 360);
         var minContentW = minWOpt > 0 ? Math.max(0, minWOpt - 2 * padX) : 0;
@@ -688,7 +762,8 @@
             : ((starsPos === 0 || starsPos === 1) ? (starsSpan + 8) : 0);
 
         var cw = Math.ceil(Math.max(barMinW, headerMinW, dmgRowMinW,
-            astInside ? astRowMinW : 0, minContentW, starsMinFrameW - 2 * padX));
+            astInside ? astRowMinW : 0, thrInside ? thrRowMinW : 0,
+            minContentW, starsMinFrameW - 2 * padX));
 
         var framed = (frameStyle !== 3);
         var sideBorderStars = framed && (starsPos === 2 || starsPos === 3);
@@ -733,6 +808,14 @@
             y += astH;
         }
 
+        var thrY = null;
+        var thrH = Math.max(astSize + 2, thrIconSize);
+        if (thr.length && thrInside) {
+            y += (astY !== null) ? gapRow : (gapRow + 1);
+            thrY = y;
+            y += thrH;
+        }
+
         var fh = y + padY + extraBot;
         if (starsPos === 2 || starsPos === 3) {
             var minSideH = starsSpan + (sideBorderStars ? 2 * (minBracket + 8) : 8);
@@ -744,6 +827,7 @@
                 if (barY !== null) barY += deltaShift;
                 if (dmgY !== null) dmgY += deltaShift;
                 if (astY !== null) astY += deltaShift;
+                if (thrY !== null) thrY += deltaShift;
             }
         }
 
@@ -780,13 +864,25 @@
         if (sideBorderStars && starsPos === 3) rightExtend = halfStar;
         else if (sideOutsideStars && starsPos === 3) rightExtend = (starsDiv ? 14 : 8) + starSize;
 
-        var winW = Math.ceil(Math.max(fx + fw + rightExtend + margin, (ast.items.length && !astInside) ? (astRowMinW + 2 * margin) : 0));
+        var winW = Math.ceil(Math.max(
+            fx + fw + rightExtend + margin,
+            (ast.items.length && !astInside) ? (astRowMinW + 2 * margin) : 0,
+            (thr.length && !thrInside) ? (thrRowMinW + 2 * margin) : 0
+        ));
         var botExtend = (starsPos === 1) ? halfStar : 0;
-        var astBelowY = null;
-        var winH;
+        var curBelowY = fy + fh + (starsPos === 1 ? halfStar + 6 : 6);
+        var astBelowY = null, thrBelowY = null;
         if (ast.items.length && !astInside) {
-            astBelowY = fy + fh + (starsPos === 1 ? halfStar + 6 : 6);
-            winH = Math.ceil(astBelowY + astH + margin);
+            astBelowY = curBelowY;
+            curBelowY += astH + 4;
+        }
+        if (thr.length && !thrInside) {
+            thrBelowY = curBelowY;
+            curBelowY += thrH + 4;
+        }
+        var winH;
+        if (astBelowY !== null || thrBelowY !== null) {
+            winH = Math.ceil(curBelowY - 4 + margin);
         } else {
             winH = Math.ceil(fy + fh + botExtend + margin);
         }
@@ -797,13 +893,16 @@
             cx: cx, cw: cw,
             headerY: fy + headerY, headerH: headerH,
             pctSize: pctSize, deltaSize: deltaSize,
-            dInfo: dInfo, tInfo: tInfo, ast: ast,
+            dInfo: dInfo, tInfo: tInfo, ast: ast, thr: thr,
             barStyle: barStyle, barY: barY !== null ? (fy + barY) : null, barH: barH, barBlockH: barBlockH,
             dmgY: dmgY !== null ? (fy + dmgY) : null, dmgH: dmgH, dmgSize: dmgSize,
             dmgLblText: dmgLblText, dmgLblMode: dmgLblMode,
             astY: astInside ? (astY !== null ? (fy + astY) : null) : astBelowY,
             astH: astH, astSize: astSize, astIconSize: astIconSize,
             astItemGap: astItemGap, astWidths: astWidths, astRowMinW: astRowMinW, astInside: astInside,
+            thrY: thrInside ? (thrY !== null ? (fy + thrY) : null) : thrBelowY,
+            thrH: thrH, thrIconSize: thrIconSize, thrItemGap: thrItemGap,
+            thrWidths: thrWidths, thrRowMinW: thrRowMinW, thrInside: thrInside,
             starsCoords: starsCoords, starSize: starSize, starGap: starGap,
             starsSpan: starsSpan, starsPos: starsPos, sideBorderStars: sideBorderStars, divLine: divLine
         };
@@ -889,6 +988,28 @@
             dmgRow: dmgRow, dmgLbl: dmgLbl, dmgMain: dmgMain, dmgSec: dmgSec,
             astRow: astRow, astItems: astItems
         };
+        var thrRow = document.createElement('div');
+        thrRow.className = 'v3-astwrap v3-thrwrap';
+        var thrItems = [];
+        for (var tj = 0; tj < 2; tj += 1) {
+            var tbox = document.createElement('div');
+            tbox.className = 'v3-astitem v3-thritem';
+            tbox.style.display = 'none';
+            var tico = document.createElement('img');
+            tico.className = 'v3-astico v3-thrico';
+            var tlbl = document.createElement('span');
+            tlbl.className = 'v3-asttxt v3-thrlbl';
+            var ttxt = document.createElement('span');
+            ttxt.className = 'v3-asttxt v3-thrval';
+            tbox.appendChild(tico);
+            tbox.appendChild(tlbl);
+            tbox.appendChild(ttxt);
+            thrRow.appendChild(tbox);
+            thrItems.push({ box: tbox, ico: tico, lbl: tlbl, txt: ttxt });
+        }
+        elV3.appendChild(thrRow);
+        v3Dom.thrRow = thrRow;
+        v3Dom.thrItems = thrItems;
         return v3Dom;
     }
 
@@ -1158,6 +1279,47 @@
             }
         } else {
             dom.astRow.style.display = 'none';
+        }
+
+        /* Tempo / Thresholds row DOM */
+        if (m.thr && m.thr.length && m.thrY !== null) {
+            var tBaseW = m.thrInside ? m.cw : Math.max(m.cw, m.thrRowMinW);
+            var tBaseX = m.thrInside ? m.cx : (winW - tBaseW) * 0.5;
+            var spacePx = Math.max(2, Math.round(0.24 * m.astSize));
+            dom.thrRow.style.display = 'flex';
+            dom.thrRow.style.left = tBaseX.toFixed(1) + 'px';
+            dom.thrRow.style.top = m.thrY + 'px';
+            dom.thrRow.style.width = tBaseW.toFixed(1) + 'px';
+            dom.thrRow.style.height = m.thrH + 'px';
+            dom.thrRow.style.justifyContent = 'center';
+            for (var kt = 0; kt < dom.thrItems.length; kt += 1) {
+                var tDom = dom.thrItems[kt];
+                if (kt < m.thr.length) {
+                    var tit = m.thr[kt];
+                    var sCol = tit.done ? v.up : v.son;
+                    var lCol = tit.done ? v.up : v.tmu;
+                    var vCol = tit.done ? v.up : v.tm;
+                    var sop = tit.done ? 0.96 : 0.82;
+                    tDom.box.style.display = 'flex';
+                    tDom.box.style.marginLeft = (kt > 0) ? (m.thrItemGap + 'px') : '0px';
+                    tDom.ico.style.width = m.thrIconSize + 'px';
+                    tDom.ico.style.height = m.thrIconSize + 'px';
+                    tDom.ico.src = v3TempoStarUri(m.thrIconSize, sCol, sop);
+                    tDom.lbl.textContent = tit.lbl;
+                    tDom.lbl.style.color = lCol;
+                    tDom.lbl.style.fontSize = m.astSize + 'px';
+                    tDom.lbl.style.textShadow = txtShadow;
+                    tDom.txt.textContent = tit.valStr;
+                    tDom.txt.style.marginLeft = spacePx + 'px';
+                    tDom.txt.style.color = vCol;
+                    tDom.txt.style.fontSize = m.astSize + 'px';
+                    tDom.txt.style.textShadow = txtShadow;
+                } else {
+                    tDom.box.style.display = 'none';
+                }
+            }
+        } else {
+            dom.thrRow.style.display = 'none';
         }
 
         var svgStr = '<svg xmlns="http://www.w3.org/2000/svg" width="' + winW + '" height="' + winH + '" viewBox="0 0 ' + winW + ' ' + winH + '">' + parts.join('') + '</svg>';

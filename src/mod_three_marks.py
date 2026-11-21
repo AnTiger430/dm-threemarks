@@ -81,7 +81,7 @@ _WINDOW_W, _WINDOW_H = (244, 96)
 _HWINDOW_W, _HWINDOW_H = (244, 144)
 _PCT_WINDOW_W, _PCT_WINDOW_H = (220, 72)
 
-MOD_VERSION = '10.12.3'
+MOD_VERSION = '10.12.4'
 _WG_API_URL = 'https://api.worldoftanks.%s/wot/tanks/mastery/?application_id=%s&distribution=damage&percentile=%s&tank_id=%s'
 _WG_HISTORY_URL = 'https://poliroid.me/gunmarks/api/v2/data/%s/vehicle/%s/%s'
 
@@ -89,7 +89,6 @@ _V3_DEFAULTS = {
     'v3Density': 1,
     'v3MinWidth': 0,
     'v3Anchor': 0,
-    'v3AltMode': 1,
     'v3HideInSniper': False,
     'v3FrameStyle': 0,
     'v3Radius': 5,
@@ -123,9 +122,13 @@ _V3_DEFAULTS = {
     'v3DamageCustomLabel': u'Сум. урон',
     'v3ThousandsSep': 1,
     'v3DamageDynColor': True,
+    'v3AssistShow': 0,
     'v3AssistMode': 0,
     'v3AssistPlace': 0,
     'v3AssistHideZero': False,
+    'v3TempoShow': 0,
+    'v3TempoMode': 0,
+    'v3TempoPlace': 0,
     'v3AccentPlus': '#A7D080',
     'v3AccentMinus': '#E57373',
     'v3AccentZero': '#9AA3AE',
@@ -488,7 +491,6 @@ def _v3UiPayload():
         'den': _cfgInt('v3Density', 0, 2),
         'minW': _cfgInt('v3MinWidth', 0, 360),
         'anc': _cfgInt('v3Anchor', 0, 5),
-        'alt': _cfgInt('v3AltMode', 0, 2),
         'fs': _cfgInt('v3FrameStyle', 0, 3),
         'rad': _cfgInt('v3Radius', 0, 14),
         'cc': _cfgColor('v3CornerColor'),
@@ -521,9 +523,13 @@ def _v3UiPayload():
         'dlc': _cfgStr('v3DamageCustomLabel', u'Сум. урон', 24),
         'sep': _cfgInt('v3ThousandsSep', 0, 2),
         'ddyn': bool(g_config.get('v3DamageDynColor', True)),
-        'am': _cfgInt('v3AssistMode', 0, 2),
+        'ash': _cfgInt('v3AssistShow', 0, 4),
+        'am': _cfgInt('v3AssistMode', 0, 1),
         'ap': _cfgInt('v3AssistPlace', 0, 1),
         'ahz': bool(g_config.get('v3AssistHideZero', False)),
+        'tsh': _cfgInt('v3TempoShow', 0, 4),
+        'tmm': _cfgInt('v3TempoMode', 0, 2),
+        'tp': _cfgInt('v3TempoPlace', 0, 1),
         'up': _cfgColor('v3AccentPlus'),
         'dn': _cfgColor('v3AccentMinus'),
         'zr': _cfgColor('v3AccentZero'),
@@ -2099,24 +2105,28 @@ def _settingsPoll(owner, panel, st, px, py, down, ctrl):
 _PREVIEW_ORDER = ('plus', 'minus', 'zero', 'big')
 _PREVIEW = {'state': 'plus', 'uiState': 0, 'source': None, 'key': None, 'syncing': False}
 _PREVIEW_SAMPLES = {
-    'plus': dict(pct=50.32, delta=1.63, dmg=2266, proj=784, big=False, glow=False, assist=(577, 120)),
-    'minus': dict(pct=37.67, delta=-0.70, dmg=0, proj=632, big=False, glow=False, assist=(0, 0)),
-    'zero': dict(pct=71.40, delta=0.0, dmg=310, proj=1204, big=False, glow=False, assist=(12, 12)),
-    'big': dict(pct=94.38, delta=4.52, dmg=9120, proj=3361, big=True, glow=True, assist=(210, 1830)),
+    'plus': dict(pct=78.94, delta=1.63, dmg=2266, proj=784, big=False, glow=False, assist=(577, 120)),
+    'minus': dict(pct=86.12, delta=-0.70, dmg=0, proj=632, big=False, glow=False, assist=(0, 0)),
+    'zero': dict(pct=95.10, delta=0.0, dmg=310, proj=1204, big=False, glow=False, assist=(12, 12)),
+    'big': dict(pct=97.85, delta=4.52, dmg=9120, proj=3361, big=True, glow=True, assist=(210, 1830)),
 }
 _PREVIEW_SAMPLES_V3 = {
     'plus': dict(pct=78.94, delta=1.25, sDelta=1.85, dmg=3680, tHold=3323, tMark=3850, tPlus1=3323,
+                 tNextPct=85, tNext=3850, t95=4380,
                  own=1830, spot=1850, track=0, stun=0, marks=1, big=False, isSpg=False, hasRating=True),
-    'minus': dict(pct=64.12, delta=-1.15, sDelta=-1.15, dmg=1120, tHold=1980, tMark=2010, tPlus1=1980,
-                  own=700, spot=0, track=420, stun=0, marks=0, big=False, isSpg=False, hasRating=True),
-    'zero': dict(pct=84.90, delta=0.0, sDelta=0.0, dmg=2450, tHold=2450, tMark=2510, tPlus1=2450,
-                 own=2450, spot=0, track=0, stun=0, marks=1, big=False, isSpg=False, hasRating=True),
-    'big': dict(pct=95.40, delta=4.65, sDelta=5.20, dmg=6820, tHold=3900, tMark=4380, tPlus1=3900,
+    'minus': dict(pct=86.12, delta=-1.15, sDelta=-1.15, dmg=2120, tHold=2980, tMark=3450, tPlus1=2980,
+                  tNextPct=95, tNext=3450, t95=3450,
+                  own=1500, spot=0, track=620, stun=0, marks=2, big=False, isSpg=False, hasRating=True),
+    'zero': dict(pct=95.10, delta=0.0, sDelta=0.0, dmg=3450, tHold=3450, tMark=3920, tPlus1=3450,
+                 tNextPct=100, tNext=3920, t95=3450,
+                 own=2970, spot=480, track=480, stun=0, marks=3, big=False, isSpg=False, hasRating=True),
+    'big': dict(pct=97.85, delta=4.65, sDelta=5.20, dmg=6820, tHold=3900, tMark=4450, tPlus1=3900,
+                tNextPct=100, tNext=4450, t95=3900,
                 own=4120, spot=1200, track=2700, stun=850, marks=3, big=True, isSpg=True, hasRating=True),
 }
 
 _PREVIEW_CONTAINER_W = 280
-_PREVIEW_CONTAINER_H = 156
+_PREVIEW_CONTAINER_H = 176
 _SVG_FONT = u'WarheliosCondensedBold,Warhelios Condensed Bold,Arial,sans-serif'
 
 _SVG_SPOT_RUNS = (
@@ -2270,13 +2280,13 @@ def _v3ResolveAssist(cfg, sample, alt=False):
     else:
         activeCh = 'track'
 
-    altMode = _cfgInt('v3AltMode', 0, 2, cfg)
-    altExp = (altMode == 1 and bool(alt))
-    rawMode = _cfgInt('v3AssistMode', 0, 2, cfg)
-    if rawMode == 2 and not altExp:
-        return [], activeCh, maxAst, altExp
+    showMode = _cfgInt('v3AssistShow', 0, 4, cfg)
+    rawMode = _cfgInt('v3AssistMode', 0, 1, cfg)
+    if showMode == 4 or (showMode == 1 and not alt) or (showMode == 2 and alt):
+        return [], activeCh, maxAst, False
 
-    mode = 0 if altExp else rawMode
+    altExp = (showMode == 3 and bool(alt))
+    mode = 0 if (rawMode == 0 or altExp) else 1
     if mode == 0:
         rows = [('spot', spot), ('track', track)]
     else:
@@ -2291,6 +2301,45 @@ def _v3ResolveAssist(cfg, sample, alt=False):
         isAct = (ch == activeCh and val > 0)
         items.append({'ch': ch, 'val': val, 'active': isAct, 'text': _v3FmtNum(val, sep)})
     return items, activeCh, maxAst, altExp
+
+
+def _v3ResolveTempo(cfg, sample, alt=False):
+    showMode = _cfgInt('v3TempoShow', 0, 4, cfg)
+    rawMode = _cfgInt('v3TempoMode', 0, 2, cfg)
+    if showMode == 4 or (showMode == 1 and not alt) or (showMode == 2 and alt):
+        return []
+
+    pct = float(sample.get('pct', 0.0) or 0.0)
+    tNextPct = int(sample.get('tNextPct', 0) or (
+        65 if pct < 65.0 else (85 if pct < 85.0 else (95 if pct < 95.0 else 100))))
+    tNext = max(0, int(sample.get('tNext', 0) or 0))
+    t95 = max(0, int(sample.get('t95', 0) or 0))
+    dmg = max(0, int(sample.get('dmg', 0) or 0))
+
+    altExp = (showMode == 3 and bool(alt))
+    mode = 0 if altExp else rawMode
+    if mode == 1:
+        pairs = [(tNextPct, tNext)]
+    elif mode == 2:
+        pairs = [(95, t95)]
+    else:
+        if tNextPct == 95:
+            pairs = [(95, t95 if t95 > 0 else tNext)]
+        elif tNextPct < 95:
+            pairs = [(tNextPct, tNext), (95, t95)]
+        else:
+            pairs = [(95, t95), (100, tNext)]
+
+    sep = _cfgInt('v3ThousandsSep', 0, 2, cfg)
+    items = []
+    for pLbl, val in pairs:
+        valStr = _v3FmtNum(val, sep) if val > 0 else u'\u2014'
+        lbl = u'%d%%:' % int(pLbl)
+        text = u'%s %s' % (lbl, valStr)
+        done = bool(val > 0 and dmg >= val)
+        items.append({'pct': int(pLbl), 'val': val, 'done': done,
+                      'lbl': lbl, 'valStr': valStr, 'text': text})
+    return items
 
 
 def _v3DeltaInfo(cfg, sample):
@@ -2367,6 +2416,7 @@ def _v3Metrics(cfg, sample=None, alt=False):
     pctText, deltaText, kind, deltaAccent, showDelta = _v3DeltaInfo(cfg, sample)
     dmg, tgt, dmgStr, tgtStr, remStr = _v3TargetInfo(cfg, sample)
     astItems, activeCh, maxAst, altExp = _v3ResolveAssist(cfg, sample, alt=alt)
+    thrItems = _v3ResolveTempo(cfg, sample, alt=alt)
 
     frameStyle = _cfgInt('v3FrameStyle', 0, 3, cfg)
     starsPos = _cfgInt('v3StarsPos', 0, 5, cfg)
@@ -2400,6 +2450,12 @@ def _v3Metrics(cfg, sample=None, alt=False):
     astRowMinW = (sum(astWidths) + max(0, len(astWidths) - 1) * astItemGap) if astWidths else 0
     astInside = (_cfgInt('v3AssistPlace', 0, 1, cfg) == 0)
 
+    thrIconSize = max(14, astSize + 1)
+    thrItemGap = 16
+    thrWidths = [thrIconSize + 5 + _svgAdvance(it['text'], astSize) for it in thrItems]
+    thrRowMinW = (sum(thrWidths) + max(0, len(thrWidths) - 1) * thrItemGap) if thrWidths else 0
+    thrInside = (_cfgInt('v3TempoPlace', 0, 1, cfg) == 0)
+
     barMinW = (156, 178, 200)[den]
     minWOpt = _cfgInt('v3MinWidth', 0, 360, cfg)
     minContentW = max(0, minWOpt - 2 * padX) if minWOpt > 0 else 0
@@ -2410,6 +2466,7 @@ def _v3Metrics(cfg, sample=None, alt=False):
 
     cw = int(math.ceil(max(barMinW, headerMinW, dmgRowMinW,
                            astRowMinW if astInside else 0,
+                           thrRowMinW if thrInside else 0,
                            minContentW, starsMinFrameW - 2 * padX)))
 
     framed = (frameStyle != 3)
@@ -2454,6 +2511,13 @@ def _v3Metrics(cfg, sample=None, alt=False):
         astY = y
         y += astH
 
+    thrY = None
+    thrH = max(astSize + 2, thrIconSize)
+    if thrItems and thrInside:
+        y += (gapRow if astY is not None else gapRow + 1)
+        thrY = y
+        y += thrH
+
     fh = y + padY + extraBot
     if starsPos in (2, 3):
         minSideH = starsSpan + (2 * (minBracket + 8) if sideBorderStars else 8)
@@ -2469,6 +2533,8 @@ def _v3Metrics(cfg, sample=None, alt=False):
                 dmgY += deltaShift
             if astY is not None:
                 astY += deltaShift
+            if thrY is not None:
+                thrY += deltaShift
 
     fw = cw + 2 * padX + extraLeft + extraRight
     margin = 6
@@ -2514,13 +2580,24 @@ def _v3Metrics(cfg, sample=None, alt=False):
     elif sideOutsideStars and starsPos == 3:
         rightExtend = (14 if starsDiv else 8) + starSize
 
-    winW = int(math.ceil(max(fx + fw + rightExtend + margin, astRowMinW + 2 * margin if (astItems and not astInside) else 0)))
+    winW = int(math.ceil(max(
+        fx + fw + rightExtend + margin,
+        astRowMinW + 2 * margin if (astItems and not astInside) else 0,
+        thrRowMinW + 2 * margin if (thrItems and not thrInside) else 0,
+    )))
 
     botExtend = halfStar if starsPos == 1 else 0
+    curBelowY = fy + fh + (halfStar + 6 if starsPos == 1 else 6)
     astBelowY = None
+    thrBelowY = None
     if astItems and not astInside:
-        astBelowY = fy + fh + (halfStar + 6 if starsPos == 1 else 6)
-        winH = int(math.ceil(astBelowY + astH + margin))
+        astBelowY = curBelowY
+        curBelowY += astH + 4
+    if thrItems and not thrInside:
+        thrBelowY = curBelowY
+        curBelowY += thrH + 4
+    if astBelowY is not None or thrBelowY is not None:
+        winH = int(math.ceil(curBelowY - 4 + margin))
     else:
         winH = int(math.ceil(fy + fh + botExtend + margin))
 
@@ -2542,6 +2619,9 @@ def _v3Metrics(cfg, sample=None, alt=False):
         'astH': astH, 'astSize': astSize, 'astIconSize': astIconSize,
         'astItemGap': astItemGap, 'astItems': astItems, 'astWidths': astWidths,
         'astRowMinW': astRowMinW, 'astInside': astInside,
+        'thrY': (fy + thrY) if thrInside and thrY is not None else thrBelowY,
+        'thrH': thrH, 'thrIconSize': thrIconSize, 'thrItemGap': thrItemGap,
+        'thrItems': thrItems, 'thrWidths': thrWidths, 'thrRowMinW': thrRowMinW, 'thrInside': thrInside,
         'starsCoords': starsCoords, 'starSize': starSize, 'starGap': starGap,
         'starsSpan': starsSpan, 'starsPos': starsPos,
         'sideBorderStars': sideBorderStars, 'divLine': divLine,
@@ -2904,18 +2984,18 @@ def _v3BuildSvg(cfg, sample, alt=False):
                               anchor=u'end', shadow=True, shadowOp=shadowOp))
 
     # 6. Assist row
+    plusCol = _cfgColFrom(cfg, 'v3AccentPlus')
     if m['astItems'] and m['astY'] is not None:
         ay = float(m['astY'])
         abY = ay + float(m['astSize']) * 0.92
         icSz = float(m['astIconSize'])
         items = m['astItems']
         widths = m['astWidths']
-        baseX = cx if m['astInside'] else float(winW - m['cw']) * 0.5
         baseW = cw if m['astInside'] else float(max(cw, m['astRowMinW']))
+        baseX = cx if m['astInside'] else float(winW - baseW) * 0.5
         gap = float(m['astItemGap'])
         totalAstW = sum(widths) + gap * max(0, len(items) - 1)
         curX = baseX + (baseW - totalAstW) * 0.5
-        plusCol = _cfgColFrom(cfg, 'v3AccentPlus')
         for idx, it in enumerate(items):
             col = plusCol if it['active'] else textMuted
             op = 1.0 if it['active'] else 0.82
@@ -2923,6 +3003,31 @@ def _v3BuildSvg(cfg, sample, alt=False):
             parts.append(_svgText(curX + icSz + 5.0, abY, it['text'], col, m['astSize'],
                                   anchor=u'start', shadow=True, shadowOp=shadowOp))
             curX += widths[idx] + gap
+
+    # 7. Tempo / Thresholds row
+    if m['thrItems'] and m['thrY'] is not None:
+        ty = float(m['thrY'])
+        tbY = ty + float(m['astSize']) * 0.92
+        icSz = float(m['thrIconSize'])
+        tItems = m['thrItems']
+        tWidths = m['thrWidths']
+        tBaseW = cw if m['thrInside'] else float(max(cw, m['thrRowMinW']))
+        tBaseX = cx if m['thrInside'] else float(winW - tBaseW) * 0.5
+        tGap = float(m['thrItemGap'])
+        totalThrW = sum(tWidths) + tGap * max(0, len(tItems) - 1)
+        curX = tBaseX + (tBaseW - totalThrW) * 0.5
+        for idx, it in enumerate(tItems):
+            isDone = bool(it['done'])
+            sCol = plusCol if isDone else starOn
+            lCol = plusCol if isDone else textMuted
+            vCol = plusCol if isDone else textMain
+            parts.append(_svgStar(curX + icSz * 0.5, ty + m['thrH'] * 0.5, icSz * 0.42, sCol, 0.96 if isDone else 0.82))
+            parts.append(_svgText(curX + icSz + 5.0, tbY, it['lbl'], lCol, m['astSize'],
+                                  anchor=u'start', shadow=True, shadowOp=shadowOp))
+            lblAdv = _svgAdvance(it['lbl'] + u' ', m['astSize'])
+            parts.append(_svgText(curX + icSz + 5.0 + lblAdv, tbY, it['valStr'], vCol, m['astSize'],
+                                  anchor=u'start', shadow=True, shadowOp=shadowOp))
+            curX += tWidths[idx] + tGap
 
     body = u'<g opacity="%.3f">%s</g>' % (panelOp, u''.join(parts))
     svg = u'<svg xmlns="http://www.w3.org/2000/svg" width="%d" height="%d" viewBox="0 0 %d %d">%s</svg>' % (
@@ -3142,7 +3247,6 @@ _MENU_V3_INT = (
     ('v3Density', 0, 2),
     ('v3MinWidth', 0, 360),
     ('v3Anchor', 0, 5),
-    ('v3AltMode', 0, 2),
     ('v3FrameStyle', 0, 3),
     ('v3Radius', 0, 14),
     ('v3StarsPos', 0, 5),
@@ -3159,8 +3263,12 @@ _MENU_V3_INT = (
     ('v3BarColorMode', 0, 2),
     ('v3DamageLabel', 0, 2),
     ('v3ThousandsSep', 0, 2),
-    ('v3AssistMode', 0, 2),
+    ('v3AssistShow', 0, 4),
+    ('v3AssistMode', 0, 1),
     ('v3AssistPlace', 0, 1),
+    ('v3TempoShow', 0, 4),
+    ('v3TempoMode', 0, 2),
+    ('v3TempoPlace', 0, 1),
 )
 _MENU_V3_FLOAT = (
     ('v3CornerAlpha', 0.0, 1.0),
@@ -3813,11 +3921,6 @@ def _menuTemplate(tpl, ver, showV3=True):
     ])
     if showV3:
         tabMain.extend([
-            vis(dropdown(u'Режим клавиши Alt', 'v3AltMode',
-                         [u'Обычный', u'Расширять по Alt', u'Прятать по Alt'],
-                         u'Поведение по Alt',
-                         u'«Расширять по Alt» временно показывает оба канала ассиста (засвет и гусеницы).'),
-                'battlePanelVariant', 2),
             vis(check(u'Скрывать в снайперском прицеле', 'v3HideInSniper',
                       u'Снайперский режим',
                       u'Убирает панель Варианта 3, пока активен снайперский прицел.'),
@@ -3969,20 +4072,50 @@ def _menuTemplate(tpl, ver, showV3=True):
                      u'Подсвечивает набранный урон тактическим зелёным при достижении цели или росте, коралловым при падении.'),
                (('battlePanelVariant', 2), ('v3ShowDamage', True))),
         vis(label(u'<b>Каналы ассиста (Засвет и Гусеницы)</b>'), 'battlePanelVariant', 2),
-        vis(dropdown(u'Отображаемые каналы', 'v3AssistMode',
-                     [u'Засвет + Гусеницы',
-                      u'Только активный канал',
+        vis(dropdown(u'Когда показывать ассист', 'v3AssistShow',
+                     [u'Всегда (без Alt)',
+                      u'Только при нажатом Alt',
+                      u'Скрывать при нажатом Alt',
+                      u'Расширять по Alt (оба канала)',
                       u'Выключено'],
-                     u'Режим ассиста',
-                     u'Активный канал (максимальный среди засвета и гусениц) автоматически подсвечивается зелёным.'),
+                     u'Показ засвета и гусениц',
+                     u'Отдельная настройка показа строки ассиста: постоянно, только по клавише Alt, скрывать по Alt, расширять по Alt или выключить.'),
             'battlePanelVariant', 2),
+        visAll(dropdown(u'Отображаемые каналы', 'v3AssistMode',
+                        [u'Засвет + Гусеницы',
+                         u'Только активный канал'],
+                        u'Режим ассиста',
+                        u'Активный канал (максимальный среди засвета и гусениц) автоматически подсвечивается зелёным.'),
+               (('battlePanelVariant', 2), ('v3AssistShow', 4, '!='))),
         visAll(dropdown(u'Место строки ассиста', 'v3AssistPlace',
                         [u'Внутри снизу', u'Под панелью'],
                         u'Расположение ассиста', u'Внутри тактической рамки или отдельной строкой под ней.'),
-               (('battlePanelVariant', 2), ('v3AssistMode', 2, '!='))),
+               (('battlePanelVariant', 2), ('v3AssistShow', 4, '!='))),
         visAll(check(u'Скрывать нулевые каналы', 'v3AssistHideZero',
                      u'Скрывать нули', u'Прячет каналы со значением 0, чтобы виджет был компактнее.'),
-               (('battlePanelVariant', 2), ('v3AssistMode', 2, '!='))),
+               (('battlePanelVariant', 2), ('v3AssistShow', 4, '!='))),
+        vis(label(u'<b>Темп на отметку (средний урон до цели и 95%)</b>'), 'battlePanelVariant', 2),
+        vis(dropdown(u'Когда показывать темп', 'v3TempoShow',
+                     [u'Всегда (без Alt)',
+                      u'Только при нажатом Alt',
+                      u'Скрывать при нажатом Alt',
+                      u'Расширять по Alt (до следующей + 95%)',
+                      u'Выключено'],
+                     u'Показ темпа на отметку',
+                     u'Отдельная настройка показа темпа (независимо от засвета и гусениц): постоянно, только при нажатом Alt, скрывать по Alt, расширять по Alt или выключить.'),
+            'battlePanelVariant', 2),
+        visAll(dropdown(u'Отображаемые пороги темпа', 'v3TempoMode',
+                        [u'До следующей отметки + 95%',
+                         u'Только до следующей отметки',
+                         u'Только на 3 отметку (95%)'],
+                        u'Выбор порогов темпа',
+                        u'Сколько суммарного урона нужно держать на следующую отметку (65 / 85 / 95 / 100%) и/или на 3 отметку (95%). При выполнении темпа в бою подсвечивается зелёным.'),
+               (('battlePanelVariant', 2), ('v3TempoShow', 4, '!='))),
+        visAll(dropdown(u'Место строки темпа', 'v3TempoPlace',
+                        [u'Внутри снизу', u'Под панелью'],
+                        u'Расположение темпа',
+                        u'Снизу внутри рамки или под панелью. Автоматически располагается отдельной строкой от засвета и гусениц, чтобы они не мешали друг другу.'),
+               (('battlePanelVariant', 2), ('v3TempoShow', 4, '!='))),
     ]
 
     tabColorsV3 = [
@@ -4791,6 +4924,43 @@ def _sniperActive():
         return False
 
 
+_V3_THR_CACHE = {'key': None, 'val': (0, 0, 0, 0)}
+
+
+def _v3Thresholds(intCD, mark, rating, ema):
+    """(t65, t85, t95, t100) средний суммарный урон на 65 / 85 / 95 / 100%."""
+    try:
+        if mark is None or rating <= 0 or ema <= 0:
+            return (0, 0, 0, 0)
+        key = (int(intCD or 0), int(round(float(mark.avg))), int(round(float(mark.percent) * 100)),
+               int(round(float(rating) * 100)), int(round(float(ema))), _calcVersion[0])
+        if _V3_THR_CACHE['key'] == key:
+            return _V3_THR_CACHE['val']
+        res = [0, 0, 0, 0]
+        curve = _curveFor(intCD)
+        if curve and mark.avg > 0:
+            limits = _serverCurve(mark, curve)[0].thresholds()
+            if limits:
+                for i in range(min(4, len(limits))):
+                    v = limits[i]
+                    if v is not None and 0 < v < 30000:
+                        res[i] = int(math.ceil(v))
+        if not any(res):
+            stats = _calcStatistics(float(rating), float(ema))
+            for i, k in enumerate((65, 85, 95)):
+                v = stats.get(k)
+                if v and 0 < v < 30000:
+                    res[i] = int(math.ceil(v))
+            if res[2] > 0:
+                res[3] = min(30000, int(math.ceil(res[2] * (100.0 / 95.0) / 10.0) * 10))
+        out = tuple(res)
+        _V3_THR_CACHE['key'] = key
+        _V3_THR_CACHE['val'] = out
+        return out
+    except Exception:
+        return (0, 0, 0, 0)
+
+
 class _BattleController(object):
 
     TICK = 0.05
@@ -4971,8 +5141,6 @@ class _BattleController(object):
                 _logOnce(('killcam', how), 'panel hidden during the shot replay (%s)' % how)
                 return True
         if _cfgInt('battlePreset', 0, 2) == 2:
-            if _cfgInt('v3AltMode', 0, 2) == 2 and _altIsDown():
-                return True
             if bool(g_config.get('v3HideInSniper', False)) and _sniperActive():
                 return True
         return False
@@ -5115,6 +5283,15 @@ class _BattleController(object):
         parts = self._parts() or {}
         if preset == 2:
             tHold = int(round(projEma))
+            t65, t85, t95, t100 = _v3Thresholds(self._intCD, mark, self._shownPct, self._ema) if hasRating else (0, 0, 0, 0)
+            if self._shownPct < 65.0:
+                tNextPct, tNext = 65, t65
+            elif self._shownPct < 85.0:
+                tNextPct, tNext = 85, t85
+            elif self._shownPct < 95.0:
+                tNextPct, tNext = 95, t95
+            else:
+                tNextPct, tNext = 100, t100
             if parts.get('src') == 'feedback':
                 own = int(parts.get('damage', 0) or 0)
                 spot = int(parts.get('radio', 0) or 0)
@@ -5136,6 +5313,9 @@ class _BattleController(object):
                 'tHold': int(tHold),
                 'tMark': 0,
                 'tPlus1': 0,
+                'tNextPct': int(tNextPct),
+                'tNext': int(tNext),
+                't95': int(t95),
                 'own': max(0, own),
                 'spot': max(0, spot),
                 'track': max(0, track),
