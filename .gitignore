@@ -1,0 +1,9 @@
+*.pyc
+__pycache__/
+dist/
+*.wotmod
+*.zip
+package/res/scripts/
+*.log
+Thumbs.db
+.DS_Store
