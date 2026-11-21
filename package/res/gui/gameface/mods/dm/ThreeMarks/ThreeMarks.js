@@ -28,7 +28,7 @@
     var DEF_V3 = {
         den: 1, mw: 0, anc: 0, alt: 1, hs: false,
         fs: 0, rad: 5, cc: '#FFFFFF', ca: 0.90, ba: 0.28, bg: '#0B1016', bga: 0.48, sh: 0.85,
-        sp: 0, ss: 0, sd: true, sz: 15, sg: 6, sgl: true, son: '#FFFFFF', sof: '#9AA3AE',
+        sp: 0, ss: 0, sd: false, sz: 15, sg: 6, sgl: true, son: '#FFFFFF', sof: '#9AA3AE',
         ho: 0, dec: 2, di: 0, dc: 0, db: 0,
         bs: 0, bsc: 0, bh: 4, bet: true, bcur: true, bmk: false, bcm: 0, bcc: '#A7D080',
         dmgOn: true, dl: 0, df: 0, dt: 0, sep: 1, ddyn: true,
@@ -736,8 +736,8 @@
             astInside ? astRowMinW : 0, minContentW, starsMinFrameW - 2 * padX));
 
         var framed = (frameStyle !== 3);
-        var sideBorderStars = framed && (starsPos === 2 || starsPos === 3) && !starsDiv;
-        var sideOutsideStars = (starsPos === 2 || starsPos === 3) && (!framed || starsDiv);
+        var sideBorderStars = framed && (starsPos === 2 || starsPos === 3);
+        var sideOutsideStars = !framed && (starsPos === 2 || starsPos === 3);
         var halfStar = Math.ceil(starSize * 0.5);
 
         var extraTop = (starsPos === 0) ? Math.max(0, halfStar + 5 - padY) : 0;
@@ -780,7 +780,7 @@
 
         var fh = y + padY + extraBot;
         if (starsPos === 2 || starsPos === 3) {
-            var minSideH = starsSpan + (sideBorderStars ? 2 * minBracket : 8);
+            var minSideH = starsSpan + (sideBorderStars ? 2 * (minBracket + 8) : 8);
             if (fh < minSideH) {
                 var diff = minSideH - fh;
                 fh = minSideH;
@@ -973,7 +973,7 @@
             }
             if ((fs === 0 || fs === 2) && ba > 0.01) {
                 var gapSide = null, g0 = 0, g1 = 0;
-                if (fs === 0) {
+                if (fs === 0 || fs === 2) {
                     var halfGap = m.starsSpan * 0.5 + 6;
                     if (m.starsPos === 0) { gapSide = 'top'; g0 = m.fx + m.fw * 0.5 - halfGap; g1 = m.fx + m.fw * 0.5 + halfGap; }
                     else if (m.starsPos === 1) { gapSide = 'bottom'; g0 = m.fx + m.fw * 0.5 - halfGap; g1 = m.fx + m.fw * 0.5 + halfGap; }

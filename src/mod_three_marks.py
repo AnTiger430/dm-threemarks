@@ -81,7 +81,7 @@ _WINDOW_W, _WINDOW_H = (244, 96)
 _HWINDOW_W, _HWINDOW_H = (244, 144)
 _PCT_WINDOW_W, _PCT_WINDOW_H = (220, 72)
 
-MOD_VERSION = '10.12.0'
+MOD_VERSION = '10.12.1'
 _WG_API_URL = 'https://api.worldoftanks.%s/wot/tanks/mastery/?application_id=%s&distribution=damage&percentile=%s&tank_id=%s'
 _WG_HISTORY_URL = 'https://poliroid.me/gunmarks/api/v2/data/%s/vehicle/%s/%s'
 
@@ -101,7 +101,7 @@ _V3_DEFAULTS = {
     'v3Shadow': 0.85,
     'v3StarsPos': 0,
     'v3StarsStyle': 0,
-    'v3StarsDivider': True,
+    'v3StarsDivider': False,
     'v3StarsSize': 15,
     'v3StarsGap': 6,
     'v3StarsGlow': True,
@@ -2095,13 +2095,13 @@ _PREVIEW_SAMPLES = {
     'big': dict(pct=94.38, delta=4.52, dmg=9120, proj=3361, big=True, glow=True, assist=(210, 1830)),
 }
 _PREVIEW_SAMPLES_V3 = {
-    'plus': dict(pct=78.94, delta=0.01, sDelta=0.42, dmg=3308, tHold=3323, tMark=3850, tPlus1=4620,
-                 own=0, spot=3308, track=0, stun=0, marks=1, big=False, isSpg=False, hasRating=True),
-    'minus': dict(pct=64.12, delta=-0.45, sDelta=-0.20, dmg=1120, tHold=1980, tMark=2010, tPlus1=2780,
+    'plus': dict(pct=78.94, delta=1.25, sDelta=1.85, dmg=3680, tHold=3323, tMark=3850, tPlus1=3323,
+                 own=1830, spot=1850, track=0, stun=0, marks=1, big=False, isSpg=False, hasRating=True),
+    'minus': dict(pct=64.12, delta=-1.15, sDelta=-1.15, dmg=1120, tHold=1980, tMark=2010, tPlus1=1980,
                   own=700, spot=0, track=420, stun=0, marks=0, big=False, isSpg=False, hasRating=True),
-    'zero': dict(pct=84.90, delta=0.0, sDelta=0.0, dmg=2450, tHold=2450, tMark=2510, tPlus1=3390,
+    'zero': dict(pct=84.90, delta=0.0, sDelta=0.0, dmg=2450, tHold=2450, tMark=2510, tPlus1=2450,
                  own=2450, spot=0, track=0, stun=0, marks=1, big=False, isSpg=False, hasRating=True),
-    'big': dict(pct=95.40, delta=2.15, sDelta=2.80, dmg=6820, tHold=3900, tMark=4380, tPlus1=5400,
+    'big': dict(pct=95.40, delta=4.65, sDelta=5.20, dmg=6820, tHold=3900, tMark=4380, tPlus1=3900,
                 own=4120, spot=1200, track=2700, stun=850, marks=3, big=True, isSpg=True, hasRating=True),
 }
 
@@ -2431,8 +2431,8 @@ def _v3Metrics(cfg, sample=None, alt=False):
                            minContentW, starsMinFrameW - 2 * padX)))
 
     framed = (frameStyle != 3)
-    sideBorderStars = framed and (starsPos in (2, 3)) and (not starsDiv)
-    sideOutsideStars = (starsPos in (2, 3)) and ((not framed) or starsDiv)
+    sideBorderStars = framed and (starsPos in (2, 3))
+    sideOutsideStars = (not framed) and (starsPos in (2, 3))
     halfStar = int(math.ceil(starSize * 0.5))
 
     extraTop = max(0, halfStar + 5 - padY) if starsPos == 0 else 0
@@ -2474,7 +2474,7 @@ def _v3Metrics(cfg, sample=None, alt=False):
 
     fh = y + padY + extraBot
     if starsPos in (2, 3):
-        minSideH = starsSpan + (2 * minBracket if sideBorderStars else 8)
+        minSideH = starsSpan + (2 * (minBracket + 8) if sideBorderStars else 8)
         if fh < minSideH:
             diff = minSideH - fh
             fh = minSideH
@@ -2821,7 +2821,7 @@ def _v3BuildSvg(cfg, sample, alt=False):
                 fx, fy, fw, fh, rad, bgCol, bgOp))
         if frameStyle in (0, 2) and borderOp > 0.01:
             gapSide, g0, g1 = None, 0.0, 0.0
-            if frameStyle == 0:
+            if frameStyle in (0, 2):
                 sp = m['starsPos']
                 halfGap = m['starsSpan'] * 0.5 + 6.0
                 if sp == 0:
@@ -3169,7 +3169,7 @@ def _menuPreviewRefresh():
 
 _MENU_LINKAGE = 'dm.threemarks'
 _MENU = {'api': None, 'tpl': None, 'ver': (1, 0, 0), 'ok': False, 'tries': 0,
-         'next': 0.0, 'busy': False, 'template': None}
+         'next': 0.0, 'busy': False, 'template': None, 'fullTemplate': None, 'tplV3': True}
 _MENU_NUM = (('uiScale', 0.5, 2.5), ('bgOpacity', 0.0, 1.0),
              ('panelOpacity', 0.0, 1.0),
              ('trackOpacity', 0.0, 1.0), ('zeroBand', 0.0, 1.0),
@@ -3496,9 +3496,40 @@ def _onMenuApplied(*args):
         _logError('menu apply')
 
 
+def _syncMenuTabs(force=False):
+    """Перестроить вкладки Mod Menu: 5 вкладок для Варианта 3, 2 вкладки для Вариантов 1/2."""
+    api = _MENU.get('api')
+    tpl = _MENU.get('tpl')
+    ver = _MENU.get('ver') or (1, 0, 0)
+    if api is None or tpl is None:
+        return False
+    reloadFn = getattr(api, 'reloadModTemplate', None)
+    wantV3 = (_cfgInt('battlePreset', 0, 2) == 2)
+    if not force and _MENU.get('tplV3') == wantV3:
+        return False
+    if reloadFn is None:
+        return False
+    try:
+        newTpl = _menuTemplate(tpl, ver, showV3=wantV3)
+        _MENU['template'] = newTpl
+        _MENU['tplV3'] = wantV3
+        _PREVIEW['syncing'] = True
+        try:
+            reloadFn(_MENU_LINKAGE, newTpl)
+        finally:
+            _PREVIEW['syncing'] = False
+        _PREVIEW['source'] = None
+        _PREVIEW['key'] = None
+        return True
+    except Exception:
+        _logError('menu sync tabs')
+        return False
+
+
 def _onMenuOpened(*args):
     """Окно Mod Menu открылось: обновить картинку предпросмотра в его странице."""
     try:
+        _syncMenuTabs()
         _PREVIEW['key'] = None
         _menuPreviewRefresh()
     except Exception:
@@ -3514,6 +3545,7 @@ def _onMenuLive(*args):
         if linkage == _MENU_LINKAGE or (isinstance(settings, dict) and
                 any(key in settings for key in _MENU_ALL_KEYS)):
             _applyMenuSettings(settings, False)
+            _syncMenuTabs()
             _menuRefresh()
             # Some Mod Menu builds reuse a template snapshot and skip redraw
             # when the previous Image source is still cached.
@@ -3531,8 +3563,10 @@ def _onMenuClosed(*args):
         _PREVIEW['uiState'] = 0
         _PREVIEW['key'] = None
         api = _MENU['api']
-        if api is not None and _MENU['template'] is not None:
-            _applyMenuSettings(api.getModSettings(_MENU_LINKAGE, _MENU['template']), False)
+        srcTpl = _MENU.get('fullTemplate') or _MENU.get('template')
+        if api is not None and srcTpl is not None:
+            _applyMenuSettings(api.getModSettings(_MENU_LINKAGE, srcTpl), False)
+        _syncMenuTabs()
         _menuRefresh()          # вернуть обычный вид панели
         _menuPreviewRefresh()
     except Exception:
@@ -3559,29 +3593,61 @@ def _ctl(fn, *args, **kwargs):
         return fn(*args)
 
 
-def _menuTemplate(tpl, ver):
+def _menuTemplate(tpl, ver, showV3=True):
     new = tuple(ver) >= (2, 0, 0)
     values = _menuValues()
     f2 = '%.2f' if new else '{{value}}'
     f1 = '%.1f' if new else '{{value}}'
     f0 = '%.0f' if new else '{{value}}'
 
-    def tip(head, body):
+    def defText(key, kind, dfmt=None, labels=None):
+        val = DEFAULT_CONFIG.get(key)
+        if kind == 'slider':
+            try:
+                fval = float(val)
+            except Exception:
+                return None
+            if key == 'v3MinWidth' and int(round(fval)) == 0:
+                return u'0 (авто)'
+            if dfmt == '%.0f':
+                return u'%.0f' % fval
+            if dfmt == '%.1f':
+                return u'%.1f' % fval
+            return u'%.2f' % fval
+        if kind == 'check':
+            return u'Вкл' if bool(val) else u'Выкл'
+        if kind == 'color':
+            return unicode(val).upper()
+        if kind == 'choice' and labels:
+            if key == 'battlePanelVariant':
+                idx = int(DEFAULT_CONFIG.get('battlePreset', 2))
+            elif key == 'previewState':
+                idx = 0
+            else:
+                idx = int(val)
+            if 0 <= idx < len(labels):
+                return labels[idx]
+        return None
+
+    def tip(head, body, defaultText=None):
         if new:
-            return u'{HEADER}%s{/HEADER}{BODY}%s{/BODY}' % (head, body)
-        return u'%s: %s' % (head, body)
+            extra = (u'<br><font color="#B8BDC4">По умолчанию:</font> <b>%s</b>' % defaultText) if defaultText is not None else u''
+            return u'{HEADER}%s{/HEADER}{BODY}%s%s{/BODY}' % (head, body, extra)
+        extra = (u' (по умолчанию: %s)' % defaultText) if defaultText is not None else u''
+        return u'%s: %s%s' % (head, body, extra)
 
     def slider(text, key, low, high, step, fmt, head, body):
+        dfmt = '%.0f' if fmt == f0 else ('%.1f' if fmt == f1 else '%.2f')
         return _ctl(tpl.createSlider, text, key, values[key], low, high, step,
-                    format=fmt, tooltip=tip(head, body))
+                    format=fmt, tooltip=tip(head, body, defText(key, 'slider', dfmt=dfmt)))
 
     def check(text, key, head, body):
         return _ctl(tpl.createCheckbox, text, key, values[key],
-                    tooltip=tip(head, body))
+                    tooltip=tip(head, body, defText(key, 'check')))
 
     def color(text, key, body):
         return _ctl(tpl.createColorChoice, text, key, values[key],
-                    tooltip=tip(text, body))
+                    tooltip=tip(text, body, defText(key, 'color')))
 
     def label(text):
         return _ctl(tpl.createLabel, text)
@@ -3603,7 +3669,26 @@ def _menuTemplate(tpl, ver):
 
     def vis(control, master, value, cond='=='):
         """Скрыть элемент, пока условие над master не выполнено (для Gameface Mod Menu)."""
-        if new and isinstance(control, dict) and (cond != '==' or isinstance(value, (list, tuple))):
+        fn = getattr(tpl, 'visibleWhen', None)
+        if fn is not None and not isinstance(value, (list, tuple)):
+            if cond == '==':
+                try:
+                    return fn(control, master, value, indent=False)
+                except TypeError:
+                    try:
+                        return fn(control, master, value)
+                    except Exception:
+                        pass
+                except Exception:
+                    pass
+            else:
+                try:
+                    return fn(control, master, value, indent=False, condition=cond)
+                except TypeError:
+                    pass
+                except Exception:
+                    pass
+        if new and isinstance(control, dict):
             control['masterVarName'] = master
             control['masterValue'] = list(value) if isinstance(value, tuple) else value
             if cond != '==':
@@ -3611,18 +3696,7 @@ def _menuTemplate(tpl, ver):
             control['gateHides'] = True
             control['masterIndent'] = False
             return control
-        fn = getattr(tpl, 'visibleWhen', None)
-        if fn is None:
-            return gated(control, master, value)
-        try:
-            return fn(control, master, value, indent=False)
-        except TypeError:
-            try:
-                return fn(control, master, value)
-            except Exception:
-                return gated(control, master, value)
-        except Exception:
-            return gated(control, master, value)
+        return gated(control, master, value)
 
     def visAll(control, conds):
         """Скрыть элемент, пока не выполнены все условия [(master, value[, cond]), ...]."""
@@ -3649,13 +3723,14 @@ def _menuTemplate(tpl, ver):
     def radio(text, key, labels, head, body, inline=False):
         gen = getattr(tpl, 'generateOptions', None)
         opts = gen(list(labels)) if gen is not None else [{'label': s} for s in labels]
+        tText = tip(head, body, defText(key, 'choice', labels=labels))
         try:
             return tpl.createRadioButtonGroup(
                 text, key, opts, values[key],
-                tooltip=tip(head, body), inline=inline)
+                tooltip=tText, inline=inline)
         except TypeError:
             return _ctl(tpl.createRadioButtonGroup, text, key, opts,
-                        values[key], tooltip=tip(head, body))
+                        values[key], tooltip=tText)
 
     def dropdown(text, key, labels, head, body):
         fn = getattr(tpl, 'createDropdown', None)
@@ -3663,8 +3738,9 @@ def _menuTemplate(tpl, ver):
             return radio(text, key, labels, head, body, inline=False)
         gen = getattr(tpl, 'generateOptions', None)
         opts = gen(list(labels)) if gen is not None else [{'label': s} for s in labels]
+        tText = tip(head, body, defText(key, 'choice', labels=labels))
         try:
-            return fn(text, key, opts, values[key], tooltip=tip(head, body))
+            return fn(text, key, opts, values[key], tooltip=tText)
         except TypeError:
             try:
                 return fn(text, key, opts, values[key])
@@ -3703,31 +3779,32 @@ def _menuTemplate(tpl, ver):
                 pass
         return [label(u'<b>%s</b>' % title)] + list(items)
 
-    v3Note = lambda: vis(
-        label(u'<i>Эти настройки применяются в «Варианте 3 — Тактический / Pro» (переключается справа).</i>'),
-        'battlePanelVariant', 2, cond='!=')
-
     tabMain = [
         label(u'<b>Размер и положение</b>'),
         slider(u'Размер панели', 'uiScale', 0.5, 2.5, 0.05, f2, u'Размер',
                u'Размер всей панели в бою и ангаре: 1.00 — исходный.'),
         slider(u'Непрозрачность всей панели', 'panelOpacity', 0.0, 1.0, 0.02, f2,
                u'Непрозрачность панели', u'0 — панель невидима, 1 — полностью видима.'),
-        vis(dropdown(u'Плотность компоновки', 'v3Density',
-                     [u'Компактный', u'Стандартный', u'Крупный'],
-                     u'Плотность компоновки',
-                     u'Отступы и базовые размеры шрифтов для Варианта 3.'),
-            'battlePanelVariant', 2),
-        vis(slider(u'Минимальная ширина (0 — авто)', 'v3MinWidth', 0, 360, 10, f0,
-                   u'Минимальная ширина',
-                   u'0 — ширина подбирается автоматически по содержимому. Иначе задаёт минимум в пикселях.'),
-            'battlePanelVariant', 2),
-        vis(dropdown(u'Точка привязки при изменении размера', 'v3Anchor',
-                     [u'Верх-лево', u'Верх-центр', u'Верх-право',
-                      u'Низ-лево', u'Низ-центр', u'Низ-право'],
-                     u'Якорь панели',
-                     u'Какой край/угол остаётся на месте, когда панель сжимается или расширяется (например, по Alt).'),
-            'battlePanelVariant', 2),
+    ]
+    if showV3:
+        tabMain.extend([
+            vis(dropdown(u'Плотность компоновки', 'v3Density',
+                         [u'Компактный', u'Стандартный', u'Крупный'],
+                         u'Плотность компоновки',
+                         u'Отступы и базовые размеры шрифтов для Варианта 3.'),
+                'battlePanelVariant', 2),
+            vis(slider(u'Минимальная ширина (0 — авто)', 'v3MinWidth', 0, 360, 10, f0,
+                       u'Минимальная ширина',
+                       u'0 — ширина подбирается автоматически по содержимому. Иначе задаёт минимум в пикселях.'),
+                'battlePanelVariant', 2),
+            vis(dropdown(u'Точка привязки при изменении размера', 'v3Anchor',
+                         [u'Верх-лево', u'Верх-центр', u'Верх-право',
+                          u'Низ-лево', u'Низ-центр', u'Низ-право'],
+                         u'Якорь панели',
+                         u'Какой край/угол остаётся на месте, когда панель сжимается или расширяется (например, по Alt).'),
+                'battlePanelVariant', 2),
+        ])
+    tabMain.extend([
         vis(slider(u'Непрозрачность фона', 'bgOpacity', 0.0, 1.0, 0.02, f2,
                    u'Непрозрачность фона', u'0 — фон прозрачный, 1 — сплошной. Рамка и тень гаснут вместе с ним.'),
             'battlePanelVariant', 0),
@@ -3757,15 +3834,20 @@ def _menuTemplate(tpl, ver):
         check(u'Скрывать панель после гибели насовсем', 'hideAfterDeath',
               u'После гибели',
               u'Панель не показывается и при наблюдении за союзниками.'),
-        vis(dropdown(u'Режим клавиши Alt', 'v3AltMode',
-                     [u'Обычный', u'Расширять по Alt', u'Прятать по Alt'],
-                     u'Поведение по Alt',
-                     u'«Расширять по Alt» временно показывает свой урон, все 3 канала ассиста и отставание (+N).'),
-            'battlePanelVariant', 2),
-        vis(check(u'Скрывать в снайперском прицеле', 'v3HideInSniper',
-                  u'Снайперский режим',
-                  u'Убирает панель Варианта 3, пока активен снайперский прицел.'),
-            'battlePanelVariant', 2),
+    ])
+    if showV3:
+        tabMain.extend([
+            vis(dropdown(u'Режим клавиши Alt', 'v3AltMode',
+                         [u'Обычный', u'Расширять по Alt', u'Прятать по Alt'],
+                         u'Поведение по Alt',
+                         u'«Расширять по Alt» временно показывает свой урон, все 3 канала ассиста и отставание (+N).'),
+                'battlePanelVariant', 2),
+            vis(check(u'Скрывать в снайперском прицеле', 'v3HideInSniper',
+                      u'Снайперский режим',
+                      u'Убирает панель Варианта 3, пока активен снайперский прицел.'),
+                'battlePanelVariant', 2),
+        ])
+    tabMain.extend([
         label(u'<b>Пороги оценки (+ / 0 / большой +)</b>'),
         slider(u'Считать нулём изменение до', 'zeroBand', 0.0, 1.0, 0.01, f2,
                u'Порог нуля', u'Изменение в пределах этого значения (в процентных пунктах) красится цветом «ноль».'),
@@ -3780,10 +3862,9 @@ def _menuTemplate(tpl, ver):
                    0.5, f1, u'Большой плюс по проценту',
                    u'С какого роста процента (в процентных пунктах) включается цвет «большой плюс». 0 — выключено.'),
             'bigByDamage', False),
-    ]
+    ])
 
     tabFrameStars = [
-        v3Note(),
         vis(label(u'<b>Тактическая рамка и подложка</b>'), 'battlePanelVariant', 2),
         vis(dropdown(u'Стиль рамки', 'v3FrameStyle',
                      [u'Тактическая (уголки + контур)', u'Только уголки',
@@ -3792,10 +3873,10 @@ def _menuTemplate(tpl, ver):
                      u'Тактическая: полупрозрачная подложка, тонкий контур с вырезом под звёзды и белые L-уголки.'),
             'battlePanelVariant', 2),
         visAll(slider(u'Скругление углов рамки', 'v3Radius', 0, 14, 1, f0,
-                      u'Скругление углов', u'Радиус скругления подложки и контура (по умолчанию 5 px).'),
+                      u'Скругление углов', u'Радиус скругления подложки и контура в пикселях.'),
                (('battlePanelVariant', 2), ('v3FrameStyle', [0, 1, 2]))),
         visAll(slider(u'Непрозрачность подложки', 'v3BgOpacity', 0.0, 1.0, 0.02, f2,
-                      u'Подложка', u'Читаемость на снежных и тёмных картах (по умолчанию 0.48).'),
+                      u'Подложка', u'Читаемость на снежных и тёмных картах.'),
                (('battlePanelVariant', 2), ('v3FrameStyle', [0, 1, 2]))),
         visAll(slider(u'Яркость угловых скобок', 'v3CornerAlpha', 0.0, 1.0, 0.05, f2,
                       u'Угловые акценты', u'Непрозрачность белых L-образных скобок по углам.'),
@@ -3812,17 +3893,17 @@ def _menuTemplate(tpl, ver):
                       u'Слева (вертикально)', u'Справа (вертикально)',
                       u'В шапке (рядом с %)', u'Скрыть'],
                      u'Позиция звёзд',
-                     u'Рамка автоматически делает аккуратный разрыв под звёзды либо добавляет вертикальный разделитель.'),
+                     u'При включённой рамке звёзды сидят прямо на границе с аккуратным вырезом без лишней разделительной полосы.'),
             'battlePanelVariant', 2),
         visAll(dropdown(u'Стиль звёзд', 'v3StarsStyle',
                         [u'Белые / контур', u'Белые / серые залитые', u'Золотые / контур'],
                         u'Стиль звёзд',
                         u'1-й вариант — как на Тактическом HUD (яркая ★ / тонкий контур ☆); 2-й — приглушённые серые; 3-й — золотые.'),
                (('battlePanelVariant', 2), ('v3StarsPos', 5, '!='))),
-        visAll(check(u'Вертикальный разделитель | (звёзды сбоку)', 'v3StarsDivider',
+        visAll(check(u'Вертикальный разделитель | (без рамки)', 'v3StarsDivider',
                      u'Вертикальный разделитель',
-                     u'Выносит вертикальные звёзды за линию-разделитель | как на минималистичном HUD.'),
-               (('battlePanelVariant', 2), ('v3StarsPos', [2, 3]))),
+                     u'Отделяет вертикальные звёзды тонкой линией | в режиме «Без рамки (HUD)».'),
+               (('battlePanelVariant', 2), ('v3FrameStyle', 3), ('v3StarsPos', [2, 3]))),
         visAll(slider(u'Размер звёзд', 'v3StarsSize', 10, 22, 1, f0,
                       u'Размер звёзд', u'Диаметр одной звезды в пикселях.'),
                (('battlePanelVariant', 2), ('v3StarsPos', 5, '!='))),
@@ -3835,7 +3916,6 @@ def _menuTemplate(tpl, ver):
     ]
 
     tabHeaderBar = [
-        v3Note(),
         vis(label(u'<b>Шапка (% и дельта)</b>'), 'battlePanelVariant', 2),
         vis(dropdown(u'Порядок элементов шапки', 'v3HeaderOrder',
                      [u'Процент слева, дельта справа',
@@ -3904,7 +3984,6 @@ def _menuTemplate(tpl, ver):
     ]
 
     tabDmgAssist = [
-        v3Note(),
         vis(label(u'<b>Строка урона</b>'), 'battlePanelVariant', 2),
         vis(check(u'Показывать строку урона', 'v3ShowDamage',
                   u'Строка урона', u'Включает или убирает строку «Общ. урон / Нужно».'),
@@ -3961,17 +4040,16 @@ def _menuTemplate(tpl, ver):
                (('battlePanelVariant', 2), ('v3AssistMode', 6, '!='))),
     ]
 
-    tabColors = [
-        # ---- Цвета Варианта 3 ----
+    tabColorsV3 = [
         vis(label(u'<b>Акцентные цвета (Тактический / Pro)</b>'), 'battlePanelVariant', 2),
         vis(color(u'Плюс (тактический зелёный)', 'v3AccentPlus',
-                  u'Цвет роста дельты, активной полоски и лидирующего канала ассиста (#A7D080).'),
+                  u'Цвет роста дельты, активной полоски и лидирующего канала ассиста.'),
             'battlePanelVariant', 2),
         vis(color(u'Минус (коралловый)', 'v3AccentMinus',
-                  u'Цвет снижения отметки (#E57373).'),
+                  u'Цвет снижения отметки.'),
             'battlePanelVariant', 2),
         vis(color(u'Ноль (нейтральный)', 'v3AccentZero',
-                  u'Цвет нулевого изменения (#9AA3AE).'),
+                  u'Цвет нулевого изменения.'),
             'battlePanelVariant', 2),
         vis(color(u'Большой плюс (рекорд)', 'v3AccentBig',
                   u'Цвет рекордно высокого роста/урона.'),
@@ -3998,13 +4076,14 @@ def _menuTemplate(tpl, ver):
         vis(color(u'Неполученная звезда', 'v3StarOffColor',
                   u'Цвет контура или приглушённой заливки незаработанных отметок.'),
             'battlePanelVariant', 2),
+    ]
 
-        # ---- Цвета Вариантов 1 и 2 ----
+    tabColorsLegacy = [
         vis(label(u'<b>Изменение отметки (Варианты 1 и 2)</b>'), 'battlePanelVariant', 2, cond='!='),
         vis(color(u'Плюс', 'colorPlus', u'Цвет, когда процент растёт.'), 'battlePanelVariant', 2, cond='!='),
         vis(color(u'Минус', 'colorMinus', u'Цвет, когда процент падает.'), 'battlePanelVariant', 2, cond='!='),
         vis(color(u'Ноль', 'colorZero', u'Цвет, когда изменение около нуля.'), 'battlePanelVariant', 2, cond='!='),
-        vis(color(u'Большой плюс', 'colorBig', u'Цвет при большом росте (по умолчанию фиолетовый).'), 'battlePanelVariant', 2, cond='!='),
+        vis(color(u'Большой плюс', 'colorBig', u'Цвет при большом росте.'), 'battlePanelVariant', 2, cond='!='),
         vis(label(u'<b>Текст и числа</b>'), 'battlePanelVariant', 2, cond='!='),
         vis(check(u'Число урона по цвету изменения', 'dmgFollowsSign',
                   u'Цвет числа урона',
@@ -4039,16 +4118,24 @@ def _menuTemplate(tpl, ver):
         visAll(color(u'Полоска: стандарт (один цвет)', 'barColorStandard',
                      u'Цвет полоски в бою, когда она не следует за состоянием отметки.'),
                (('battlePanelVariant', 0), ('barBySign', False))),
+    ]
 
+    tabColorsHangar = [
         label(u'<b>Ангар</b>'),
         color(u'Полоска в ангаре', 'barColorHangar', u'Цвет полоски на панели в ангаре.'),
     ]
 
-    col1 = (tab(u'Основное', tabMain) +
-            tab(u'Рамка и звёзды', tabFrameStars) +
-            tab(u'Шапка и полоска', tabHeaderBar) +
-            tab(u'Урон и ассист', tabDmgAssist) +
-            tab(u'Цвета', tabColors))
+    if showV3:
+        tabColors = tabColorsV3 + tabColorsLegacy + tabColorsHangar
+        col1 = (tab(u'Основное', tabMain) +
+                tab(u'Рамка и звёзды', tabFrameStars) +
+                tab(u'Шапка и полоска', tabHeaderBar) +
+                tab(u'Урон и ассист', tabDmgAssist) +
+                tab(u'Цвета', tabColors))
+    else:
+        tabColors = tabColorsLegacy + tabColorsHangar
+        col1 = (tab(u'Основное', tabMain) +
+                tab(u'Цвета', tabColors))
 
     previewSource, _bw, _bh, previewW, previewH = _menuPreviewRender()
     _PREVIEW['source'] = previewSource
@@ -4074,14 +4161,17 @@ def _menuTemplate(tpl, ver):
               u'Вариант 1: классическая полная панель. Вариант 2: только % и урон. '
               u'Вариант 3: тактическая рамка, звёзды, гибкие полоски и полный контроль ассиста.',
               inline=False),
-        vis(actionBtn('v3ResetPreset', u'Сбросить пресет 3', u'Эталон «Тактический / Pro»',
-                      u'Сброс настроек Варианта 3',
-                      u'Возвращает все визуальные настройки Варианта 3 к виду по умолчанию.'),
-            'battlePanelVariant', 2),
+    ]
+    if showV3:
+        col2.append(
+            vis(actionBtn('v3ResetPreset', u'Сбросить пресет 3', u'Эталон «Тактический / Pro»',
+                          u'Сброс настроек Варианта 3',
+                          u'Возвращает все визуальные настройки Варианта 3 к виду по умолчанию.'),
+                'battlePanelVariant', 2))
+    col2.append(
         actionBtn('resetPosition', u'Сбросить позицию', u'Позиция панели в бою',
                   u'Сброс позиции',
-                  u'Возвращает боевую панель на стандартные координаты на экране.'),
-    ]
+                  u'Возвращает боевую панель на стандартные координаты на экране.'))
     return {'modDisplayName': u'Три отметки на стволе',
             'modVersion': MOD_VERSION,
             'column1': col1, 'column2': col2}
@@ -4118,7 +4208,7 @@ def _registerMenu():
             ver = tuple(api.getVersionTuple())
         except Exception:
             ver = (1, 0, 0)
-        template = _menuTemplate(tpl, ver)
+        template = _menuTemplate(tpl, ver, showV3=True)
         try:
             saved = api.setModTemplate(_MENU_LINKAGE, template, _onMenuApplied, _onMenuButton)
         except TypeError:
@@ -4129,7 +4219,8 @@ def _registerMenu():
                     evBtn += _onMenuButton
             except Exception:
                 _logError('menu button register')
-        _MENU.update(api=api, tpl=tpl, ver=ver, template=template, ok=True)
+        _MENU.update(api=api, tpl=tpl, ver=ver, template=template,
+                     fullTemplate=template, tplV3=True, ok=True)
         try:
             api.setModDefaults(_MENU_LINKAGE, _menuDefaults())
         except Exception:
@@ -4155,6 +4246,7 @@ def _registerMenu():
             pass
         # значения, сохранённые самим меню, главнее config.json
         _applyMenuSettings(saved, True)
+        _syncMenuTabs()
         _PREVIEW['key'] = None
         _menuPreviewRefresh()
         _menuSwapPanel()
