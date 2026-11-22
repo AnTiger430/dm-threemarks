@@ -2105,23 +2105,23 @@ def _settingsPoll(owner, panel, st, px, py, down, ctrl):
 _PREVIEW_ORDER = ('plus', 'minus', 'zero', 'big')
 _PREVIEW = {'state': 'plus', 'uiState': 0, 'source': None, 'key': None, 'syncing': False}
 _PREVIEW_SAMPLES = {
-    'plus': dict(pct=78.94, delta=1.63, dmg=2266, proj=784, big=False, glow=False, assist=(577, 120)),
-    'minus': dict(pct=86.12, delta=-0.70, dmg=0, proj=632, big=False, glow=False, assist=(0, 0)),
-    'zero': dict(pct=95.10, delta=0.0, dmg=310, proj=1204, big=False, glow=False, assist=(12, 12)),
-    'big': dict(pct=97.85, delta=4.52, dmg=9120, proj=3361, big=True, glow=True, assist=(210, 1830)),
+    'plus': dict(pct=43.00, delta=1.63, dmg=2266, proj=1480, big=False, glow=False, assist=(577, 120)),
+    'minus': dict(pct=70.00, delta=-0.70, dmg=1120, proj=2320, big=False, glow=False, assist=(0, 0)),
+    'zero': dict(pct=85.00, delta=0.0, dmg=2890, proj=2890, big=False, glow=False, assist=(12, 12)),
+    'big': dict(pct=97.00, delta=4.52, dmg=6820, proj=3750, big=True, glow=True, assist=(210, 1830)),
 }
 _PREVIEW_SAMPLES_V3 = {
-    'plus': dict(pct=78.94, delta=1.25, sDelta=1.85, dmg=3680, tHold=3323, tMark=3850, tPlus1=3323,
-                 tNextPct=85, tNext=3850, t95=4380,
-                 own=1830, spot=1850, track=0, stun=0, marks=1, big=False, isSpg=False, hasRating=True),
-    'minus': dict(pct=86.12, delta=-1.15, sDelta=-1.15, dmg=2120, tHold=2980, tMark=3450, tPlus1=2980,
-                  tNextPct=95, tNext=3450, t95=3450,
-                  own=1500, spot=0, track=620, stun=0, marks=2, big=False, isSpg=False, hasRating=True),
-    'zero': dict(pct=95.10, delta=0.0, sDelta=0.0, dmg=3450, tHold=3450, tMark=3920, tPlus1=3450,
-                 tNextPct=100, tNext=3920, t95=3450,
-                 own=2970, spot=480, track=480, stun=0, marks=3, big=False, isSpg=False, hasRating=True),
-    'big': dict(pct=97.85, delta=4.65, sDelta=5.20, dmg=6820, tHold=3900, tMark=4450, tPlus1=3900,
-                tNextPct=100, tNext=4450, t95=3900,
+    'plus': dict(pct=43.00, delta=1.25, sDelta=1.85, dmg=1850, tHold=1480, tMark=2150, tPlus1=1480,
+                 tNextPct=65, tNext=2150, t95=3450,
+                 own=1100, spot=750, track=0, stun=0, marks=0, big=False, isSpg=False, hasRating=True),
+    'minus': dict(pct=70.00, delta=-1.15, sDelta=-1.15, dmg=1420, tHold=2320, tMark=2890, tPlus1=2320,
+                  tNextPct=85, tNext=2890, t95=3450,
+                  own=900, spot=0, track=520, stun=0, marks=1, big=False, isSpg=False, hasRating=True),
+    'zero': dict(pct=85.00, delta=0.0, sDelta=0.0, dmg=2890, tHold=2890, tMark=3450, tPlus1=2890,
+                 tNextPct=95, tNext=3450, t95=3450,
+                 own=2410, spot=480, track=480, stun=0, marks=2, big=False, isSpg=False, hasRating=True),
+    'big': dict(pct=97.00, delta=4.65, sDelta=5.20, dmg=6820, tHold=3750, tMark=3920, tPlus1=3750,
+                tNextPct=100, tNext=3920, t95=3450,
                 own=4120, spot=1200, track=2700, stun=850, marks=3, big=True, isSpg=True, hasRating=True),
 }
 
