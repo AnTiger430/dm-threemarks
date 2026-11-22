@@ -381,20 +381,18 @@
             activeCh = (spot >= track) ? 'spot' : 'track';
         }
         var alt = !!d.alt;
-        var showMode = v3Int(v, 'ash', 0, 4);
+        var showMode = v3Int(v, 'ash', 0, 3);
         var rawMode = v3Int(v, 'am', 0, 1);
-        if (showMode === 4 || (showMode === 1 && !alt) || (showMode === 2 && alt)) {
+        if (showMode === 3 || (showMode === 1 && !alt) || (showMode === 2 && alt)) {
             return { items: [], activeCh: activeCh, maxAst: maxAst, altExp: false };
         }
-        var altExp = (showMode === 3 && alt);
-        var mode = (rawMode === 0 || altExp) ? 0 : 1;
         var rows;
-        if (mode === 0) {
+        if (rawMode === 0) {
             rows = [['spot', spot], ['track', track]];
         } else {
             rows = [[activeCh || 'spot', maxAst]];
         }
-        if (v.ahz && !altExp) {
+        if (v.ahz) {
             var filtered = [];
             for (var fi = 0; fi < rows.length; fi += 1) {
                 if (rows[fi][1] > 0) filtered.push(rows[fi]);
@@ -409,14 +407,14 @@
             var isAct = (ch === activeCh && val > 0);
             items.push({ ch: ch, val: val, active: isAct, text: v3FmtNum(val, sep) });
         }
-        return { items: items, activeCh: activeCh, maxAst: maxAst, altExp: altExp };
+        return { items: items, activeCh: activeCh, maxAst: maxAst, altExp: false };
     }
 
     function v3ResolveTempo(v, d) {
         var alt = !!d.alt;
-        var showMode = v3Int(v, 'tsh', 0, 4);
+        var showMode = v3Int(v, 'tsh', 0, 3);
         var rawMode = v3Int(v, 'tmm', 0, 2);
-        if (showMode === 4 || (showMode === 1 && !alt) || (showMode === 2 && alt)) {
+        if (showMode === 3 || (showMode === 1 && !alt) || (showMode === 2 && alt)) {
             return [];
         }
         var pct = num(d.pct, 0);
@@ -424,8 +422,7 @@
         var tNext = Math.max(0, Math.round(num(d.tNext, 0)));
         var t95 = Math.max(0, Math.round(num(d.t95, 0)));
         var dmg = Math.max(0, Math.round(num(d.dmg, 0)));
-        var altExp = (showMode === 3 && alt);
-        var mode = altExp ? 0 : rawMode;
+        var mode = rawMode;
         var pairs;
         if (mode === 1) {
             pairs = [[tNextPct, tNext]];
@@ -446,7 +443,7 @@
             var pLbl = pairs[i][0];
             var val = pairs[i][1];
             var valStr = val > 0 ? v3FmtNum(val, sep) : '\u2014';
-            var lbl = pLbl + '%:';
+            var lbl = pLbl + '%';
             var text = lbl + ' ' + valStr;
             var done = (val > 0 && dmg >= val);
             items.push({ pct: pLbl, val: val, done: done, lbl: lbl, valStr: valStr, text: text });
@@ -740,12 +737,13 @@
         var astRowMinW = astWidths.length ? (sumAstW + Math.max(0, astWidths.length - 1) * astItemGap) : 0;
         var astInside = (v3Int(v, 'ap', 0, 1) === 0);
 
-        var thrIconSize = Math.max(14, astSize + 1);
-        var thrItemGap = 16;
+        var thrSize = Math.max(11, astSize - 1);
+        var thrIconSize = thrSize;
+        var thrItemGap = 12;
         var thrWidths = [];
         var sumThrW = 0;
         for (var ti = 0; ti < thr.length; ti += 1) {
-            var tw = thrIconSize + 5 + v3Advance(thr[ti].text, astSize);
+            var tw = thrIconSize + 4 + v3Advance(thr[ti].text, thrSize);
             thrWidths.push(tw);
             sumThrW += tw;
         }
@@ -762,7 +760,6 @@
             : ((starsPos === 0 || starsPos === 1) ? (starsSpan + 8) : 0);
 
         var cw = Math.ceil(Math.max(barMinW, headerMinW, dmgRowMinW,
-            astInside ? astRowMinW : 0, thrInside ? thrRowMinW : 0,
             minContentW, starsMinFrameW - 2 * padX));
 
         var framed = (frameStyle !== 3);
@@ -809,7 +806,7 @@
         }
 
         var thrY = null;
-        var thrH = Math.max(astSize + 2, thrIconSize);
+        var thrH = Math.max(thrSize + 2, thrIconSize);
         if (thr.length && thrInside) {
             y += (astY !== null) ? gapRow : (gapRow + 1);
             thrY = y;
@@ -864,11 +861,7 @@
         if (sideBorderStars && starsPos === 3) rightExtend = halfStar;
         else if (sideOutsideStars && starsPos === 3) rightExtend = (starsDiv ? 14 : 8) + starSize;
 
-        var winW = Math.ceil(Math.max(
-            fx + fw + rightExtend + margin,
-            (ast.items.length && !astInside) ? (astRowMinW + 2 * margin) : 0,
-            (thr.length && !thrInside) ? (thrRowMinW + 2 * margin) : 0
-        ));
+        var winW = Math.ceil(fx + fw + rightExtend + margin);
         var botExtend = (starsPos === 1) ? halfStar : 0;
         var curBelowY = fy + fh + (starsPos === 1 ? halfStar + 6 : 6);
         var astBelowY = null, thrBelowY = null;
@@ -901,7 +894,7 @@
             astH: astH, astSize: astSize, astIconSize: astIconSize,
             astItemGap: astItemGap, astWidths: astWidths, astRowMinW: astRowMinW, astInside: astInside,
             thrY: thrInside ? (thrY !== null ? (fy + thrY) : null) : thrBelowY,
-            thrH: thrH, thrIconSize: thrIconSize, thrItemGap: thrItemGap,
+            thrH: thrH, thrSize: thrSize, thrIconSize: thrIconSize, thrItemGap: thrItemGap,
             thrWidths: thrWidths, thrRowMinW: thrRowMinW, thrInside: thrInside,
             starsCoords: starsCoords, starSize: starSize, starGap: starGap,
             starsSpan: starsSpan, starsPos: starsPos, sideBorderStars: sideBorderStars, divLine: divLine
@@ -1240,7 +1233,8 @@
             dom.dmgMain.style.fontSize = m.dmgSize + 'px';
             dom.dmgMain.style.textShadow = txtShadow;
             dom.dmgSec.style.display = 'block';
-            dom.dmgSec.textContent = ' / ' + m.tInfo.tgtStr;
+            dom.dmgSec.style.marginLeft = '4px';
+            dom.dmgSec.textContent = '/ ' + m.tInfo.tgtStr;
             dom.dmgSec.style.color = v.tmu;
             dom.dmgSec.style.fontSize = m.dmgSize + 'px';
             dom.dmgSec.style.textShadow = txtShadow;
@@ -1283,9 +1277,9 @@
 
         /* Tempo / Thresholds row DOM */
         if (m.thr && m.thr.length && m.thrY !== null) {
-            var tBaseW = m.thrInside ? m.cw : Math.max(m.cw, m.thrRowMinW);
-            var tBaseX = m.thrInside ? m.cx : (winW - tBaseW) * 0.5;
-            var spacePx = Math.max(2, Math.round(0.24 * m.astSize));
+            var tBaseW = m.cw;
+            var tBaseX = m.cx;
+            var spacePx = Math.max(2, Math.round(0.24 * m.thrSize));
             dom.thrRow.style.display = 'flex';
             dom.thrRow.style.left = tBaseX.toFixed(1) + 'px';
             dom.thrRow.style.top = m.thrY + 'px';
@@ -1304,15 +1298,16 @@
                     tDom.box.style.marginLeft = (kt > 0) ? (m.thrItemGap + 'px') : '0px';
                     tDom.ico.style.width = m.thrIconSize + 'px';
                     tDom.ico.style.height = m.thrIconSize + 'px';
+                    tDom.ico.style.marginRight = '4px';
                     tDom.ico.src = v3TempoStarUri(m.thrIconSize, sCol, sop);
                     tDom.lbl.textContent = tit.lbl;
                     tDom.lbl.style.color = lCol;
-                    tDom.lbl.style.fontSize = m.astSize + 'px';
+                    tDom.lbl.style.fontSize = m.thrSize + 'px';
                     tDom.lbl.style.textShadow = txtShadow;
                     tDom.txt.textContent = tit.valStr;
                     tDom.txt.style.marginLeft = spacePx + 'px';
                     tDom.txt.style.color = vCol;
-                    tDom.txt.style.fontSize = m.astSize + 'px';
+                    tDom.txt.style.fontSize = m.thrSize + 'px';
                     tDom.txt.style.textShadow = txtShadow;
                 } else {
                     tDom.box.style.display = 'none';

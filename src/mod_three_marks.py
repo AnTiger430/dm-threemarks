@@ -81,7 +81,7 @@ _WINDOW_W, _WINDOW_H = (244, 96)
 _HWINDOW_W, _HWINDOW_H = (244, 144)
 _PCT_WINDOW_W, _PCT_WINDOW_H = (220, 72)
 
-MOD_VERSION = '10.12.4'
+MOD_VERSION = '10.12.5'
 _WG_API_URL = 'https://api.worldoftanks.%s/wot/tanks/mastery/?application_id=%s&distribution=damage&percentile=%s&tank_id=%s'
 _WG_HISTORY_URL = 'https://poliroid.me/gunmarks/api/v2/data/%s/vehicle/%s/%s'
 
@@ -523,11 +523,11 @@ def _v3UiPayload():
         'dlc': _cfgStr('v3DamageCustomLabel', u'Сум. урон', 24),
         'sep': _cfgInt('v3ThousandsSep', 0, 2),
         'ddyn': bool(g_config.get('v3DamageDynColor', True)),
-        'ash': _cfgInt('v3AssistShow', 0, 4),
+        'ash': _cfgInt('v3AssistShow', 0, 3),
         'am': _cfgInt('v3AssistMode', 0, 1),
         'ap': _cfgInt('v3AssistPlace', 0, 1),
         'ahz': bool(g_config.get('v3AssistHideZero', False)),
-        'tsh': _cfgInt('v3TempoShow', 0, 4),
+        'tsh': _cfgInt('v3TempoShow', 0, 3),
         'tmm': _cfgInt('v3TempoMode', 0, 2),
         'tp': _cfgInt('v3TempoPlace', 0, 1),
         'up': _cfgColor('v3AccentPlus'),
@@ -2103,24 +2103,24 @@ def _settingsPoll(owner, panel, st, px, py, down, ctrl):
 # Живой предпросмотр: пока окно Mod Menu открыто, панель в ангаре показывает боевой
 # вид с примерными числами и текущими (ещё не применёнными) настройками.
 _PREVIEW_ORDER = ('plus', 'minus', 'zero', 'big')
-_PREVIEW = {'state': 'plus', 'uiState': 0, 'source': None, 'key': None, 'syncing': False}
+_PREVIEW = {'state': 'plus', 'uiState': 0, 'alt': False, 'hwAlt': False, 'source': None, 'key': None, 'syncing': False}
 _PREVIEW_SAMPLES = {
-    'plus': dict(pct=43.00, delta=1.63, dmg=2266, proj=1480, big=False, glow=False, assist=(577, 120)),
-    'minus': dict(pct=70.00, delta=-0.70, dmg=1120, proj=2320, big=False, glow=False, assist=(0, 0)),
-    'zero': dict(pct=85.00, delta=0.0, dmg=2890, proj=2890, big=False, glow=False, assist=(12, 12)),
-    'big': dict(pct=97.00, delta=4.52, dmg=6820, proj=3750, big=True, glow=True, assist=(210, 1830)),
+    'plus': dict(pct=43.28, delta=1.63, dmg=2266, proj=1480, big=False, glow=False, assist=(577, 120)),
+    'minus': dict(pct=70.64, delta=-0.70, dmg=1120, proj=2320, big=False, glow=False, assist=(0, 0)),
+    'zero': dict(pct=85.47, delta=0.0, dmg=2890, proj=2890, big=False, glow=False, assist=(12, 12)),
+    'big': dict(pct=97.83, delta=4.52, dmg=6820, proj=3750, big=True, glow=True, assist=(210, 1830)),
 }
 _PREVIEW_SAMPLES_V3 = {
-    'plus': dict(pct=43.00, delta=1.25, sDelta=1.85, dmg=1850, tHold=1480, tMark=2150, tPlus1=1480,
+    'plus': dict(pct=43.28, delta=1.25, sDelta=1.85, dmg=1850, tHold=1480, tMark=2150, tPlus1=1480,
                  tNextPct=65, tNext=2150, t95=3450,
                  own=1100, spot=750, track=0, stun=0, marks=0, big=False, isSpg=False, hasRating=True),
-    'minus': dict(pct=70.00, delta=-1.15, sDelta=-1.15, dmg=1420, tHold=2320, tMark=2890, tPlus1=2320,
+    'minus': dict(pct=70.64, delta=-1.15, sDelta=-1.15, dmg=1420, tHold=2320, tMark=2890, tPlus1=2320,
                   tNextPct=85, tNext=2890, t95=3450,
                   own=900, spot=0, track=520, stun=0, marks=1, big=False, isSpg=False, hasRating=True),
-    'zero': dict(pct=85.00, delta=0.0, sDelta=0.0, dmg=2890, tHold=2890, tMark=3450, tPlus1=2890,
+    'zero': dict(pct=85.47, delta=0.0, sDelta=0.0, dmg=2890, tHold=2890, tMark=3450, tPlus1=2890,
                  tNextPct=95, tNext=3450, t95=3450,
                  own=2410, spot=480, track=480, stun=0, marks=2, big=False, isSpg=False, hasRating=True),
-    'big': dict(pct=97.00, delta=4.65, sDelta=5.20, dmg=6820, tHold=3750, tMark=3920, tPlus1=3750,
+    'big': dict(pct=97.83, delta=4.65, sDelta=5.20, dmg=6820, tHold=3750, tMark=3920, tPlus1=3750,
                 tNextPct=100, tNext=3920, t95=3450,
                 own=4120, spot=1200, track=2700, stun=850, marks=3, big=True, isSpg=True, hasRating=True),
 }
@@ -2280,19 +2280,17 @@ def _v3ResolveAssist(cfg, sample, alt=False):
     else:
         activeCh = 'track'
 
-    showMode = _cfgInt('v3AssistShow', 0, 4, cfg)
+    showMode = _cfgInt('v3AssistShow', 0, 3, cfg)
     rawMode = _cfgInt('v3AssistMode', 0, 1, cfg)
-    if showMode == 4 or (showMode == 1 and not alt) or (showMode == 2 and alt):
+    if showMode == 3 or (showMode == 1 and not alt) or (showMode == 2 and alt):
         return [], activeCh, maxAst, False
 
-    altExp = (showMode == 3 and bool(alt))
-    mode = 0 if (rawMode == 0 or altExp) else 1
-    if mode == 0:
+    if rawMode == 0:
         rows = [('spot', spot), ('track', track)]
     else:
         rows = [(activeCh or 'spot', maxAst)]
 
-    if bool(cfg.get('v3AssistHideZero', False)) and not altExp:
+    if bool(cfg.get('v3AssistHideZero', False)):
         rows = [(ch, val) for ch, val in rows if val > 0]
 
     sep = _cfgInt('v3ThousandsSep', 0, 2, cfg)
@@ -2300,13 +2298,13 @@ def _v3ResolveAssist(cfg, sample, alt=False):
     for ch, val in rows:
         isAct = (ch == activeCh and val > 0)
         items.append({'ch': ch, 'val': val, 'active': isAct, 'text': _v3FmtNum(val, sep)})
-    return items, activeCh, maxAst, altExp
+    return items, activeCh, maxAst, False
 
 
 def _v3ResolveTempo(cfg, sample, alt=False):
-    showMode = _cfgInt('v3TempoShow', 0, 4, cfg)
+    showMode = _cfgInt('v3TempoShow', 0, 3, cfg)
     rawMode = _cfgInt('v3TempoMode', 0, 2, cfg)
-    if showMode == 4 or (showMode == 1 and not alt) or (showMode == 2 and alt):
+    if showMode == 3 or (showMode == 1 and not alt) or (showMode == 2 and alt):
         return []
 
     pct = float(sample.get('pct', 0.0) or 0.0)
@@ -2316,8 +2314,7 @@ def _v3ResolveTempo(cfg, sample, alt=False):
     t95 = max(0, int(sample.get('t95', 0) or 0))
     dmg = max(0, int(sample.get('dmg', 0) or 0))
 
-    altExp = (showMode == 3 and bool(alt))
-    mode = 0 if altExp else rawMode
+    mode = rawMode
     if mode == 1:
         pairs = [(tNextPct, tNext)]
     elif mode == 2:
@@ -2334,7 +2331,7 @@ def _v3ResolveTempo(cfg, sample, alt=False):
     items = []
     for pLbl, val in pairs:
         valStr = _v3FmtNum(val, sep) if val > 0 else u'\u2014'
-        lbl = u'%d%%:' % int(pLbl)
+        lbl = u'%d%%' % int(pLbl)
         text = u'%s %s' % (lbl, valStr)
         done = bool(val > 0 and dmg >= val)
         items.append({'pct': int(pLbl), 'val': val, 'done': done,
@@ -2450,9 +2447,10 @@ def _v3Metrics(cfg, sample=None, alt=False):
     astRowMinW = (sum(astWidths) + max(0, len(astWidths) - 1) * astItemGap) if astWidths else 0
     astInside = (_cfgInt('v3AssistPlace', 0, 1, cfg) == 0)
 
-    thrIconSize = max(14, astSize + 1)
-    thrItemGap = 16
-    thrWidths = [thrIconSize + 5 + _svgAdvance(it['text'], astSize) for it in thrItems]
+    thrSize = max(11, astSize - 1)
+    thrIconSize = thrSize
+    thrItemGap = 12
+    thrWidths = [thrIconSize + 4 + _svgAdvance(it['text'], thrSize) for it in thrItems]
     thrRowMinW = (sum(thrWidths) + max(0, len(thrWidths) - 1) * thrItemGap) if thrWidths else 0
     thrInside = (_cfgInt('v3TempoPlace', 0, 1, cfg) == 0)
 
@@ -2465,8 +2463,6 @@ def _v3Metrics(cfg, sample=None, alt=False):
     starsMinFrameW = (starsSpan + 12 + 2 * minBracket) if (starsPos in (0, 1) and frameStyle != 3) else (starsSpan + 8 if starsPos in (0, 1) else 0)
 
     cw = int(math.ceil(max(barMinW, headerMinW, dmgRowMinW,
-                           astRowMinW if astInside else 0,
-                           thrRowMinW if thrInside else 0,
                            minContentW, starsMinFrameW - 2 * padX)))
 
     framed = (frameStyle != 3)
@@ -2512,7 +2508,7 @@ def _v3Metrics(cfg, sample=None, alt=False):
         y += astH
 
     thrY = None
-    thrH = max(astSize + 2, thrIconSize)
+    thrH = max(thrSize + 2, thrIconSize)
     if thrItems and thrInside:
         y += (gapRow if astY is not None else gapRow + 1)
         thrY = y
@@ -2580,11 +2576,7 @@ def _v3Metrics(cfg, sample=None, alt=False):
     elif sideOutsideStars and starsPos == 3:
         rightExtend = (14 if starsDiv else 8) + starSize
 
-    winW = int(math.ceil(max(
-        fx + fw + rightExtend + margin,
-        astRowMinW + 2 * margin if (astItems and not astInside) else 0,
-        thrRowMinW + 2 * margin if (thrItems and not thrInside) else 0,
-    )))
+    winW = int(math.ceil(fx + fw + rightExtend + margin))
 
     botExtend = halfStar if starsPos == 1 else 0
     curBelowY = fy + fh + (halfStar + 6 if starsPos == 1 else 6)
@@ -2620,7 +2612,7 @@ def _v3Metrics(cfg, sample=None, alt=False):
         'astItemGap': astItemGap, 'astItems': astItems, 'astWidths': astWidths,
         'astRowMinW': astRowMinW, 'astInside': astInside,
         'thrY': (fy + thrY) if thrInside and thrY is not None else thrBelowY,
-        'thrH': thrH, 'thrIconSize': thrIconSize, 'thrItemGap': thrItemGap,
+        'thrH': thrH, 'thrSize': thrSize, 'thrIconSize': thrIconSize, 'thrItemGap': thrItemGap,
         'thrItems': thrItems, 'thrWidths': thrWidths, 'thrRowMinW': thrRowMinW, 'thrInside': thrInside,
         'starsCoords': starsCoords, 'starSize': starSize, 'starGap': starGap,
         'starsSpan': starsSpan, 'starsPos': starsPos,
@@ -2976,9 +2968,9 @@ def _v3BuildSvg(cfg, sample, alt=False):
                 _cfgColFrom(cfg, 'v3AccentMinus') if m['kind'] == 'minus' else textMain)
         else:
             dmgCol = textMain
-        rightTxt = u' / ' + m['tgtStr']
+        rightTxt = u'/ ' + m['tgtStr']
         wRight = _svgAdvance(rightTxt, m['dmgSize'])
-        parts.append(_svgText(cx + cw - wRight, dy, m['dmgStr'], dmgCol, m['dmgSize'],
+        parts.append(_svgText(cx + cw - wRight - 4.0, dy, m['dmgStr'], dmgCol, m['dmgSize'],
                               anchor=u'end', shadow=True, shadowOp=shadowOp))
         parts.append(_svgText(cx + cw, dy, rightTxt, textMuted, m['dmgSize'],
                               anchor=u'end', shadow=True, shadowOp=shadowOp))
@@ -3007,12 +2999,13 @@ def _v3BuildSvg(cfg, sample, alt=False):
     # 7. Tempo / Thresholds row
     if m['thrItems'] and m['thrY'] is not None:
         ty = float(m['thrY'])
-        tbY = ty + float(m['astSize']) * 0.92
+        tSz = float(m['thrSize'])
+        tbY = ty + tSz * 0.92
         icSz = float(m['thrIconSize'])
         tItems = m['thrItems']
         tWidths = m['thrWidths']
-        tBaseW = cw if m['thrInside'] else float(max(cw, m['thrRowMinW']))
-        tBaseX = cx if m['thrInside'] else float(winW - tBaseW) * 0.5
+        tBaseW = cw
+        tBaseX = cx
         tGap = float(m['thrItemGap'])
         totalThrW = sum(tWidths) + tGap * max(0, len(tItems) - 1)
         curX = tBaseX + (tBaseW - totalThrW) * 0.5
@@ -3022,10 +3015,10 @@ def _v3BuildSvg(cfg, sample, alt=False):
             lCol = plusCol if isDone else textMuted
             vCol = plusCol if isDone else textMain
             parts.append(_svgStar(curX + icSz * 0.5, ty + m['thrH'] * 0.5, icSz * 0.42, sCol, 0.96 if isDone else 0.82))
-            parts.append(_svgText(curX + icSz + 5.0, tbY, it['lbl'], lCol, m['astSize'],
+            parts.append(_svgText(curX + icSz + 4.0, tbY, it['lbl'], lCol, m['thrSize'],
                                   anchor=u'start', shadow=True, shadowOp=shadowOp))
-            lblAdv = _svgAdvance(it['lbl'] + u' ', m['astSize'])
-            parts.append(_svgText(curX + icSz + 5.0 + lblAdv, tbY, it['valStr'], vCol, m['astSize'],
+            lblAdv = _svgAdvance(it['lbl'] + u' ', m['thrSize'])
+            parts.append(_svgText(curX + icSz + 4.0 + lblAdv, tbY, it['valStr'], vCol, m['thrSize'],
                                   anchor=u'start', shadow=True, shadowOp=shadowOp))
             curX += tWidths[idx] + tGap
 
@@ -3043,7 +3036,8 @@ def _menuPreviewRender():
     uiScale = _cfgNumber('uiScale', 0.5, 2.5)
     if preset == 2:
         sample = _PREVIEW_SAMPLES_V3.get(state) or _PREVIEW_SAMPLES_V3['plus']
-        uri, width, height = _v3BuildSvg(g_config, sample, alt=False)
+        altActive = bool(_PREVIEW.get('alt', False) or _PREVIEW.get('hwAlt', False))
+        uri, width, height = _v3BuildSvg(g_config, sample, alt=altActive)
         scale = min(float(_PREVIEW_CONTAINER_W) / float(width),
                     float(_PREVIEW_CONTAINER_H) / float(height),
                     uiScale)
@@ -3263,10 +3257,10 @@ _MENU_V3_INT = (
     ('v3BarColorMode', 0, 2),
     ('v3DamageLabel', 0, 2),
     ('v3ThousandsSep', 0, 2),
-    ('v3AssistShow', 0, 4),
+    ('v3AssistShow', 0, 3),
     ('v3AssistMode', 0, 1),
     ('v3AssistPlace', 0, 1),
-    ('v3TempoShow', 0, 4),
+    ('v3TempoShow', 0, 3),
     ('v3TempoMode', 0, 2),
     ('v3TempoPlace', 0, 1),
 )
@@ -3301,7 +3295,7 @@ _MENU_V3_COLORS = (
     'v3TextMuted',
 )
 _MENU_ALL_KEYS = (
-    ('previewState', 'battlePanelVariant') +
+    ('previewState', 'previewAlt', 'battlePanelVariant') +
     _MENU_BOOL + _MENU_V3_BOOL + _MENU_V3_STR +
     _MENU_COLORS + _MENU_V3_COLORS +
     tuple(n for n, _l, _h in (_MENU_NUM + _MENU_V3_INT + _MENU_V3_FLOAT))
@@ -3383,6 +3377,7 @@ def _menuValues():
     values['battlePanelVariant'] = _cfgInt('battlePreset', 0, 2)
     state = _PREVIEW.get('state', 'plus')
     values['previewState'] = _PREVIEW_ORDER.index(state) if state in _PREVIEW_ORDER else 0
+    values['previewAlt'] = 1 if _PREVIEW.get('alt', False) else 0
     return values
 
 
@@ -3400,6 +3395,7 @@ def _menuDefaults():
         values[name] = str(DEFAULT_CONFIG[name]).upper()
     values['battlePanelVariant'] = int(DEFAULT_CONFIG.get('battlePreset', 2))
     values['previewState'] = 0
+    values['previewAlt'] = 0
     return values
 
 
@@ -3424,6 +3420,12 @@ def _applyMenuSettings(settings, save):
         if idx != _PREVIEW.get('uiState'):
             _PREVIEW['uiState'] = idx
             _PREVIEW['state'] = _PREVIEW_ORDER[idx]
+    if 'previewAlt' in settings:
+        try:
+            altIdx = 1 if int(settings['previewAlt']) == 1 else 0
+        except (TypeError, ValueError):
+            altIdx = 0
+        _PREVIEW['alt'] = bool(altIdx == 1)
     if 'battlePanelVariant' in settings:
         try:
             preset = max(0, min(2, int(settings['battlePanelVariant'])))
@@ -3692,7 +3694,7 @@ def _menuTemplate(tpl, ver, showV3=True):
         if kind == 'choice' and labels:
             if key == 'battlePanelVariant':
                 idx = int(DEFAULT_CONFIG.get('battlePreset', 2))
-            elif key == 'previewState':
+            elif key in ('previewState', 'previewAlt'):
                 idx = 0
             else:
                 idx = int(val)
@@ -4076,33 +4078,31 @@ def _menuTemplate(tpl, ver, showV3=True):
                      [u'Всегда (без Alt)',
                       u'Только при нажатом Alt',
                       u'Скрывать при нажатом Alt',
-                      u'Расширять по Alt (оба канала)',
                       u'Выключено'],
                      u'Показ засвета и гусениц',
-                     u'Отдельная настройка показа строки ассиста: постоянно, только по клавише Alt, скрывать по Alt, расширять по Alt или выключить.'),
+                     u'Отдельная настройка показа строки ассиста: постоянно, только по клавише Alt, скрывать по Alt или выключить.'),
             'battlePanelVariant', 2),
         visAll(dropdown(u'Отображаемые каналы', 'v3AssistMode',
                         [u'Засвет + Гусеницы',
                          u'Только активный канал'],
                         u'Режим ассиста',
                         u'Активный канал (максимальный среди засвета и гусениц) автоматически подсвечивается зелёным.'),
-               (('battlePanelVariant', 2), ('v3AssistShow', 4, '!='))),
+               (('battlePanelVariant', 2), ('v3AssistShow', 3, '!='))),
         visAll(dropdown(u'Место строки ассиста', 'v3AssistPlace',
                         [u'Внутри снизу', u'Под панелью'],
                         u'Расположение ассиста', u'Внутри тактической рамки или отдельной строкой под ней.'),
-               (('battlePanelVariant', 2), ('v3AssistShow', 4, '!='))),
+               (('battlePanelVariant', 2), ('v3AssistShow', 3, '!='))),
         visAll(check(u'Скрывать нулевые каналы', 'v3AssistHideZero',
                      u'Скрывать нули', u'Прячет каналы со значением 0, чтобы виджет был компактнее.'),
-               (('battlePanelVariant', 2), ('v3AssistShow', 4, '!='))),
+               (('battlePanelVariant', 2), ('v3AssistShow', 3, '!='))),
         vis(label(u'<b>Темп на отметку (средний урон до цели и 95%)</b>'), 'battlePanelVariant', 2),
         vis(dropdown(u'Когда показывать темп', 'v3TempoShow',
                      [u'Всегда (без Alt)',
                       u'Только при нажатом Alt',
                       u'Скрывать при нажатом Alt',
-                      u'Расширять по Alt (до следующей + 95%)',
                       u'Выключено'],
                      u'Показ темпа на отметку',
-                     u'Отдельная настройка показа темпа (независимо от засвета и гусениц): постоянно, только при нажатом Alt, скрывать по Alt, расширять по Alt или выключить.'),
+                     u'Отдельная настройка показа темпа (независимо от засвета и гусениц): постоянно, только при нажатом Alt, скрывать по Alt или выключить.'),
             'battlePanelVariant', 2),
         visAll(dropdown(u'Отображаемые пороги темпа', 'v3TempoMode',
                         [u'До следующей отметки + 95%',
@@ -4110,12 +4110,12 @@ def _menuTemplate(tpl, ver, showV3=True):
                          u'Только на 3 отметку (95%)'],
                         u'Выбор порогов темпа',
                         u'Сколько суммарного урона нужно держать на следующую отметку (65 / 85 / 95 / 100%) и/или на 3 отметку (95%). При выполнении темпа в бою подсвечивается зелёным.'),
-               (('battlePanelVariant', 2), ('v3TempoShow', 4, '!='))),
+               (('battlePanelVariant', 2), ('v3TempoShow', 3, '!='))),
         visAll(dropdown(u'Место строки темпа', 'v3TempoPlace',
                         [u'Внутри снизу', u'Под панелью'],
                         u'Расположение темпа',
                         u'Снизу внутри рамки или под панелью. Автоматически располагается отдельной строкой от засвета и гусениц, чтобы они не мешали друг другу.'),
-               (('battlePanelVariant', 2), ('v3TempoShow', 4, '!='))),
+               (('battlePanelVariant', 2), ('v3TempoShow', 3, '!='))),
     ]
 
     tabColorsV3 = [
@@ -4231,6 +4231,16 @@ def _menuTemplate(tpl, ver, showV3=True):
               u'Состояние для предпросмотра',
               u'Переключает пример на картинке выше, чтобы сразу проверить все 4 состояния в бою.',
               inline=True),
+    ]
+    if showV3:
+        col2.append(
+            vis(radio(u'<b>Клавиша Alt (превью)</b>', 'previewAlt',
+                      [u'Без Alt (обычный вид)', u'Зажат Alt'],
+                      u'Проверка нажатия Alt',
+                      u'Позволяет прямо на превью выше посмотреть, как выглядит панель без Alt и при нажатом Alt (также можно просто зажать Alt на клавиатуре).',
+                      inline=True),
+                'battlePanelVariant', 2))
+    col2.append(
         radio(u'<b>Вариант боевой панели</b>', 'battlePanelVariant',
               [u'Вариант 1 — полная панель',
                u'Вариант 2 — % и урон',
@@ -4238,8 +4248,7 @@ def _menuTemplate(tpl, ver, showV3=True):
               u'Вариант панели',
               u'Вариант 1: классическая полная панель. Вариант 2: только % и урон. '
               u'Вариант 3: тактическая рамка, звёзды, гибкие полоски и полный контроль ассиста.',
-              inline=False),
-    ]
+              inline=False))
     if showV3:
         col2.append(
             vis(actionBtn('v3ResetPreset', u'Сбросить пресет 3', u'Эталон «Тактический / Pro»',
@@ -5551,6 +5560,11 @@ class _HangarController(object):
         try:
             if not _MENU['ok']:
                 _registerMenu()
+            else:
+                hwAlt = _altIsDown()
+                if hwAlt != _PREVIEW.get('hwAlt', False):
+                    _PREVIEW['hwAlt'] = hwAlt
+                    _menuPreviewRefresh()
             self._scanViews()
             if self._panel is None and not self._blocked:
                 self._ensure()

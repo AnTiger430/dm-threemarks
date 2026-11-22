@@ -334,6 +334,9 @@ html, body { background: transparent; overflow: hidden; }
   font-weight: 700;
   white-space: nowrap;
 }
+#tm-v3 .v3-dmgsec {
+  margin-left: 4px;
+}
 #tm-v3 .v3-astwrap {
   position: absolute;
   display: none;
