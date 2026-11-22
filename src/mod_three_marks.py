@@ -81,7 +81,7 @@ _WINDOW_W, _WINDOW_H = (244, 96)
 _HWINDOW_W, _HWINDOW_H = (244, 144)
 _PCT_WINDOW_W, _PCT_WINDOW_H = (220, 72)
 
-MOD_VERSION = '10.12.5'
+MOD_VERSION = '10.12.6'
 _WG_API_URL = 'https://api.worldoftanks.%s/wot/tanks/mastery/?application_id=%s&distribution=damage&percentile=%s&tank_id=%s'
 _WG_HISTORY_URL = 'https://poliroid.me/gunmarks/api/v2/data/%s/vehicle/%s/%s'
 
@@ -112,6 +112,7 @@ _V3_DEFAULTS = {
     'v3BarStyle': 0,
     'v3BarScale': 0,
     'v3BarHeight': 4,
+    'v3BarTrackHeight': 2,
     'v3BarEndTicks': True,
     'v3BarCursor': True,
     'v3BarMarks': False,
@@ -137,6 +138,41 @@ _V3_DEFAULTS = {
     'v3TextMuted': '#B8BDC4',
 }
 
+_VH_DEFAULTS = {
+    'vhScale': 1.0,
+    'vhDensity': 1,
+    'vhFrameStyle': 0,
+    'vhRadius': 5,
+    'vhCornerColor': '#FFFFFF',
+    'vhCornerAlpha': 0.90,
+    'vhBorderAlpha': 0.28,
+    'vhBgColor': '#0B1016',
+    'vhBgOpacity': 0.48,
+    'vhStarsPos': 0,
+    'vhStarsStyle': 0,
+    'vhStarsDivider': False,
+    'vhStarsSize': 15,
+    'vhStarsGap': 6,
+    'vhStarsGlow': True,
+    'vhStarOnColor': '#FFFFFF',
+    'vhStarOffColor': '#9AA3AE',
+    'vhPctDecimals': 1,
+    'vhBarStyle': 0,
+    'vhBarScale': 0,
+    'vhBarHeight': 4,
+    'vhBarTrackHeight': 2,
+    'vhBarEndTicks': True,
+    'vhBarCursor': True,
+    'vhBarMarks': False,
+    'vhBarColor': '#A7D080',
+    'vhShowEma': True,
+    'vhShowThresholds': True,
+    'vhShow100': True,
+    'vhThousandsSep': 1,
+    'vhTextMain': '#FFFFFF',
+    'vhTextMuted': '#B8BDC4',
+}
+
 DEFAULT_CONFIG = {
     'x': -0.55,
     'y': 0.95,
@@ -152,10 +188,10 @@ DEFAULT_CONFIG = {
     # Что делает панель в бою под меню Esc / диалогами:
     # 'show' - остаётся как есть, 'dim' - затемняется, 'hide' - скрывается.
     'battleMenu': 'show',
-    # Пресет боевой панели: 0 - Вариант 1, 1 - Вариант 2 (% и урон), 2 - Вариант 3 (Тактический / Pro).
-    'battlePreset': 2,
+    # Пресет боевой панели: 0 - Вариант 1 (Киберспорт), 1 - Вариант 2 (Отметка Корбена).
+    'battlePreset': 0,
     # Обратная совместимость: True соответствует battlePreset == 1.
-    'battlePercentOnly': True,
+    'battlePercentOnly': False,
     # True - прятать панель ангара под любым большим окном (диалоги, Mod Menu...).
     'hideUnderWindows': False,
     # True - панель ангара только для случайных боёв (включая взвод): в
@@ -229,6 +265,7 @@ DEFAULT_CONFIG = {
     'wgApiApplicationId': 'bce57ac20af6b67b08be09fd66847ed9',
 }
 DEFAULT_CONFIG.update(_V3_DEFAULTS)
+DEFAULT_CONFIG.update(_VH_DEFAULTS)
 
 _itemsCache = dependency.instance(IItemsCache)
 _sessionProvider = dependency.instance(IBattleSessionProvider)
@@ -296,9 +333,10 @@ def _loadConfig():
         if 'battlePreset' not in stored:
             cfg['battlePreset'] = 1 if bool(cfg.get('battlePercentOnly', False)) else 0
     try:
-        preset = max(0, min(2, int(round(float(cfg.get('battlePreset', 2))))))
+        rawPreset = int(round(float(cfg.get('battlePreset', 0))))
+        preset = 1 if rawPreset == 1 else 0
     except (TypeError, ValueError):
-        preset = 2
+        preset = 0
     cfg['battlePreset'] = preset
     cfg['battlePercentOnly'] = (preset == 1)
     _saveJson(CONFIG_PATH, cfg)
@@ -513,6 +551,7 @@ def _v3UiPayload():
         'bs': _cfgInt('v3BarStyle', 0, 3),
         'bsc': _cfgInt('v3BarScale', 0, 1),
         'bh': _cfgInt('v3BarHeight', 2, 10),
+        'bth': _cfgInt('v3BarTrackHeight', 1, 10),
         'bet': bool(g_config.get('v3BarEndTicks', True)),
         'bcur': bool(g_config.get('v3BarCursor', True)),
         'bmk': bool(g_config.get('v3BarMarks', False)),
@@ -536,6 +575,122 @@ def _v3UiPayload():
         'big': _cfgColor('v3AccentBig'),
         'tm': _cfgColor('v3TextMain'),
         'tmu': _cfgColor('v3TextMuted'),
+        'hThr': True,
+        'h100': True,
+    }
+
+
+def _vhToV3Cfg(cfg=None):
+    src = g_config if cfg is None else cfg
+    return {
+        'panelOpacity': src.get('panelOpacity', 1.0),
+        'v3Density': src.get('vhDensity', 1),
+        'v3MinWidth': 0,
+        'v3Anchor': 0,
+        'v3FrameStyle': src.get('vhFrameStyle', 0),
+        'v3Radius': src.get('vhRadius', 5),
+        'v3CornerColor': src.get('vhCornerColor', '#FFFFFF'),
+        'v3CornerAlpha': src.get('vhCornerAlpha', 0.90),
+        'v3BorderAlpha': src.get('vhBorderAlpha', 0.28),
+        'v3BgColor': src.get('vhBgColor', '#0B1016'),
+        'v3BgOpacity': src.get('vhBgOpacity', 0.48),
+        'v3StarsPos': src.get('vhStarsPos', 0),
+        'v3StarsStyle': src.get('vhStarsStyle', 0),
+        'v3StarsDivider': src.get('vhStarsDivider', False),
+        'v3StarsSize': src.get('vhStarsSize', 15),
+        'v3StarsGap': src.get('vhStarsGap', 6),
+        'v3StarsGlow': src.get('vhStarsGlow', True),
+        'v3StarOnColor': src.get('vhStarOnColor', '#FFFFFF'),
+        'v3StarOffColor': src.get('vhStarOffColor', '#9AA3AE'),
+        'v3HeaderOrder': 0,
+        'v3PctDecimals': src.get('vhPctDecimals', 1),
+        'v3DeltaIcon': 3,
+        'v3DeltaColorMode': 0,
+        'v3BarStyle': src.get('vhBarStyle', 0),
+        'v3BarScale': src.get('vhBarScale', 0),
+        'v3BarHeight': src.get('vhBarHeight', 4),
+        'v3BarTrackHeight': src.get('vhBarTrackHeight', 2),
+        'v3BarEndTicks': src.get('vhBarEndTicks', True),
+        'v3BarCursor': src.get('vhBarCursor', True),
+        'v3BarMarks': src.get('vhBarMarks', False),
+        'v3BarColorMode': 0,
+        'v3BarCustomColor': src.get('vhBarColor', '#A7D080'),
+        'v3ShowDamage': src.get('vhShowEma', True),
+        'v3DamageLabel': 0,
+        'v3DamageCustomLabel': u'Ср. урон',
+        'v3ThousandsSep': src.get('vhThousandsSep', 1),
+        'v3DamageDynColor': True,
+        'v3AssistShow': 3,
+        'v3AssistMode': 0,
+        'v3AssistPlace': 0,
+        'v3AssistHideZero': False,
+        'v3TempoShow': 3,
+        'v3TempoMode': 0,
+        'v3TempoPlace': 0,
+        'v3AccentPlus': src.get('vhBarColor', '#A7D080'),
+        'v3AccentMinus': '#E57373',
+        'v3AccentZero': '#9AA3AE',
+        'v3AccentBig': '#B07CFF',
+        'v3TextMain': src.get('vhTextMain', '#FFFFFF'),
+        'v3TextMuted': src.get('vhTextMuted', '#B8BDC4'),
+        'vhShowThresholds': src.get('vhShowThresholds', True),
+        'vhShow100': src.get('vhShow100', True),
+    }
+
+
+def _vhUiPayload():
+    return {
+        'den': _cfgInt('vhDensity', 0, 2),
+        'minW': 0,
+        'anc': 0,
+        'fs': _cfgInt('vhFrameStyle', 0, 3),
+        'rad': _cfgInt('vhRadius', 0, 14),
+        'cc': _cfgColor('vhCornerColor'),
+        'ca': round(_cfgNumber('vhCornerAlpha', 0.0, 1.0), 3),
+        'ba': round(_cfgNumber('vhBorderAlpha', 0.0, 1.0), 3),
+        'bgc': _cfgColor('vhBgColor'),
+        'bgo': round(_cfgNumber('vhBgOpacity', 0.0, 1.0), 3),
+        'sp': _cfgInt('vhStarsPos', 0, 5),
+        'ss': _cfgInt('vhStarsStyle', 0, 2),
+        'sd': bool(g_config.get('vhStarsDivider', False)),
+        'sz': _cfgInt('vhStarsSize', 10, 22),
+        'sg': _cfgInt('vhStarsGap', 2, 14),
+        'sgl': bool(g_config.get('vhStarsGlow', True)),
+        'son': _cfgColor('vhStarOnColor'),
+        'sof': _cfgColor('vhStarOffColor'),
+        'ho': 0,
+        'dec': _cfgInt('vhPctDecimals', 0, 1),
+        'di': 3,
+        'dc': 0,
+        'bs': _cfgInt('vhBarStyle', 0, 3),
+        'bsc': _cfgInt('vhBarScale', 0, 1),
+        'bh': _cfgInt('vhBarHeight', 2, 10),
+        'bth': _cfgInt('vhBarTrackHeight', 1, 10),
+        'bet': bool(g_config.get('vhBarEndTicks', True)),
+        'bcur': bool(g_config.get('vhBarCursor', True)),
+        'bmk': bool(g_config.get('vhBarMarks', False)),
+        'bcm': 0,
+        'bcc': _cfgColor('vhBarColor'),
+        'dmgOn': bool(g_config.get('vhShowEma', True)),
+        'dl': 0,
+        'dlc': u'Ср. урон',
+        'sep': _cfgInt('vhThousandsSep', 0, 2),
+        'ddyn': True,
+        'ash': 3,
+        'am': 0,
+        'ap': 0,
+        'ahz': False,
+        'tsh': 3,
+        'tmm': 0,
+        'tp': 0,
+        'up': _cfgColor('vhBarColor'),
+        'dn': '#E57373',
+        'zr': '#9AA3AE',
+        'big': '#B07CFF',
+        'tm': _cfgColor('vhTextMain'),
+        'tmu': _cfgColor('vhTextMuted'),
+        'hThr': bool(g_config.get('vhShowThresholds', True)),
+        'h100': bool(g_config.get('vhShow100', True)),
     }
 
 
@@ -543,11 +698,16 @@ def _uiScale():
     return _cfgNumber('uiScale', 0.5, 2.5)
 
 
+def _vhScale():
+    return _cfgNumber('vhScale', 0.5, 2.5)
+
+
 def _uiPayload():
     """Настройки внешнего вида для панели (JS)."""
-    preset = _cfgInt('battlePreset', 0, 2)
+    preset = _cfgInt('battlePreset', 0, 1)
     return {
         's': round(_uiScale(), 3),
+        'hs': round(_vhScale(), 3),
         'preset': preset,
         'bg': round(_cfgNumber('bgOpacity', 0.0, 1.0), 3),
         'alpha': round(_cfgNumber('panelOpacity', 0.0, 1.0), 3),
@@ -574,7 +734,8 @@ def _uiPayload():
         'dmgSign': bool(g_config.get('dmgFollowsSign', True)),
         'dmg': _cfgColor('colorDmg'),
         'proj': _cfgColor('colorProj'),
-        'v3': _v3UiPayload() if preset == 2 else None,
+        'v3': _v3UiPayload() if preset == 0 else None,
+        'vh': _vhUiPayload(),
     }
 
 
@@ -2103,7 +2264,7 @@ def _settingsPoll(owner, panel, st, px, py, down, ctrl):
 # Живой предпросмотр: пока окно Mod Menu открыто, панель в ангаре показывает боевой
 # вид с примерными числами и текущими (ещё не применёнными) настройками.
 _PREVIEW_ORDER = ('plus', 'minus', 'zero', 'big')
-_PREVIEW = {'state': 'plus', 'uiState': 0, 'alt': False, 'hwAlt': False, 'source': None, 'key': None, 'syncing': False}
+_PREVIEW = {'state': 'plus', 'uiState': 0, 'alt': False, 'hwAlt': False, 'target': 0, 'source': None, 'key': None, 'syncing': False}
 _PREVIEW_SAMPLES = {
     'plus': dict(pct=43.28, delta=1.63, dmg=2266, proj=1480, big=False, glow=False, assist=(577, 120)),
     'minus': dict(pct=70.64, delta=-0.70, dmg=1120, proj=2320, big=False, glow=False, assist=(0, 0)),
@@ -2112,16 +2273,16 @@ _PREVIEW_SAMPLES = {
 }
 _PREVIEW_SAMPLES_V3 = {
     'plus': dict(pct=43.28, delta=1.25, sDelta=1.85, dmg=1850, tHold=1480, tMark=2150, tPlus1=1480,
-                 tNextPct=65, tNext=2150, t95=3450,
+                 tNextPct=65, tNext=2150, t65=2150, t85=2890, t95=3450, t100=3920,
                  own=1100, spot=750, track=0, stun=0, marks=0, big=False, isSpg=False, hasRating=True),
     'minus': dict(pct=70.64, delta=-1.15, sDelta=-1.15, dmg=1420, tHold=2320, tMark=2890, tPlus1=2320,
-                  tNextPct=85, tNext=2890, t95=3450,
+                  tNextPct=85, tNext=2890, t65=2150, t85=2890, t95=3450, t100=3920,
                   own=900, spot=0, track=520, stun=0, marks=1, big=False, isSpg=False, hasRating=True),
     'zero': dict(pct=85.47, delta=0.0, sDelta=0.0, dmg=2890, tHold=2890, tMark=3450, tPlus1=2890,
-                 tNextPct=95, tNext=3450, t95=3450,
+                 tNextPct=95, tNext=3450, t65=2150, t85=2890, t95=3450, t100=3920,
                  own=2410, spot=480, track=480, stun=0, marks=2, big=False, isSpg=False, hasRating=True),
     'big': dict(pct=97.83, delta=4.65, sDelta=5.20, dmg=6820, tHold=3750, tMark=3920, tPlus1=3750,
-                tNextPct=100, tNext=3920, t95=3450,
+                tNextPct=100, tNext=3920, t65=2150, t85=2890, t95=3450, t100=3920,
                 own=4120, spot=1200, track=2700, stun=850, marks=3, big=True, isSpg=True, hasRating=True),
 }
 
@@ -2400,9 +2561,33 @@ def _v3BarRatio(cfg, sample, dmg, tgt):
     return pct / 100.0
 
 
+def _v3ResolveHangarRows(cfg, sample):
+    if not bool(sample.get('isHangar', False)):
+        return []
+    if bool(sample.get('mini', False)) or not bool(cfg.get('vhShowThresholds', True)):
+        return []
+    sep = _cfgInt('v3ThousandsSep', 0, 2, cfg)
+    hasRating = bool(sample.get('hasRating', True))
+    pct = float(sample.get('pct', 0.0) or 0.0)
+    show100 = bool(cfg.get('vhShow100', True))
+
+    def mkCell(pLbl, key):
+        val = max(0, int(sample.get(key, 0) or 0))
+        valStr = (u'~' + _v3FmtNum(val, sep)) if (hasRating and 0 < val < 30000) else u'\u2014'
+        lbl = u'%d%%' % int(pLbl)
+        done = bool(hasRating and val > 0 and pct >= float(pLbl))
+        return {'pct': int(pLbl), 'val': val, 'done': done,
+                'lbl': lbl, 'valStr': valStr, 'text': u'%s %s' % (lbl, valStr)}
+
+    row1 = [mkCell(65, 't65'), mkCell(85, 't85')]
+    row2 = [mkCell(95, 't95'), mkCell(100, 't100')] if show100 else [mkCell(95, 't95')]
+    return [row1, row2]
+
+
 def _v3Metrics(cfg, sample=None, alt=False):
     if sample is None:
         sample = _PREVIEW_SAMPLES_V3['plus']
+    isHangar = bool(sample.get('isHangar', False))
     den = _cfgInt('v3Density', 0, 2, cfg)
     padX, padY, gapRow, pctSize, deltaSize, dmgSize, astSize = (
         (10, 7, 4, 24, 14, 13, 13),
@@ -2411,9 +2596,14 @@ def _v3Metrics(cfg, sample=None, alt=False):
     )[den]
 
     pctText, deltaText, kind, deltaAccent, showDelta = _v3DeltaInfo(cfg, sample)
+    if isHangar:
+        showDelta = False
     dmg, tgt, dmgStr, tgtStr, remStr = _v3TargetInfo(cfg, sample)
-    astItems, activeCh, maxAst, altExp = _v3ResolveAssist(cfg, sample, alt=alt)
-    thrItems = _v3ResolveTempo(cfg, sample, alt=alt)
+    if isHangar and not (bool(sample.get('hasRating', True)) and dmg > 0):
+        dmgStr = u'\u2014'
+    astItems, activeCh, maxAst, altExp = ([], None, 0, False) if isHangar else _v3ResolveAssist(cfg, sample, alt=alt)
+    thrItems = [] if isHangar else _v3ResolveTempo(cfg, sample, alt=alt)
+    hRows = _v3ResolveHangarRows(cfg, sample) if isHangar else []
 
     frameStyle = _cfgInt('v3FrameStyle', 0, 3, cfg)
     starsPos = _cfgInt('v3StarsPos', 0, 5, cfg)
@@ -2431,14 +2621,18 @@ def _v3Metrics(cfg, sample=None, alt=False):
 
     showDmg = bool(cfg.get('v3ShowDamage', True))
     dmgLblMode = _cfgInt('v3DamageLabel', 0, 2, cfg)
-    if dmgLblMode == 0:
-        dmgLblText = u'\u0421\u0443\u043c. \u0443\u0440\u043e\u043d'
-    elif dmgLblMode == 1:
-        dmgLblText = _cfgStr('v3DamageCustomLabel', u'\u0421\u0443\u043c. \u0443\u0440\u043e\u043d', 24, cfg)
+    if isHangar:
+        dmgLblText = u'\u0421\u0440. \u0443\u0440\u043e\u043d'
+        dmgValStr = dmgStr
     else:
-        dmgLblText = u''
+        if dmgLblMode == 0:
+            dmgLblText = u'\u0421\u0443\u043c. \u0443\u0440\u043e\u043d'
+        elif dmgLblMode == 1:
+            dmgLblText = _cfgStr('v3DamageCustomLabel', u'\u0421\u0443\u043c. \u0443\u0440\u043e\u043d', 24, cfg)
+        else:
+            dmgLblText = u''
+        dmgValStr = dmgStr + u' / ' + tgtStr
     lblW = _svgAdvance(dmgLblText, dmgSize) if dmgLblText else 0
-    dmgValStr = dmgStr + u' / ' + tgtStr
     dmgRowMinW = (lblW + (12 if lblW > 0 else 0) + _svgAdvance(dmgValStr, dmgSize)) if showDmg else 0
 
     astIconSize = max(14, astSize + 1)
@@ -2448,9 +2642,9 @@ def _v3Metrics(cfg, sample=None, alt=False):
     astInside = (_cfgInt('v3AssistPlace', 0, 1, cfg) == 0)
 
     thrSize = max(11, astSize - 1)
-    thrIconSize = thrSize
-    thrItemGap = 12
-    thrWidths = [thrIconSize + 4 + _svgAdvance(it['text'], thrSize) for it in thrItems]
+    thrIconSize = 0
+    thrItemGap = 14
+    thrWidths = [_svgAdvance(it['text'], thrSize) for it in thrItems]
     thrRowMinW = (sum(thrWidths) + max(0, len(thrWidths) - 1) * thrItemGap) if thrWidths else 0
     thrInside = (_cfgInt('v3TempoPlace', 0, 1, cfg) == 0)
 
@@ -2484,13 +2678,15 @@ def _v3Metrics(cfg, sample=None, alt=False):
 
     barStyle = _cfgInt('v3BarStyle', 0, 3, cfg)
     barH = _cfgInt('v3BarHeight', 2, 10, cfg)
+    trackH = _cfgInt('v3BarTrackHeight', 1, 10, cfg)
+    effBarH = max(barH, trackH)
     barY = None
     barBlockH = 0
     if barStyle != 3:
         y += gapRow
         barY = y
-        barBlockH = max(barH, 10 if bool(cfg.get('v3BarCursor', True)) else barH,
-                        8 if (barStyle in (0, 2) and bool(cfg.get('v3BarEndTicks', True))) else barH)
+        barBlockH = max(effBarH, 10 if bool(cfg.get('v3BarCursor', True)) else effBarH,
+                        8 if (barStyle in (0, 2) and bool(cfg.get('v3BarEndTicks', True))) else effBarH)
         y += barBlockH
 
     dmgY = None
@@ -2508,10 +2704,23 @@ def _v3Metrics(cfg, sample=None, alt=False):
         y += astH
 
     thrY = None
-    thrH = max(thrSize + 2, thrIconSize)
+    thrH = thrSize + 2
     if thrItems and thrInside:
         y += (gapRow if astY is not None else gapRow + 1)
         thrY = y
+        y += thrH
+
+    hSepY = None
+    hRow1Y = None
+    hRow2Y = None
+    if hRows:
+        y += gapRow + 1
+        hSepY = y
+        y += gapRow
+        hRow1Y = y
+        y += thrH
+        y += max(3, gapRow - 1)
+        hRow2Y = y
         y += thrH
 
     fh = y + padY + extraBot
@@ -2531,6 +2740,12 @@ def _v3Metrics(cfg, sample=None, alt=False):
                 astY += deltaShift
             if thrY is not None:
                 thrY += deltaShift
+            if hSepY is not None:
+                hSepY += deltaShift
+            if hRow1Y is not None:
+                hRow1Y += deltaShift
+            if hRow2Y is not None:
+                hRow2Y += deltaShift
 
     fw = cw + 2 * padX + extraLeft + extraRight
     margin = 6
@@ -2603,7 +2818,7 @@ def _v3Metrics(cfg, sample=None, alt=False):
         'pctText': pctText, 'deltaText': deltaText,
         'kind': kind, 'deltaAccent': deltaAccent, 'showDelta': showDelta,
         'deltaIconW': deltaIconW, 'pctW': pctW, 'deltaW': deltaW,
-        'barY': (fy + barY) if barY is not None else None, 'barH': barH, 'barBlockH': barBlockH,
+        'barY': (fy + barY) if barY is not None else None, 'barH': barH, 'trackH': trackH, 'barBlockH': barBlockH,
         'dmgY': (fy + dmgY) if dmgY is not None else None, 'dmgH': dmgH, 'dmgSize': dmgSize,
         'dmg': dmg, 'tgt': tgt, 'dmgStr': dmgStr, 'tgtStr': tgtStr, 'remStr': remStr,
         'dmgLblText': dmgLblText, 'dmgLblMode': dmgLblMode, 'dmgValStr': dmgValStr,
@@ -2614,6 +2829,10 @@ def _v3Metrics(cfg, sample=None, alt=False):
         'thrY': (fy + thrY) if thrInside and thrY is not None else thrBelowY,
         'thrH': thrH, 'thrSize': thrSize, 'thrIconSize': thrIconSize, 'thrItemGap': thrItemGap,
         'thrItems': thrItems, 'thrWidths': thrWidths, 'thrRowMinW': thrRowMinW, 'thrInside': thrInside,
+        'isHangar': isHangar, 'hRows': hRows,
+        'hSepY': (fy + hSepY) if hSepY is not None else None,
+        'hRow1Y': (fy + hRow1Y) if hRow1Y is not None else None,
+        'hRow2Y': (fy + hRow2Y) if hRow2Y is not None else None,
         'starsCoords': starsCoords, 'starSize': starSize, 'starGap': starGap,
         'starsSpan': starsSpan, 'starsPos': starsPos,
         'sideBorderStars': sideBorderStars, 'divLine': divLine,
@@ -2730,24 +2949,48 @@ def _v3DeltaIconSvg(x, y, kind, down, color):
 
 
 def _v3AssistIconSvg(ch, x, y, size, color, opacity):
-    cx = x + size * 0.5
-    cy = y + size * 0.5
+    s = float(size) / 16.0
+    cx = float(x) + float(size) * 0.5
+    cy = float(y) + float(size) * 0.5
     if ch == 'spot':
+        r1 = 3.5 * s
+        dx1, dy1 = 2.68 * s, 2.25 * s
+        r2 = 5.8 * s
+        dx2, dy2 = 4.31 * s, 3.88 * s
+        sw = 1.25 * s
         return (
-            u'<circle cx="%.1f" cy="%.1f" r="1.8" fill="%s" fill-opacity="%.2f"/>'
-            u'<path d="M %.1f %.1f A 4.2 4.2 0 0 0 %.1f %.1f M %.1f %.1f A 6.6 6.6 0 0 0 %.1f %.1f '
-            u'M %.1f %.1f A 4.2 4.2 0 0 1 %.1f %.1f M %.1f %.1f A 6.6 6.6 0 0 1 %.1f %.1f" '
-            u'fill="none" stroke="%s" stroke-width="1.4" stroke-linecap="round" stroke-opacity="%.2f"/>' % (
-                cx, cy, color, opacity,
-                cx - 3.2, cy - 3.2, cx - 3.2, cy + 3.2,
-                cx - 5.4, cy - 4.8, cx - 5.4, cy + 4.8,
-                cx + 3.2, cy - 3.2, cx + 3.2, cy + 3.2,
-                cx + 5.4, cy - 4.8, cx + 5.4, cy + 4.8,
-                color, opacity))
+            u'<circle cx="%.2f" cy="%.2f" r="%.2f" fill="%s" fill-opacity="%.2f"/>'
+            u'<path d="M %.2f %.2f A %.2f %.2f 0 0 0 %.2f %.2f '
+            u'M %.2f %.2f A %.2f %.2f 0 0 0 %.2f %.2f '
+            u'M %.2f %.2f A %.2f %.2f 0 0 1 %.2f %.2f '
+            u'M %.2f %.2f A %.2f %.2f 0 0 1 %.2f %.2f" '
+            u'fill="none" stroke="%s" stroke-width="%.2f" stroke-linecap="round" stroke-opacity="%.2f"/>' % (
+                cx, cy, 1.45 * s, color, opacity,
+                cx - dx1, cy - dy1, r1, r1, cx - dx1, cy + dy1,
+                cx - dx2, cy - dy2, r2, r2, cx - dx2, cy + dy2,
+                cx + dx1, cy - dy1, r1, r1, cx + dx1, cy + dy1,
+                cx + dx2, cy - dy2, r2, r2, cx + dx2, cy + dy2,
+                color, sw, opacity))
     if ch == 'track':
-        ox = x + (size - 16.0) * 0.5
-        oy = y + (size - 16.0) * 0.5
-        return _svgBitmapIcon(ox, oy, _SVG_TRACK_RUNS, opacity, color=color)
+        ca = math.cos(math.radians(-35.0))
+        sa = math.sin(math.radians(-35.0))
+        def rot(dx, dy):
+            return (cx + (dx * ca - dy * sa) * s, cy + (dx * sa + dy * ca) * s)
+        rails = []
+        for rx in (-2.1, 2.1):
+            x0, y0 = rot(rx, -3.8)
+            x1, y1 = rot(rx, 3.8)
+            rails.append(u'M %.2f %.2f L %.2f %.2f' % (x0, y0, x1, y1))
+        treads = []
+        for ty in (-3.8, 0.0, 3.8):
+            x0, y0 = rot(-4.0, ty)
+            x1, y1 = rot(4.0, ty)
+            treads.append(u'M %.2f %.2f L %.2f %.2f' % (x0, y0, x1, y1))
+        return (
+            u'<path d="%s" fill="none" stroke="%s" stroke-width="%.2f" stroke-linecap="round" stroke-opacity="%.2f"/>'
+            u'<path d="%s" fill="none" stroke="%s" stroke-width="%.2f" stroke-linecap="round" stroke-opacity="%.2f"/>' % (
+                u' '.join(rails), color, 1.15 * s, opacity * 0.85,
+                u' '.join(treads), color, 1.3 * s, opacity))
     if ch == 'stun':
         rays = []
         for i in range(6):
@@ -2786,7 +3029,9 @@ def _v3BarSvg(cfg, m, sample, ratio, barCol):
     if barStyle == 3 or m['barY'] is None:
         return u''
     bh = float(m['barH'])
+    trackH = float(m.get('trackH', _cfgInt('v3BarTrackHeight', 1, 10, cfg)))
     by = float(m['barY']) + (float(m['barBlockH']) - bh) * 0.5
+    trackY = by + (bh - trackH) * 0.5
     out = []
     if barStyle == 1:
         gap = 2.0
@@ -2799,8 +3044,8 @@ def _v3BarSvg(cfg, m, sample, ratio, barCol):
         for idx, (s0, s1) in enumerate(spans):
             sw = usableW * weights[idx]
             segFill = max(0.0, min(1.0, (curPct - s0) / max(1e-6, s1 - s0)))
-            out.append(u'<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" rx="1" fill="#0B1016" fill-opacity="0.55" stroke="#FFFFFF" stroke-width="0.7" stroke-opacity="0.32"/>' % (
-                curX, by, sw, bh))
+            out.append(u'<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" rx="1" fill="#FFFFFF" fill-opacity="0.22"/>' % (
+                curX, trackY, sw, trackH))
             if segFill > 0.005:
                 fw = max(1.0, sw * segFill)
                 out.append(u'<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" rx="1" fill="%s" stroke="#000000" stroke-width="0.6" stroke-opacity="0.60"/>' % (
@@ -2808,7 +3053,7 @@ def _v3BarSvg(cfg, m, sample, ratio, barCol):
                 cursorTipX = curX + fw
             curX += sw + gap
         if bool(cfg.get('v3BarCursor', True)):
-            curH = max(10.0, bh + 6.0)
+            curH = max(10.0, max(bh, trackH) + 6.0)
             curY = by + (bh - curH) * 0.5
             tipX = max(bx, min(bx + bw - 2.5, cursorTipX - 1.25))
             out.append(u'<rect x="%.1f" y="%.1f" width="2.5" height="%.1f" rx="0.8" fill="#FFFFFF" fill-opacity="0.95"/>' % (
@@ -2816,28 +3061,28 @@ def _v3BarSvg(cfg, m, sample, ratio, barCol):
         return u''.join(out)
 
     # Style 0 (continuous + ticks + cursor) or Style 2 (solid)
-    trackH = 2.0 if (barStyle == 0 and bh <= 4.0) else bh
-    trackY = by + (bh - trackH) * 0.5
     out.append(u'<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" rx="1" fill="#FFFFFF" fill-opacity="0.22"/>' % (
         bx, trackY, bw, trackH))
     if bool(cfg.get('v3BarEndTicks', True)):
-        tickH = max(8.0, bh + 4.0)
+        tickH = max(8.0, max(bh, trackH) + 4.0)
         tickTop = by + (bh - tickH) * 0.5
         out.append(u'<rect x="%.1f" y="%.1f" width="1.2" height="%.1f" fill="#FFFFFF" fill-opacity="0.45"/>' % (
             bx, tickTop, tickH))
         out.append(u'<rect x="%.1f" y="%.1f" width="1.2" height="%.1f" fill="#FFFFFF" fill-opacity="0.45"/>' % (
             bx + bw - 1.2, tickTop, tickH))
     if bool(cfg.get('v3BarMarks', False)) and _cfgInt('v3BarScale', 0, 1, cfg) == 0:
+        markH = max(bh, trackH) + 3.0
+        markTop = by + (bh - markH) * 0.5
         for th in (65.0, 85.0, 95.0):
             tx = bx + bw * (th / 100.0)
             out.append(u'<rect x="%.1f" y="%.1f" width="1.0" height="%.1f" fill="#FFFFFF" fill-opacity="0.40"/>' % (
-                tx - 0.5, by - 1.5, bh + 3.0))
+                tx - 0.5, markTop, markH))
     fillW = max(0.0, min(bw, bw * ratio))
     if fillW > 0.5:
         out.append(u'<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" rx="1" fill="%s"/>' % (
             bx, by, fillW, bh, barCol))
     if bool(cfg.get('v3BarCursor', True)):
-        curH = max(10.0, bh + 6.0)
+        curH = max(10.0, max(bh, trackH) + 6.0)
         curY = by + (bh - curH) * 0.5
         curX = max(bx, min(bx + bw - 2.5, bx + fillW - 1.25))
         out.append(u'<rect x="%.1f" y="%.1f" width="2.5" height="%.1f" rx="0.8" fill="#FFFFFF" fill-opacity="0.95"/>' % (
@@ -2956,27 +3201,31 @@ def _v3BuildSvg(cfg, sample, alt=False):
     parts.append(_v3BarSvg(cfg, m, sample, ratio, barCol))
 
     # 5. Damage row
+    plusCol = _cfgColFrom(cfg, 'v3AccentPlus')
     if m['dmgY'] is not None:
         dy = float(m['dmgY']) + float(m['dmgSize']) * 0.92
         if m['dmgLblText']:
             parts.append(_svgText(cx, dy, m['dmgLblText'], textMuted, m['dmgSize'],
                                   anchor=u'start', shadow=True, shadowOp=shadowOp))
-
-        dynCol = bool(cfg.get('v3DamageDynColor', True))
-        if dynCol:
-            dmgCol = _cfgColFrom(cfg, 'v3AccentPlus') if (m['dmg'] >= m['tgt'] > 0 or m['kind'] in ('plus', 'big')) else (
-                _cfgColFrom(cfg, 'v3AccentMinus') if m['kind'] == 'minus' else textMain)
+        if m.get('isHangar'):
+            emaCol = plusCol if (bool(sample.get('hasRating', True)) and m['dmg'] > 0) else textMuted
+            parts.append(_svgText(cx + cw, dy, m['dmgStr'], emaCol, m['dmgSize'],
+                                  anchor=u'end', shadow=True, shadowOp=shadowOp))
         else:
-            dmgCol = textMain
-        rightTxt = u'/ ' + m['tgtStr']
-        wRight = _svgAdvance(rightTxt, m['dmgSize'])
-        parts.append(_svgText(cx + cw - wRight - 4.0, dy, m['dmgStr'], dmgCol, m['dmgSize'],
-                              anchor=u'end', shadow=True, shadowOp=shadowOp))
-        parts.append(_svgText(cx + cw, dy, rightTxt, textMuted, m['dmgSize'],
-                              anchor=u'end', shadow=True, shadowOp=shadowOp))
+            dynCol = bool(cfg.get('v3DamageDynColor', True))
+            if dynCol:
+                dmgCol = plusCol if (m['dmg'] >= m['tgt'] > 0 or m['kind'] in ('plus', 'big')) else (
+                    _cfgColFrom(cfg, 'v3AccentMinus') if m['kind'] == 'minus' else textMain)
+            else:
+                dmgCol = textMain
+            rightTxt = u'/ ' + m['tgtStr']
+            wRight = _svgAdvance(rightTxt, m['dmgSize'])
+            parts.append(_svgText(cx + cw - wRight - 4.0, dy, m['dmgStr'], dmgCol, m['dmgSize'],
+                                  anchor=u'end', shadow=True, shadowOp=shadowOp))
+            parts.append(_svgText(cx + cw, dy, rightTxt, textMuted, m['dmgSize'],
+                                  anchor=u'end', shadow=True, shadowOp=shadowOp))
 
     # 6. Assist row
-    plusCol = _cfgColFrom(cfg, 'v3AccentPlus')
     if m['astItems'] and m['astY'] is not None:
         ay = float(m['astY'])
         abY = ay + float(m['astSize']) * 0.92
@@ -2996,12 +3245,11 @@ def _v3BuildSvg(cfg, sample, alt=False):
                                   anchor=u'start', shadow=True, shadowOp=shadowOp))
             curX += widths[idx] + gap
 
-    # 7. Tempo / Thresholds row
+    # 7. Tempo / Thresholds row (no star icons - % and value only)
     if m['thrItems'] and m['thrY'] is not None:
         ty = float(m['thrY'])
         tSz = float(m['thrSize'])
         tbY = ty + tSz * 0.92
-        icSz = float(m['thrIconSize'])
         tItems = m['thrItems']
         tWidths = m['thrWidths']
         tBaseW = cw
@@ -3011,16 +3259,55 @@ def _v3BuildSvg(cfg, sample, alt=False):
         curX = tBaseX + (tBaseW - totalThrW) * 0.5
         for idx, it in enumerate(tItems):
             isDone = bool(it['done'])
-            sCol = plusCol if isDone else starOn
             lCol = plusCol if isDone else textMuted
             vCol = plusCol if isDone else textMain
-            parts.append(_svgStar(curX + icSz * 0.5, ty + m['thrH'] * 0.5, icSz * 0.42, sCol, 0.96 if isDone else 0.82))
-            parts.append(_svgText(curX + icSz + 4.0, tbY, it['lbl'], lCol, m['thrSize'],
+            parts.append(_svgText(curX, tbY, it['lbl'], lCol, m['thrSize'],
                                   anchor=u'start', shadow=True, shadowOp=shadowOp))
             lblAdv = _svgAdvance(it['lbl'] + u' ', m['thrSize'])
-            parts.append(_svgText(curX + icSz + 4.0 + lblAdv, tbY, it['valStr'], vCol, m['thrSize'],
+            parts.append(_svgText(curX + lblAdv, tbY, it['valStr'], vCol, m['thrSize'],
                                   anchor=u'start', shadow=True, shadowOp=shadowOp))
             curX += tWidths[idx] + tGap
+
+    # 8. Hangar 2x2 thresholds grid (65% / 85% / 95% / 100%)
+    if m.get('hRows'):
+        if m.get('hSepY') is not None:
+            sy = float(m['hSepY'])
+            parts.append(u'<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="%s" stroke-width="1.0" stroke-opacity="0.18"/>' % (
+                cx, sy, cx + cw, sy, cornerCol))
+        tSz = float(m['thrSize'])
+        for rowY, rowItems in ((m.get('hRow1Y'), m['hRows'][0]),
+                               (m.get('hRow2Y'), m['hRows'][1] if len(m['hRows']) > 1 else [])):
+            if rowY is None or not rowItems:
+                continue
+            tbY = float(rowY) + tSz * 0.92
+            if len(rowItems) == 2:
+                it0, it1 = rowItems[0], rowItems[1]
+                lCol0 = plusCol if it0['done'] else textMuted
+                vCol0 = plusCol if it0['done'] else textMain
+                parts.append(_svgText(cx, tbY, it0['lbl'], lCol0, m['thrSize'],
+                                      anchor=u'start', shadow=True, shadowOp=shadowOp))
+                parts.append(_svgText(cx + _svgAdvance(it0['lbl'] + u' ', m['thrSize']), tbY,
+                                      it0['valStr'], vCol0, m['thrSize'],
+                                      anchor=u'start', shadow=True, shadowOp=shadowOp))
+                lCol1 = plusCol if it1['done'] else textMuted
+                vCol1 = plusCol if it1['done'] else textMain
+                w1 = _svgAdvance(it1['lbl'] + u' ' + it1['valStr'], m['thrSize'])
+                x1 = cx + cw - w1
+                parts.append(_svgText(x1, tbY, it1['lbl'], lCol1, m['thrSize'],
+                                      anchor=u'start', shadow=True, shadowOp=shadowOp))
+                parts.append(_svgText(cx + cw, tbY, it1['valStr'], vCol1, m['thrSize'],
+                                      anchor=u'end', shadow=True, shadowOp=shadowOp))
+            else:
+                it0 = rowItems[0]
+                lCol0 = plusCol if it0['done'] else textMuted
+                vCol0 = plusCol if it0['done'] else textMain
+                w0 = _svgAdvance(it0['lbl'] + u' ' + it0['valStr'], m['thrSize'])
+                x0 = cx + (cw - w0) * 0.5
+                parts.append(_svgText(x0, tbY, it0['lbl'], lCol0, m['thrSize'],
+                                      anchor=u'start', shadow=True, shadowOp=shadowOp))
+                parts.append(_svgText(x0 + _svgAdvance(it0['lbl'] + u' ', m['thrSize']), tbY,
+                                      it0['valStr'], vCol0, m['thrSize'],
+                                      anchor=u'start', shadow=True, shadowOp=shadowOp))
 
     body = u'<g opacity="%.3f">%s</g>' % (panelOp, u''.join(parts))
     svg = u'<svg xmlns="http://www.w3.org/2000/svg" width="%d" height="%d" viewBox="0 0 %d %d">%s</svg>' % (
@@ -3030,11 +3317,26 @@ def _v3BuildSvg(cfg, sample, alt=False):
 
 
 def _menuPreviewRender():
-    """Return (dataUri, baseW, baseH, dispW, dispH) matching battle HUD 1-to-1."""
+    """Return (dataUri, baseW, baseH, dispW, dispH) matching battle/hangar HUD 1-to-1."""
     state = _PREVIEW.get('state', 'plus')
-    preset = _cfgInt('battlePreset', 0, 2)
+    target = int(_PREVIEW.get('target', 0) or 0)
+    if target == 1:
+        baseSample = _PREVIEW_SAMPLES_V3.get(state) or _PREVIEW_SAMPLES_V3['plus']
+        hSample = dict(baseSample)
+        hSample['isHangar'] = True
+        hSample['dmg'] = int(baseSample.get('tHold', 2450) or 2450)
+        vhScale = _cfgNumber('vhScale', 0.5, 2.5)
+        uri, width, height = _v3BuildSvg(_vhToV3Cfg(g_config), hSample, alt=False)
+        scale = min(float(_PREVIEW_CONTAINER_W) / float(width),
+                    float(_PREVIEW_CONTAINER_H) / float(height),
+                    vhScale)
+        dispW = max(1, int(round(width * scale)))
+        dispH = max(1, int(round(height * scale)))
+        return uri, width, height, dispW, dispH
+
+    preset = _cfgInt('battlePreset', 0, 1)
     uiScale = _cfgNumber('uiScale', 0.5, 2.5)
-    if preset == 2:
+    if preset == 0:
         sample = _PREVIEW_SAMPLES_V3.get(state) or _PREVIEW_SAMPLES_V3['plus']
         altActive = bool(_PREVIEW.get('alt', False) or _PREVIEW.get('hwAlt', False))
         uri, width, height = _v3BuildSvg(g_config, sample, alt=altActive)
@@ -3226,16 +3528,12 @@ def _menuPreviewRefresh():
 _MENU_LINKAGE = 'dm.threemarks'
 _MENU = {'api': None, 'tpl': None, 'ver': (1, 0, 0), 'ok': False, 'tries': 0,
          'next': 0.0, 'busy': False, 'template': None, 'fullTemplate': None, 'tplV3': True}
-_MENU_NUM = (('uiScale', 0.5, 2.5), ('bgOpacity', 0.0, 1.0),
-             ('panelOpacity', 0.0, 1.0),
-             ('trackOpacity', 0.0, 1.0), ('zeroBand', 0.0, 1.0),
-             ('bigFrom', 0.0, 10.0), ('bigDamageFactor', 1.0, 10.0))
-_MENU_BOOL = ('glow', 'pctFollowsSign', 'dmgFollowsSign', 'barBySign', 'showSpot', 'showTrack',
-              'bigByDamage', 'hideInIntro', 'hideInKillcam', 'hideAfterDeath')
+_MENU_NUM = (('uiScale', 0.5, 2.5), ('panelOpacity', 0.0, 1.0),
+             ('zeroBand', 0.0, 1.0), ('bigFrom', 0.0, 10.0),
+             ('bigDamageFactor', 1.0, 10.0))
+_MENU_BOOL = ('dmgFollowsSign', 'bigByDamage', 'hideInIntro', 'hideInKillcam', 'hideAfterDeath')
 _MENU_COLORS = ('colorPlus', 'colorMinus', 'colorZero', 'colorBig',
-                'barColorPlus', 'barColorMinus', 'barColorZero', 'barColorBig',
-                'barColorHangar', 'pctColor', 'colorDmg', 'colorProj',
-                'tickColor', 'barColorStandard')
+                'pctColor', 'colorDmg', 'colorProj')
 
 _MENU_V3_INT = (
     ('v3Density', 0, 2),
@@ -3254,6 +3552,7 @@ _MENU_V3_INT = (
     ('v3BarStyle', 0, 3),
     ('v3BarScale', 0, 1),
     ('v3BarHeight', 2, 10),
+    ('v3BarTrackHeight', 1, 10),
     ('v3BarColorMode', 0, 2),
     ('v3DamageLabel', 0, 2),
     ('v3ThousandsSep', 0, 2),
@@ -3294,11 +3593,56 @@ _MENU_V3_COLORS = (
     'v3TextMain',
     'v3TextMuted',
 )
+
+_MENU_VH_INT = (
+    ('vhDensity', 0, 2),
+    ('vhFrameStyle', 0, 3),
+    ('vhRadius', 0, 14),
+    ('vhStarsPos', 0, 5),
+    ('vhStarsStyle', 0, 2),
+    ('vhStarsSize', 10, 22),
+    ('vhStarsGap', 2, 14),
+    ('vhPctDecimals', 0, 1),
+    ('vhBarStyle', 0, 3),
+    ('vhBarScale', 0, 1),
+    ('vhBarHeight', 2, 10),
+    ('vhBarTrackHeight', 1, 10),
+    ('vhThousandsSep', 0, 2),
+)
+_MENU_VH_FLOAT = (
+    ('vhScale', 0.5, 2.5),
+    ('vhCornerAlpha', 0.0, 1.0),
+    ('vhBorderAlpha', 0.0, 1.0),
+    ('vhBgOpacity', 0.0, 1.0),
+)
+_MENU_VH_BOOL = (
+    'hangarPanel',
+    'hangarOnlyRandom',
+    'hideUnderWindows',
+    'vhStarsDivider',
+    'vhStarsGlow',
+    'vhBarEndTicks',
+    'vhBarCursor',
+    'vhBarMarks',
+    'vhShowEma',
+    'vhShowThresholds',
+    'vhShow100',
+)
+_MENU_VH_COLORS = (
+    'vhBarColor',
+    'vhTextMain',
+    'vhTextMuted',
+    'vhCornerColor',
+    'vhBgColor',
+    'vhStarOnColor',
+    'vhStarOffColor',
+)
+
 _MENU_ALL_KEYS = (
-    ('previewState', 'previewAlt', 'battlePanelVariant') +
-    _MENU_BOOL + _MENU_V3_BOOL + _MENU_V3_STR +
-    _MENU_COLORS + _MENU_V3_COLORS +
-    tuple(n for n, _l, _h in (_MENU_NUM + _MENU_V3_INT + _MENU_V3_FLOAT))
+    ('previewTarget', 'previewState', 'previewAlt', 'battlePanelVariant') +
+    _MENU_BOOL + _MENU_V3_BOOL + _MENU_VH_BOOL + _MENU_V3_STR +
+    _MENU_COLORS + _MENU_V3_COLORS + _MENU_VH_COLORS +
+    tuple(n for n, _l, _h in (_MENU_NUM + _MENU_V3_INT + _MENU_V3_FLOAT + _MENU_VH_INT + _MENU_VH_FLOAT))
 )
 
 
@@ -3337,22 +3681,22 @@ def _menuColorValue(raw):
 
 
 def _menuConvert(key, raw):
-    if key in _MENU_BOOL or key in _MENU_V3_BOOL:
+    if key in _MENU_BOOL or key in _MENU_V3_BOOL or key in _MENU_VH_BOOL:
         return bool(raw)
     if key in _MENU_V3_STR:
         if isinstance(raw, basestring):
             text = raw.decode('utf-8', 'replace') if isinstance(raw, str) else raw
             return text.replace(u'\r', u' ').replace(u'\n', u' ')[:24]
         return None
-    if key in _MENU_COLORS or key in _MENU_V3_COLORS:
+    if key in _MENU_COLORS or key in _MENU_V3_COLORS or key in _MENU_VH_COLORS:
         return _menuColorValue(raw)
-    for name, low, high in _MENU_V3_INT:
+    for name, low, high in _MENU_V3_INT + _MENU_VH_INT:
         if name == key:
             try:
                 return int(round(max(low, min(high, float(raw)))))
             except (TypeError, ValueError):
                 return None
-    for name, low, high in _MENU_NUM + _MENU_V3_FLOAT:
+    for name, low, high in _MENU_NUM + _MENU_V3_FLOAT + _MENU_VH_FLOAT:
         if name == key:
             try:
                 return round(max(low, min(high, float(raw))), 4)
@@ -3364,38 +3708,40 @@ def _menuConvert(key, raw):
 def _menuValues():
     """Текущие значения в том виде, в каком их ждёт меню."""
     values = {}
-    for name, low, high in _MENU_NUM + _MENU_V3_FLOAT:
+    for name, low, high in _MENU_NUM + _MENU_V3_FLOAT + _MENU_VH_FLOAT:
         values[name] = round(_cfgNumber(name, low, high), 4)
-    for name, low, high in _MENU_V3_INT:
+    for name, low, high in _MENU_V3_INT + _MENU_VH_INT:
         values[name] = _cfgInt(name, low, high)
-    for name in _MENU_BOOL + _MENU_V3_BOOL:
+    for name in _MENU_BOOL + _MENU_V3_BOOL + _MENU_VH_BOOL:
         values[name] = bool(g_config.get(name, DEFAULT_CONFIG.get(name)))
     for name in _MENU_V3_STR:
         values[name] = _cfgStr(name, DEFAULT_CONFIG.get(name, u''), 24)
-    for name in _MENU_COLORS + _MENU_V3_COLORS:
+    for name in _MENU_COLORS + _MENU_V3_COLORS + _MENU_VH_COLORS:
         values[name] = _cfgColor(name)
-    values['battlePanelVariant'] = _cfgInt('battlePreset', 0, 2)
+    values['battlePanelVariant'] = _cfgInt('battlePreset', 0, 1)
     state = _PREVIEW.get('state', 'plus')
     values['previewState'] = _PREVIEW_ORDER.index(state) if state in _PREVIEW_ORDER else 0
     values['previewAlt'] = 1 if _PREVIEW.get('alt', False) else 0
+    values['previewTarget'] = 1 if int(_PREVIEW.get('target', 0) or 0) == 1 else 0
     return values
 
 
 def _menuDefaults():
     values = {}
-    for name, low, high in _MENU_NUM + _MENU_V3_FLOAT:
+    for name, low, high in _MENU_NUM + _MENU_V3_FLOAT + _MENU_VH_FLOAT:
         values[name] = float(DEFAULT_CONFIG[name])
-    for name, low, high in _MENU_V3_INT:
+    for name, low, high in _MENU_V3_INT + _MENU_VH_INT:
         values[name] = int(DEFAULT_CONFIG[name])
-    for name in _MENU_BOOL + _MENU_V3_BOOL:
+    for name in _MENU_BOOL + _MENU_V3_BOOL + _MENU_VH_BOOL:
         values[name] = bool(DEFAULT_CONFIG[name])
     for name in _MENU_V3_STR:
         values[name] = unicode(DEFAULT_CONFIG[name])
-    for name in _MENU_COLORS + _MENU_V3_COLORS:
+    for name in _MENU_COLORS + _MENU_V3_COLORS + _MENU_VH_COLORS:
         values[name] = str(DEFAULT_CONFIG[name]).upper()
-    values['battlePanelVariant'] = int(DEFAULT_CONFIG.get('battlePreset', 2))
+    values['battlePanelVariant'] = int(DEFAULT_CONFIG.get('battlePreset', 0))
     values['previewState'] = 0
     values['previewAlt'] = 0
+    values['previewTarget'] = 0
     return values
 
 
@@ -3412,6 +3758,12 @@ def _applyMenuSettings(settings, save):
     if not isinstance(settings, dict):
         return False
     changed = False
+    if 'previewTarget' in settings:
+        try:
+            tgtIdx = 1 if int(settings['previewTarget']) == 1 else 0
+        except (TypeError, ValueError):
+            tgtIdx = 0
+        _PREVIEW['target'] = tgtIdx
     if 'previewState' in settings:
         try:
             idx = max(0, min(len(_PREVIEW_ORDER) - 1, int(settings['previewState'])))
@@ -3428,9 +3780,11 @@ def _applyMenuSettings(settings, save):
         _PREVIEW['alt'] = bool(altIdx == 1)
     if 'battlePanelVariant' in settings:
         try:
-            preset = max(0, min(2, int(settings['battlePanelVariant'])))
+            rawVar = int(settings['battlePanelVariant'])
+            preset = 1 if rawVar == 1 else 0
         except (TypeError, ValueError):
             preset = None
+            rawVar = None
         if preset is not None:
             if g_config.get('battlePreset') != preset:
                 g_config['battlePreset'] = preset
@@ -3439,8 +3793,22 @@ def _applyMenuSettings(settings, save):
             if g_config.get('battlePercentOnly') != onlyPct:
                 g_config['battlePercentOnly'] = onlyPct
                 changed = True
-    applyKeys = (_MENU_BOOL + _MENU_V3_BOOL + _MENU_V3_STR + _MENU_COLORS + _MENU_V3_COLORS +
-                 tuple(n for n, _l, _h in (_MENU_NUM + _MENU_V3_INT + _MENU_V3_FLOAT)))
+            if rawVar == 2:
+                api = _MENU.get('api')
+                setVal = getattr(api, 'setControlValue', None) if api is not None else None
+                if setVal is not None and not _PREVIEW.get('syncing'):
+                    _PREVIEW['syncing'] = True
+                    try:
+                        setVal(_MENU_LINKAGE, 'battlePanelVariant', 0)
+                    except Exception:
+                        pass
+                    finally:
+                        _PREVIEW['syncing'] = False
+    applyKeys = (_MENU_BOOL + _MENU_V3_BOOL + _MENU_VH_BOOL + _MENU_V3_STR +
+                 _MENU_COLORS + _MENU_V3_COLORS + _MENU_VH_COLORS +
+                 tuple(n for n, _l, _h in (_MENU_NUM + _MENU_V3_INT + _MENU_V3_FLOAT + _MENU_VH_INT + _MENU_VH_FLOAT)))
+    vhTouch = False
+    bTouch = False
     for key in applyKeys:
         if key not in settings:
             continue
@@ -3451,6 +3819,10 @@ def _applyMenuSettings(settings, save):
         if g_config.get(key) != value:
             g_config[key] = value
             changed = True
+            if key.startswith('vh') or key in ('hangarPanel', 'hangarOnlyRandom', 'hideUnderWindows'):
+                vhTouch = True
+            elif key.startswith('v3') or key.startswith('color') or key in ('uiScale', 'dmgFollowsSign', 'pctColor'):
+                bTouch = True
             state = _previewStateFor(key)
             if state:
                 _PREVIEW['state'] = state
@@ -3469,6 +3841,20 @@ def _applyMenuSettings(settings, save):
                             _PREVIEW['syncing'] = False
                 elif save:
                     _PREVIEW['uiState'] = newIdx
+    if not save and 'previewTarget' not in settings:
+        wantTarget = 1 if (vhTouch and not bTouch) else (0 if (bTouch and not vhTouch) else None)
+        if wantTarget is not None and _PREVIEW.get('target') != wantTarget:
+            _PREVIEW['target'] = wantTarget
+            api = _MENU.get('api')
+            setVal = getattr(api, 'setControlValue', None) if api is not None else None
+            if setVal is not None and not _PREVIEW.get('syncing'):
+                _PREVIEW['syncing'] = True
+                try:
+                    setVal(_MENU_LINKAGE, 'previewTarget', wantTarget)
+                except Exception:
+                    pass
+                finally:
+                    _PREVIEW['syncing'] = False
     if changed:
         if save:
             _saveJson(CONFIG_PATH, g_config)
@@ -3487,7 +3873,7 @@ def _menuArgs(args):
 
 
 def _resetV3Preset():
-    """Сбросить визуальные настройки Варианта 3 к эталону по умолчанию."""
+    """Сбросить визуальные настройки Варианта 1 («Киберспорт») к эталону по умолчанию."""
     for key, val in _V3_DEFAULTS.iteritems():
         g_config[key] = val
     _saveJson(CONFIG_PATH, g_config)
@@ -3518,6 +3904,38 @@ def _resetV3Preset():
     _menuPreviewRefresh()
 
 
+def _resetVhPreset():
+    """Сбросить визуальные настройки ангарной панели к эталону по умолчанию."""
+    for key, val in _VH_DEFAULTS.iteritems():
+        g_config[key] = val
+    _saveJson(CONFIG_PATH, g_config)
+    api = _MENU.get('api')
+    if api is not None:
+        vals = _menuValues()
+        _PREVIEW['syncing'] = True
+        try:
+            upd = getattr(api, 'updateModSettings', None)
+            if upd is not None:
+                try:
+                    upd(_MENU_LINKAGE, vals)
+                except Exception:
+                    pass
+            setVal = getattr(api, 'setControlValue', None)
+            if setVal is not None:
+                for key in _VH_DEFAULTS:
+                    if key in vals:
+                        try:
+                            setVal(_MENU_LINKAGE, key, vals[key])
+                        except Exception:
+                            pass
+        finally:
+            _PREVIEW['syncing'] = False
+    _menuRefresh()
+    _PREVIEW['source'] = None
+    _PREVIEW['key'] = None
+    _menuPreviewRefresh()
+
+
 def _resetPanelPosition():
     """Вернуть боевую панель на позицию по умолчанию."""
     g_config['x'] = DEFAULT_CONFIG['x']
@@ -3526,6 +3944,19 @@ def _resetPanelPosition():
     try:
         if g_controller._panel is not None:
             g_controller._panel.moveTo(g_config['x'], g_config['y'])
+    except Exception:
+        pass
+    _menuRefresh()
+
+
+def _resetHangarPosition():
+    """Вернуть ангарную панель на позицию по умолчанию."""
+    g_config['hx'] = DEFAULT_CONFIG['hx']
+    g_config['hy'] = DEFAULT_CONFIG['hy']
+    _saveJson(CONFIG_PATH, g_config)
+    try:
+        if g_hangar._panel is not None:
+            g_hangar._panel.moveTo(g_config['hx'], g_config['hy'])
     except Exception:
         pass
     _menuRefresh()
@@ -3549,8 +3980,12 @@ def _onMenuButton(*args, **kwargs):
         action = btnName or varName
         if action in ('v3ResetPreset', 'resetPreset'):
             _resetV3Preset()
+        elif action == 'vhResetPreset':
+            _resetVhPreset()
         elif action in ('resetPosition', 'v3ResetPosition'):
             _resetPanelPosition()
+        elif action == 'resetHangarPosition':
+            _resetHangarPosition()
     except Exception:
         _logError('menu button')
 
@@ -3568,14 +4003,14 @@ def _onMenuApplied(*args):
 
 
 def _syncMenuTabs(force=False):
-    """Перестроить вкладки Mod Menu: 5 вкладок для Варианта 3, 2 вкладки для Вариантов 1/2."""
+    """Перестроить вкладки Mod Menu: 6 вкладок для Варианта 1 (Киберспорт), 3 вкладки для Варианта 2 (Отметка Корбена)."""
     api = _MENU.get('api')
     tpl = _MENU.get('tpl')
     ver = _MENU.get('ver') or (1, 0, 0)
     if api is None or tpl is None:
         return False
     reloadFn = getattr(api, 'reloadModTemplate', None)
-    wantV3 = (_cfgInt('battlePreset', 0, 2) == 2)
+    wantV3 = (_cfgInt('battlePreset', 0, 1) == 0)
     if not force and _MENU.get('tplV3') == wantV3:
         return False
     if reloadFn is None:
@@ -3693,8 +4128,8 @@ def _menuTemplate(tpl, ver, showV3=True):
             return unicode(val) if val is not None else u''
         if kind == 'choice' and labels:
             if key == 'battlePanelVariant':
-                idx = int(DEFAULT_CONFIG.get('battlePreset', 2))
-            elif key in ('previewState', 'previewAlt'):
+                idx = int(DEFAULT_CONFIG.get('battlePreset', 0))
+            elif key in ('previewState', 'previewAlt', 'previewTarget'):
                 idx = 0
             else:
                 idx = int(val)
@@ -3866,9 +4301,9 @@ def _menuTemplate(tpl, ver, showV3=True):
         return [label(u'<b>%s</b>' % title)] + list(items)
 
     tabMain = [
-        label(u'<b>Размер и положение</b>'),
-        slider(u'Размер панели', 'uiScale', 0.5, 2.5, 0.05, f2, u'Размер',
-               u'Размер всей панели в бою и ангаре: 1.00 — исходный.'),
+        label(u'<b>Размер и положение (бой)</b>'),
+        slider(u'Размер боевой панели', 'uiScale', 0.5, 2.5, 0.05, f2, u'Размер',
+               u'Масштаб боевой панели: 1.00 — исходный (масштаб ангарной панели настраивается отдельно во вкладке «Ангар»).'),
         slider(u'Непрозрачность всей панели', 'panelOpacity', 0.0, 1.0, 0.02, f2,
                u'Непрозрачность панели', u'0 — панель невидима, 1 — полностью видима.'),
     ]
@@ -3877,39 +4312,20 @@ def _menuTemplate(tpl, ver, showV3=True):
             vis(dropdown(u'Плотность компоновки', 'v3Density',
                          [u'Компактный', u'Стандартный', u'Крупный'],
                          u'Плотность компоновки',
-                         u'Отступы и базовые размеры шрифтов для Варианта 3.'),
-                'battlePanelVariant', 2),
+                         u'Отступы и базовые размеры шрифтов для Варианта 1 («Киберспорт»).'),
+                'battlePanelVariant', 0),
             vis(slider(u'Минимальная ширина (0 — авто)', 'v3MinWidth', 0, 360, 10, f0,
                        u'Минимальная ширина',
                        u'0 — ширина подбирается автоматически по содержимому. Иначе задаёт минимум в пикселях.'),
-                'battlePanelVariant', 2),
+                'battlePanelVariant', 0),
             vis(dropdown(u'Точка привязки при изменении размера', 'v3Anchor',
                          [u'Верх-лево', u'Верх-центр', u'Верх-право',
                           u'Низ-лево', u'Низ-центр', u'Низ-право'],
                          u'Якорь панели',
                          u'Какой край/угол остаётся на месте, когда панель сжимается или расширяется (например, по Alt).'),
-                'battlePanelVariant', 2),
+                'battlePanelVariant', 0),
         ])
     tabMain.extend([
-        vis(slider(u'Непрозрачность фона', 'bgOpacity', 0.0, 1.0, 0.02, f2,
-                   u'Непрозрачность фона', u'0 — фон прозрачный, 1 — сплошной. Рамка и тень гаснут вместе с ним.'),
-            'battlePanelVariant', 0),
-        vis(slider(u'Непрозрачность пустой части полоски', 'trackOpacity', 0.0, 1.0,
-                   0.02, f2, u'Пустая часть полоски',
-                   u'Насколько заметна незаполненная часть полоски прогресса.'),
-            'battlePanelVariant', 0),
-        vis(label(u'<b>Элементы Варианта 1</b>'), 'battlePanelVariant', 0),
-        vis(check(u'Показывать помощь по засвету', 'showSpot',
-                  u'Засвет',
-                  u'Под панелью в бою — сколько урона вы помогли нанести засветом.'),
-            'battlePanelVariant', 0),
-        vis(check(u'Показывать помощь по гусенице', 'showTrack',
-                  u'Гусеница',
-                  u'Под панелью в бою — сколько урона вы помогли нанести, сбив гусеницу.'),
-            'battlePanelVariant', 0),
-        vis(check(u'Вспышка полоски при росте', 'glow', u'Вспышка',
-                  u'Полоска ненадолго вспыхивает, когда процент вырос.'),
-            'battlePanelVariant', 0),
         label(u'<b>Поведение в бою</b>'),
         check(u'Скрывать панель во вступлении («В центре внимания»)', 'hideInIntro',
               u'Вступление',
@@ -3925,8 +4341,8 @@ def _menuTemplate(tpl, ver, showV3=True):
         tabMain.extend([
             vis(check(u'Скрывать в снайперском прицеле', 'v3HideInSniper',
                       u'Снайперский режим',
-                      u'Убирает панель Варианта 3, пока активен снайперский прицел.'),
-                'battlePanelVariant', 2),
+                      u'Убирает панель «Киберспорт», пока активен снайперский прицел.'),
+                'battlePanelVariant', 0),
         ])
     tabMain.extend([
         label(u'<b>Пороги оценки (+ / 0 / большой +)</b>'),
@@ -3946,79 +4362,79 @@ def _menuTemplate(tpl, ver, showV3=True):
     ])
 
     tabFrameStars = [
-        vis(label(u'<b>Тактическая рамка и подложка</b>'), 'battlePanelVariant', 2),
+        vis(label(u'<b>Тактическая рамка и подложка</b>'), 'battlePanelVariant', 0),
         vis(dropdown(u'Стиль рамки', 'v3FrameStyle',
                      [u'Тактическая (уголки + контур)', u'Только уголки',
                       u'Сплошная рамка', u'Без рамки (HUD)'],
                      u'Стиль рамки',
                      u'Тактическая: полупрозрачная подложка, тонкий контур с вырезом под звёзды и белые L-уголки.'),
-            'battlePanelVariant', 2),
+            'battlePanelVariant', 0),
         visAll(slider(u'Скругление углов рамки', 'v3Radius', 0, 14, 1, f0,
                       u'Скругление углов', u'Радиус скругления подложки и контура в пикселях.'),
-               (('battlePanelVariant', 2), ('v3FrameStyle', [0, 1, 2]))),
+               (('battlePanelVariant', 0), ('v3FrameStyle', [0, 1, 2]))),
         visAll(slider(u'Непрозрачность подложки', 'v3BgOpacity', 0.0, 1.0, 0.02, f2,
                       u'Подложка', u'Читаемость на снежных и тёмных картах.'),
-               (('battlePanelVariant', 2), ('v3FrameStyle', [0, 1, 2]))),
+               (('battlePanelVariant', 0), ('v3FrameStyle', [0, 1, 2]))),
         visAll(slider(u'Яркость угловых скобок', 'v3CornerAlpha', 0.0, 1.0, 0.05, f2,
                       u'Угловые акценты', u'Непрозрачность белых L-образных скобок по углам.'),
-               (('battlePanelVariant', 2), ('v3FrameStyle', [0, 1]))),
+               (('battlePanelVariant', 0), ('v3FrameStyle', [0, 1]))),
         visAll(slider(u'Непрозрачность контура', 'v3BorderAlpha', 0.0, 1.0, 0.02, f2,
                       u'Тонкий периметр', u'Непрозрачность тонкой линии рамки по периметру.'),
-               (('battlePanelVariant', 2), ('v3FrameStyle', [0, 2]))),
-        vis(label(u'<b>Звёзды отметок</b>'), 'battlePanelVariant', 2),
+               (('battlePanelVariant', 0), ('v3FrameStyle', [0, 2]))),
+        vis(label(u'<b>Звёзды отметок</b>'), 'battlePanelVariant', 0),
         vis(dropdown(u'Расположение звёзд', 'v3StarsPos',
                      [u'Сверху (горизонтально)', u'Снизу (горизонтально)',
                       u'Слева (вертикально)', u'Справа (вертикально)',
                       u'В шапке (рядом с %)', u'Скрыть'],
                      u'Позиция звёзд',
                      u'При включённой рамке звёзды сидят прямо на границе с аккуратным вырезом без лишней разделительной полосы.'),
-            'battlePanelVariant', 2),
+            'battlePanelVariant', 0),
         visAll(dropdown(u'Стиль звёзд', 'v3StarsStyle',
                         [u'Белые / контур', u'Белые / серые залитые', u'Золотые / контур'],
                         u'Стиль звёзд',
-                        u'1-й вариант — как на Тактическом HUD (яркая ★ / тонкий контур ☆); 2-й — приглушённые серые; 3-й — золотые.'),
-               (('battlePanelVariant', 2), ('v3StarsPos', 5, '!='))),
+                        u'1-й вариант — яркая ★ / тонкий контур ☆; 2-й — приглушённые серые; 3-й — золотые.'),
+               (('battlePanelVariant', 0), ('v3StarsPos', 5, '!='))),
         visAll(check(u'Вертикальный разделитель | (без рамки)', 'v3StarsDivider',
                      u'Вертикальный разделитель',
                      u'Отделяет вертикальные звёзды тонкой линией | в режиме «Без рамки (HUD)».'),
-               (('battlePanelVariant', 2), ('v3FrameStyle', 3), ('v3StarsPos', [2, 3]))),
+               (('battlePanelVariant', 0), ('v3FrameStyle', 3), ('v3StarsPos', [2, 3]))),
         visAll(slider(u'Размер звёзд', 'v3StarsSize', 10, 22, 1, f0,
                       u'Размер звёзд', u'Диаметр одной звезды в пикселях.'),
-               (('battlePanelVariant', 2), ('v3StarsPos', 5, '!='))),
+               (('battlePanelVariant', 0), ('v3StarsPos', 5, '!='))),
         visAll(slider(u'Расстояние между звёздами', 'v3StarsGap', 2, 14, 1, f0,
                       u'Зазор между звёздами', u'Расстояние между краями соседних звёзд.'),
-               (('battlePanelVariant', 2), ('v3StarsPos', 5, '!='))),
+               (('battlePanelVariant', 0), ('v3StarsPos', 5, '!='))),
         visAll(check(u'Мягкое свечение полученных звёзд', 'v3StarsGlow',
                      u'Свечение звёзд', u'Лёгкий ореол вокруг уже заработанных отметок.'),
-               (('battlePanelVariant', 2), ('v3StarsPos', 5, '!='))),
+               (('battlePanelVariant', 0), ('v3StarsPos', 5, '!='))),
     ]
 
     tabHeaderBar = [
-        vis(label(u'<b>Шапка (% и дельта)</b>'), 'battlePanelVariant', 2),
+        vis(label(u'<b>Шапка (% и дельта)</b>'), 'battlePanelVariant', 0),
         vis(dropdown(u'Порядок элементов шапки', 'v3HeaderOrder',
                      [u'Процент слева, дельта справа',
                       u'Дельта слева, процент справа',
                       u'По центру (% + дельта)'],
                      u'Порядок шапки',
-                     u'Позволяет переключить шапку с левого % (Тактический) на правый % (зеркальный минимализм) или по центру.'),
-            'battlePanelVariant', 2),
+                     u'Позволяет переключить шапку с левого % на правый % или по центру.'),
+            'battlePanelVariant', 0),
         vis(dropdown(u'Точность процента', 'v3PctDecimals',
                      [u'Целые (79%)', u'2 знака (78.94%)'],
                      u'Знаки после запятой', u'Целый процент или 2 знака после запятой (стандарт).'),
-            'battlePanelVariant', 2),
+            'battlePanelVariant', 0),
         vis(dropdown(u'Значок дельты', 'v3DeltaIcon',
                      [u'Треугольники (▲ / ▼)', u'Стрелки (↗ / ↘)',
                       u'Только + / −', u'Скрыть дельту'],
                      u'Индикатор изменения',
                      u'Форма значка изменения отметки или полное скрытие дельты.'),
-            'battlePanelVariant', 2),
+            'battlePanelVariant', 0),
         visAll(dropdown(u'Цвет дельты', 'v3DeltaColorMode',
                         [u'По изменению (иконка и текст)',
                          u'Нейтральный (приглушённый)'],
                         u'Окраска дельты',
                         u'Подсветка значка и числа цветом изменения (+ / − / 0) либо нейтральный приглушённый цвет.'),
-               (('battlePanelVariant', 2), ('v3DeltaIcon', 3, '!='))),
-        vis(label(u'<b>Полоска прогресса</b>'), 'battlePanelVariant', 2),
+               (('battlePanelVariant', 0), ('v3DeltaIcon', 3, '!='))),
+        vis(label(u'<b>Полоска прогресса</b>'), 'battlePanelVariant', 0),
         vis(dropdown(u'Стиль полоски', 'v3BarStyle',
                      [u'Тактическая (трек + курсор)',
                       u'Пороги 65 / 85 / 95 / 100%',
@@ -4026,54 +4442,57 @@ def _menuTemplate(tpl, ver, showV3=True):
                       u'Без полоски'],
                      u'Стиль полоски прогресса',
                      u'Тактическая: тонкий трек с засечками | — | и ярким маркером. Пороги: 4 сегмента 65 / 85 / 95 / 100%.'),
-            'battlePanelVariant', 2),
+            'battlePanelVariant', 0),
         visAll(dropdown(u'Масштаб полоски', 'v3BarScale',
                         [u'0 — 100%', u'До следующей отметки'],
                         u'Шкала полоски',
                         u'От общего % (0–100) или внутри текущего интервала до следующей отметки.'),
-               (('battlePanelVariant', 2), ('v3BarStyle', 3, '!='))),
-        visAll(slider(u'Высота полоски (px)', 'v3BarHeight', 2, 10, 1, f0,
-                      u'Толщина полоски', u'Высота заполненной линии прогресса.'),
-               (('battlePanelVariant', 2), ('v3BarStyle', 3, '!='))),
+               (('battlePanelVariant', 0), ('v3BarStyle', 3, '!='))),
+        visAll(slider(u'Высота заполненной полоски (px)', 'v3BarHeight', 2, 10, 1, f0,
+                      u'Толщина заполненной полоски', u'Высота закрашенной линии прогресса.'),
+               (('battlePanelVariant', 0), ('v3BarStyle', 3, '!='))),
+        visAll(slider(u'Толщина незаполненной полоски (px)', 'v3BarTrackHeight', 1, 10, 1, f0,
+                      u'Толщина пустой белой полоски', u'Высота белой незаполненной линии трека прогресса.'),
+               (('battlePanelVariant', 0), ('v3BarStyle', 3, '!='))),
         visAll(dropdown(u'Цвет полоски', 'v3BarColorMode',
                         [u'Тактический зелёный',
                          u'По изменению (+ / − / 0)',
                          u'Свой цвет'],
                         u'Цвет полоски',
                         u'Определяет логику окрашивания заполненной части полоски.'),
-               (('battlePanelVariant', 2), ('v3BarStyle', 3, '!='))),
+               (('battlePanelVariant', 0), ('v3BarStyle', 3, '!='))),
         visAll(check(u'Крайние засечки | — |', 'v3BarEndTicks',
                      u'Засечки по краям', u'Вертикальные ограничители | в начале и в конце полоски.'),
-               (('battlePanelVariant', 2), ('v3BarStyle', [0, 2]))),
+               (('battlePanelVariant', 0), ('v3BarStyle', [0, 2]))),
         visAll(check(u'Вертикальный курсор на значении', 'v3BarCursor',
                      u'Маркер-курсор', u'Яркая светлая риска точно на текущем заполнении полоски.'),
-               (('battlePanelVariant', 2), ('v3BarStyle', 3, '!='))),
+               (('battlePanelVariant', 0), ('v3BarStyle', 3, '!='))),
         visAll(check(u'Риски порогов 65 / 85 / 95%', 'v3BarMarks',
                      u'Отметки 65 / 85 / 95%', u'Тонкие деления на полоске в точках получения 1, 2 и 3 отметок (при шкале 0–100%).'),
-               (('battlePanelVariant', 2), ('v3BarStyle', [0, 2]), ('v3BarScale', 0))),
+               (('battlePanelVariant', 0), ('v3BarStyle', [0, 2]), ('v3BarScale', 0))),
     ]
 
     tabDmgAssist = [
-        vis(label(u'<b>Строка урона</b>'), 'battlePanelVariant', 2),
+        vis(label(u'<b>Строка урона</b>'), 'battlePanelVariant', 0),
         vis(check(u'Показывать строку урона', 'v3ShowDamage',
                   u'Строка урона', u'Включает или убирает строку «Набито / Нужно».'),
-            'battlePanelVariant', 2),
+            'battlePanelVariant', 0),
         visAll(dropdown(u'Подпись строки урона', 'v3DamageLabel',
                         [u'Сум. урон', u'Своя подпись', u'Без подписи'],
                         u'Подпись слева', u'Текст слева от чисел урона: «Сум. урон», своя надпись или без подписи.'),
-               (('battlePanelVariant', 2), ('v3ShowDamage', True))),
+               (('battlePanelVariant', 0), ('v3ShowDamage', True))),
         visAll(textInput(u'Своя подпись урона', 'v3DamageCustomLabel',
                          u'Своя надпись', u'Произвольный текст слева от чисел урона (до 24 символов).'),
-               (('battlePanelVariant', 2), ('v3ShowDamage', True), ('v3DamageLabel', 1))),
+               (('battlePanelVariant', 0), ('v3ShowDamage', True), ('v3DamageLabel', 1))),
         vis(dropdown(u'Разделитель тысяч', 'v3ThousandsSep',
                      [u'Пробел (3 308)', u'Запятая (3,308)', u'Без разделителя (3308)'],
-                     u'Формат тысяч', u'Единый разделитель для всех чисел урона и ассиста в Варианте 3.'),
-            'battlePanelVariant', 2),
+                     u'Формат тысяч', u'Единый разделитель для всех чисел урона и ассиста в Варианте 1 («Киберспорт»).'),
+            'battlePanelVariant', 0),
         visAll(check(u'Выделять текущий урон цветом', 'v3DamageDynColor',
                      u'Динамический цвет урона',
                      u'Подсвечивает набранный урон тактическим зелёным при достижении цели или росте, коралловым при падении.'),
-               (('battlePanelVariant', 2), ('v3ShowDamage', True))),
-        vis(label(u'<b>Каналы ассиста (Засвет и Гусеницы)</b>'), 'battlePanelVariant', 2),
+               (('battlePanelVariant', 0), ('v3ShowDamage', True))),
+        vis(label(u'<b>Каналы ассиста (Засвет и Гусеницы)</b>'), 'battlePanelVariant', 0),
         vis(dropdown(u'Когда показывать ассист', 'v3AssistShow',
                      [u'Всегда (без Alt)',
                       u'Только при нажатом Alt',
@@ -4081,21 +4500,21 @@ def _menuTemplate(tpl, ver, showV3=True):
                       u'Выключено'],
                      u'Показ засвета и гусениц',
                      u'Отдельная настройка показа строки ассиста: постоянно, только по клавише Alt, скрывать по Alt или выключить.'),
-            'battlePanelVariant', 2),
+            'battlePanelVariant', 0),
         visAll(dropdown(u'Отображаемые каналы', 'v3AssistMode',
                         [u'Засвет + Гусеницы',
                          u'Только активный канал'],
                         u'Режим ассиста',
                         u'Активный канал (максимальный среди засвета и гусениц) автоматически подсвечивается зелёным.'),
-               (('battlePanelVariant', 2), ('v3AssistShow', 3, '!='))),
+               (('battlePanelVariant', 0), ('v3AssistShow', 3, '!='))),
         visAll(dropdown(u'Место строки ассиста', 'v3AssistPlace',
                         [u'Внутри снизу', u'Под панелью'],
                         u'Расположение ассиста', u'Внутри тактической рамки или отдельной строкой под ней.'),
-               (('battlePanelVariant', 2), ('v3AssistShow', 3, '!='))),
+               (('battlePanelVariant', 0), ('v3AssistShow', 3, '!='))),
         visAll(check(u'Скрывать нулевые каналы', 'v3AssistHideZero',
                      u'Скрывать нули', u'Прячет каналы со значением 0, чтобы виджет был компактнее.'),
-               (('battlePanelVariant', 2), ('v3AssistShow', 3, '!='))),
-        vis(label(u'<b>Темп на отметку (средний урон до цели и 95%)</b>'), 'battlePanelVariant', 2),
+               (('battlePanelVariant', 0), ('v3AssistShow', 3, '!='))),
+        vis(label(u'<b>Темп на отметку (средний урон до цели и 95%)</b>'), 'battlePanelVariant', 0),
         vis(dropdown(u'Когда показывать темп', 'v3TempoShow',
                      [u'Всегда (без Alt)',
                       u'Только при нажатом Alt',
@@ -4103,133 +4522,241 @@ def _menuTemplate(tpl, ver, showV3=True):
                       u'Выключено'],
                      u'Показ темпа на отметку',
                      u'Отдельная настройка показа темпа (независимо от засвета и гусениц): постоянно, только при нажатом Alt, скрывать по Alt или выключить.'),
-            'battlePanelVariant', 2),
+            'battlePanelVariant', 0),
         visAll(dropdown(u'Отображаемые пороги темпа', 'v3TempoMode',
                         [u'До следующей отметки + 95%',
                          u'Только до следующей отметки',
                          u'Только на 3 отметку (95%)'],
                         u'Выбор порогов темпа',
                         u'Сколько суммарного урона нужно держать на следующую отметку (65 / 85 / 95 / 100%) и/или на 3 отметку (95%). При выполнении темпа в бою подсвечивается зелёным.'),
-               (('battlePanelVariant', 2), ('v3TempoShow', 3, '!='))),
+               (('battlePanelVariant', 0), ('v3TempoShow', 3, '!='))),
         visAll(dropdown(u'Место строки темпа', 'v3TempoPlace',
                         [u'Внутри снизу', u'Под панелью'],
                         u'Расположение темпа',
                         u'Снизу внутри рамки или под панелью. Автоматически располагается отдельной строкой от засвета и гусениц, чтобы они не мешали друг другу.'),
-               (('battlePanelVariant', 2), ('v3TempoShow', 3, '!='))),
+               (('battlePanelVariant', 0), ('v3TempoShow', 3, '!='))),
     ]
 
     tabColorsV3 = [
-        vis(label(u'<b>Акцентные цвета (Тактический / Pro)</b>'), 'battlePanelVariant', 2),
+        vis(label(u'<b>Акцентные цвета (Вариант 1 — Киберспорт)</b>'), 'battlePanelVariant', 0),
         vis(color(u'Плюс (тактический зелёный)', 'v3AccentPlus',
                   u'Цвет роста дельты, активной полоски и лидирующего канала ассиста.'),
-            'battlePanelVariant', 2),
+            'battlePanelVariant', 0),
         vis(color(u'Минус (коралловый)', 'v3AccentMinus',
                   u'Цвет снижения отметки.'),
-            'battlePanelVariant', 2),
+            'battlePanelVariant', 0),
         vis(color(u'Ноль (нейтральный)', 'v3AccentZero',
                   u'Цвет нулевого изменения.'),
-            'battlePanelVariant', 2),
+            'battlePanelVariant', 0),
         vis(color(u'Большой плюс (рекорд)', 'v3AccentBig',
                   u'Цвет рекордно высокого роста/урона.'),
-            'battlePanelVariant', 2),
+            'battlePanelVariant', 0),
         visAll(color(u'Свой цвет полоски', 'v3BarCustomColor',
                      u'Используется, когда цвет полоски выставлен в «Свой цвет».'),
-               (('battlePanelVariant', 2), ('v3BarColorMode', 2))),
-        vis(label(u'<b>Рамка, текст и звёзды</b>'), 'battlePanelVariant', 2),
+               (('battlePanelVariant', 0), ('v3BarColorMode', 2))),
+        vis(label(u'<b>Рамка, текст и звёзды (Киберспорт)</b>'), 'battlePanelVariant', 0),
         vis(color(u'Основной текст (процент и числа)', 'v3TextMain',
                   u'Цвет крупного процента и основных значений.'),
-            'battlePanelVariant', 2),
+            'battlePanelVariant', 0),
         vis(color(u'Приглушённый текст (подписи)', 'v3TextMuted',
                   u'Цвет подписи урона, целевого числа и неактивного ассиста.'),
-            'battlePanelVariant', 2),
+            'battlePanelVariant', 0),
         vis(color(u'Угловые скобки и контур рамки', 'v3CornerColor',
                   u'Цвет L-уголков, тонкой рамки и разделителя звёзд.'),
-            'battlePanelVariant', 2),
+            'battlePanelVariant', 0),
         vis(color(u'Подложка фона', 'v3BgColor',
                   u'Базовый тёмный тон подложки панели.'),
-            'battlePanelVariant', 2),
+            'battlePanelVariant', 0),
         vis(color(u'Полученная звезда', 'v3StarOnColor',
                   u'Цвет заливки заработанных отметок.'),
-            'battlePanelVariant', 2),
+            'battlePanelVariant', 0),
         vis(color(u'Неполученная звезда', 'v3StarOffColor',
                   u'Цвет контура или приглушённой заливки незаработанных отметок.'),
-            'battlePanelVariant', 2),
+            'battlePanelVariant', 0),
     ]
 
     tabColorsLegacy = [
-        vis(label(u'<b>Изменение отметки (Варианты 1 и 2)</b>'), 'battlePanelVariant', 2, cond='!='),
-        vis(color(u'Плюс', 'colorPlus', u'Цвет, когда процент растёт.'), 'battlePanelVariant', 2, cond='!='),
-        vis(color(u'Минус', 'colorMinus', u'Цвет, когда процент падает.'), 'battlePanelVariant', 2, cond='!='),
-        vis(color(u'Ноль', 'colorZero', u'Цвет, когда изменение около нуля.'), 'battlePanelVariant', 2, cond='!='),
-        vis(color(u'Большой плюс', 'colorBig', u'Цвет при большом росте.'), 'battlePanelVariant', 2, cond='!='),
-        vis(label(u'<b>Текст и числа</b>'), 'battlePanelVariant', 2, cond='!='),
+        vis(label(u'<b>Изменение отметки (Вариант 2 — Отметка Корбена)</b>'), 'battlePanelVariant', 1),
+        vis(color(u'Плюс', 'colorPlus', u'Цвет, когда процент растёт.'), 'battlePanelVariant', 1),
+        vis(color(u'Минус', 'colorMinus', u'Цвет, когда процент падает.'), 'battlePanelVariant', 1),
+        vis(color(u'Ноль', 'colorZero', u'Цвет, когда изменение около нуля.'), 'battlePanelVariant', 1),
+        vis(color(u'Большой плюс', 'colorBig', u'Цвет при большом росте.'), 'battlePanelVariant', 1),
+        vis(label(u'<b>Текст и числа (Отметка Корбена)</b>'), 'battlePanelVariant', 1),
         vis(check(u'Число урона по цвету изменения', 'dmgFollowsSign',
                   u'Цвет числа урона',
                   u'Число набитого урона берёт цвет изменения (+ / − / 0).'),
-            'battlePanelVariant', 2, cond='!='),
+            'battlePanelVariant', 1),
         visAll(color(u'Число урона', 'colorDmg',
                      u'Цвет числа набитого урона, когда отключён цвет по изменению.'),
-               (('battlePanelVariant', 2, '!='), ('dmgFollowsSign', False))),
+               (('battlePanelVariant', 1), ('dmgFollowsSign', False))),
         vis(color(u'Прогнозное среднее («/ нужно»)', 'colorProj', u'Цвет «/ нужно» справа от набитого урона.'),
-            'battlePanelVariant', 2, cond='!='),
-        vis(check(u'Большой процент по цвету изменения', 'pctFollowsSign',
-                  u'Цвет большого процента',
-                  u'Красить большой процент так же, как изменение (+ / − / 0).'),
-            'battlePanelVariant', 0),
-        vis(color(u'Большой процент (без изменения / основной)', 'pctColor',
-                  u'Основной цвет процента, когда он не зависит от знака изменения.'),
-            'battlePanelVariant', 2, cond='!='),
-        vis(label(u'<b>Полоска прогресса (Вариант 1)</b>'), 'battlePanelVariant', 0),
-        vis(check(u'Цвет полоски по состоянию отметки (+ / − / 0)', 'barBySign',
-                  u'Цвет полоски',
-                  u'Включено: полоска в бою красится по состоянию отметки. Выключено: один цвет «Стандарт».'),
-            'battlePanelVariant', 0),
-        vis(color(u'Бегунок', 'tickColor', u'Цвет бегунка на полоске.'), 'battlePanelVariant', 0),
-        visAll(color(u'Полоска: плюс', 'barColorPlus', u'Цвет полоски, когда процент растёт.'),
-               (('battlePanelVariant', 0), ('barBySign', True))),
-        visAll(color(u'Полоска: минус', 'barColorMinus', u'Цвет полоски, когда процент падает.'),
-               (('battlePanelVariant', 0), ('barBySign', True))),
-        visAll(color(u'Полоска: ноль', 'barColorZero', u'Цвет полоски, когда изменение около нуля.'),
-               (('battlePanelVariant', 0), ('barBySign', True))),
-        visAll(color(u'Полоска: большой плюс', 'barColorBig', u'Цвет полоски при большом росте.'),
-               (('battlePanelVariant', 0), ('barBySign', True))),
-        visAll(color(u'Полоска: стандарт (один цвет)', 'barColorStandard',
-                     u'Цвет полоски в бою, когда она не следует за состоянием отметки.'),
-               (('battlePanelVariant', 0), ('barBySign', False))),
+            'battlePanelVariant', 1),
+        vis(color(u'Большой процент (без изменения)', 'pctColor',
+                  u'Цвет процента до первого выстрела/изменения.'),
+            'battlePanelVariant', 1),
     ]
 
-    tabColorsHangar = [
-        label(u'<b>Ангар</b>'),
-        color(u'Полоска в ангаре', 'barColorHangar', u'Цвет полоски на панели в ангаре.'),
+    tabHangar = [
+        label(u'<b>Панель в ангаре (стиль «Киберспорт»)</b>'),
+        check(u'Показывать панель в ангаре', 'hangarPanel',
+              u'Панель в ангаре', u'Включает или выключает виджет отметок в ангаре.'),
+        vis(check(u'Только в режиме «Случайный бой»', 'hangarOnlyRandom',
+                  u'Режим боя в ангаре',
+                  u'Скрывает ангарную панель в режимах, где отметки не считаются (Натиск, события и др.).'),
+            'hangarPanel', True),
+        vis(check(u'Скрывать под крупными окнами в ангаре', 'hideUnderWindows',
+                  u'Окна поверх ангара',
+                  u'Прячет панель ангара, когда открыто полноэкранное окно или диалог.'),
+            'hangarPanel', True),
+        vis(slider(u'Размер панели в ангаре', 'vhScale', 0.5, 2.5, 0.05, f2,
+                   u'Масштаб в ангаре', u'Отдельный размер панели в ангаре (независимо от боевой панели).'),
+            'hangarPanel', True),
+        vis(dropdown(u'Плотность компоновки (ангар)', 'vhDensity',
+                     [u'Компактный', u'Стандартный', u'Крупный'],
+                     u'Плотность в ангаре', u'Отступы и размеры шрифтов ангарной панели.'),
+            'hangarPanel', True),
+        vis(label(u'<b>Рамка и звёзды (ангар)</b>'), 'hangarPanel', True),
+        vis(dropdown(u'Стиль рамки (ангар)', 'vhFrameStyle',
+                     [u'Тактическая (уголки + контур)', u'Только уголки',
+                      u'Сплошная рамка', u'Без рамки (HUD)'],
+                     u'Рамка в ангаре', u'Стиль тактической рамки ангарной панели.'),
+            'hangarPanel', True),
+        visAll(slider(u'Скругление углов рамки (ангар)', 'vhRadius', 0, 14, 1, f0,
+                      u'Скругление углов', u'Радиус скругления углов рамки в ангаре.'),
+               (('hangarPanel', True), ('vhFrameStyle', [0, 1, 2]))),
+        visAll(slider(u'Непрозрачность подложки (ангар)', 'vhBgOpacity', 0.0, 1.0, 0.02, f2,
+                      u'Подложка в ангаре', u'Непрозрачность тёмного фона ангарной панели.'),
+               (('hangarPanel', True), ('vhFrameStyle', [0, 1, 2]))),
+        visAll(slider(u'Яркость угловых скобок (ангар)', 'vhCornerAlpha', 0.0, 1.0, 0.05, f2,
+                      u'Угловые скобки', u'Яркость L-уголков по краям ангарной панели.'),
+               (('hangarPanel', True), ('vhFrameStyle', [0, 1]))),
+        visAll(slider(u'Непрозрачность контура (ангар)', 'vhBorderAlpha', 0.0, 1.0, 0.02, f2,
+                      u'Контур рамки', u'Непрозрачность тонкой линии периметра ангарной панели.'),
+               (('hangarPanel', True), ('vhFrameStyle', [0, 2]))),
+        vis(dropdown(u'Расположение звёзд (ангар)', 'vhStarsPos',
+                     [u'Сверху (горизонтально)', u'Снизу (горизонтально)',
+                      u'Слева (вертикально)', u'Справа (вертикально)',
+                      u'В шапке (рядом с %)', u'Скрыть'],
+                     u'Звёзды в ангаре', u'Позиция звёзд отметок на ангарной панели.'),
+            'hangarPanel', True),
+        visAll(dropdown(u'Стиль звёзд (ангар)', 'vhStarsStyle',
+                        [u'Белые / контур', u'Белые / серые залитые', u'Золотые / контур'],
+                        u'Стиль звёзд в ангаре', u'Оформление полученных и неполученных звёзд.'),
+               (('hangarPanel', True), ('vhStarsPos', 5, '!='))),
+        visAll(check(u'Вертикальный разделитель | (без рамки, ангар)', 'vhStarsDivider',
+                     u'Разделитель звёзд', u'Тонкая вертикальная линия при боковых звёздах без рамки.'),
+               (('hangarPanel', True), ('vhFrameStyle', 3), ('vhStarsPos', [2, 3]))),
+        visAll(slider(u'Размер звёзд (ангар)', 'vhStarsSize', 10, 22, 1, f0,
+                      u'Размер звёзд', u'Диаметр одной звезды в ангаре.'),
+               (('hangarPanel', True), ('vhStarsPos', 5, '!='))),
+        visAll(slider(u'Расстояние между звёздами (ангар)', 'vhStarsGap', 2, 14, 1, f0,
+                      u'Отступ звёзд', u'Зазор между звёздами в ангаре.'),
+               (('hangarPanel', True), ('vhStarsPos', 5, '!='))),
+        visAll(check(u'Мягкое свечение полученных звёзд (ангар)', 'vhStarsGlow',
+                     u'Свечение звёзд', u'Мягкий ореол вокруг заработанных звёзд в ангаре.'),
+               (('hangarPanel', True), ('vhStarsPos', 5, '!='))),
+        vis(label(u'<b>Полоска и данные (65 / 85 / 95 / 100%)</b>'), 'hangarPanel', True),
+        vis(dropdown(u'Точность процента (ангар)', 'vhPctDecimals',
+                     [u'Целые (79%)', u'2 знака (78.94%)'],
+                     u'Точность процента', u'Количество знаков после запятой в ангаре.'),
+            'hangarPanel', True),
+        vis(dropdown(u'Стиль полоски (ангар)', 'vhBarStyle',
+                     [u'Тактическая (трек + курсор)',
+                      u'Пороги 65 / 85 / 95 / 100%',
+                      u'Сплошная',
+                      u'Без полоски'],
+                     u'Стиль полоски в ангаре', u'Вид полоски прогресса на ангарной панели.'),
+            'hangarPanel', True),
+        visAll(dropdown(u'Масштаб полоски (ангар)', 'vhBarScale',
+                        [u'0 — 100%', u'До следующей отметки'],
+                        u'Шкала полоски в ангаре', u'Полная шкала 0–100% или прогресс внутри текущего интервала.'),
+               (('hangarPanel', True), ('vhBarStyle', 3, '!='))),
+        visAll(slider(u'Высота заполненной полоски (px, ангар)', 'vhBarHeight', 2, 10, 1, f0,
+                      u'Высота полоски', u'Толщина заполненной части полоски в ангаре.'),
+               (('hangarPanel', True), ('vhBarStyle', 3, '!='))),
+        visAll(slider(u'Толщина незаполненной полоски (px, ангар)', 'vhBarTrackHeight', 1, 10, 1, f0,
+                      u'Толщина белой полоски', u'Толщина пустой белой части полоски в ангаре.'),
+               (('hangarPanel', True), ('vhBarStyle', 3, '!='))),
+        visAll(check(u'Крайние засечки | — | (ангар)', 'vhBarEndTicks',
+                     u'Засечки по краям', u'Вертикальные ограничители в начале и конце полоски.'),
+               (('hangarPanel', True), ('vhBarStyle', [0, 2]))),
+        visAll(check(u'Вертикальный курсор на значении (ангар)', 'vhBarCursor',
+                     u'Курсор полоски', u'Яркая вертикальная риска на текущем проценте.'),
+               (('hangarPanel', True), ('vhBarStyle', 3, '!='))),
+        visAll(check(u'Риски порогов 65 / 85 / 95% (ангар)', 'vhBarMarks',
+                     u'Деления порогов', u'Тонкие деления 65 / 85 / 95% на полоске в ангаре.'),
+               (('hangarPanel', True), ('vhBarStyle', [0, 2]), ('vhBarScale', 0))),
+        vis(check(u'Показывать строку «Ср. урон»', 'vhShowEma',
+                  u'Текущий средний урон', u'Показывает текущее скользящее среднее суммарного урона танка.'),
+            'hangarPanel', True),
+        vis(check(u'Показывать пороги отметок (65 / 85 / 95 / 100%)', 'vhShowThresholds',
+                  u'Таблица порогов в ангаре', u'Показывает требуемый средний урон для 65%, 85%, 95% и 100%.'),
+            'hangarPanel', True),
+        visAll(check(u'Показывать порог 100% отметки', 'vhShow100',
+                     u'Порог 100%', u'Добавляет расчёт среднего суммарного урона на 100% отметки рядом с 95%.'),
+               (('hangarPanel', True), ('vhShowThresholds', True))),
+        vis(dropdown(u'Разделитель тысяч (ангар)', 'vhThousandsSep',
+                     [u'Пробел (3 308)', u'Запятая (3,308)', u'Без разделителя (3308)'],
+                     u'Формат чисел в ангаре', u'Разделитель тысяч для среднего урона и порогов в ангаре.'),
+            'hangarPanel', True),
+        vis(label(u'<b>Цвета панели в ангаре</b>'), 'hangarPanel', True),
+        vis(color(u'Цвет полоски и акцента (ангар)', 'vhBarColor',
+                  u'Цвет заполненной полоски, числа «Ср. урон» и уже выполненных порогов отметок.'),
+            'hangarPanel', True),
+        vis(color(u'Основной текст (процент и пороги, ангар)', 'vhTextMain',
+                  u'Цвет крупного процента и значений порогов 65 / 85 / 95 / 100%.'),
+            'hangarPanel', True),
+        vis(color(u'Приглушённый текст (подписи, ангар)', 'vhTextMuted',
+                  u'Цвет подписей «Ср. урон» и «65% / 85% / 95% / 100%».'),
+            'hangarPanel', True),
+        vis(color(u'Угловые скобки и контур рамки (ангар)', 'vhCornerColor',
+                  u'Цвет L-уголков, тонкой рамки и разделительной линии в ангаре.'),
+            'hangarPanel', True),
+        vis(color(u'Подложка фона (ангар)', 'vhBgColor',
+                  u'Цвет тёмной подложки ангарной панели.'),
+            'hangarPanel', True),
+        vis(color(u'Полученная звезда (ангар)', 'vhStarOnColor',
+                  u'Цвет заработанных звёзд в ангаре.'),
+            'hangarPanel', True),
+        vis(color(u'Неполученная звезда (ангар)', 'vhStarOffColor',
+                  u'Цвет контура или заливки неполученных звёзд в ангаре.'),
+            'hangarPanel', True),
     ]
 
     if showV3:
-        tabColors = tabColorsV3 + tabColorsLegacy + tabColorsHangar
+        tabColors = tabColorsV3 + tabColorsLegacy
         col1 = (tab(u'Основное', tabMain) +
                 tab(u'Рамка и звёзды', tabFrameStars) +
                 tab(u'Шапка и полоска', tabHeaderBar) +
                 tab(u'Урон и ассист', tabDmgAssist) +
-                tab(u'Цвета', tabColors))
+                tab(u'Цвета', tabColors) +
+                tab(u'Ангар', tabHangar))
     else:
-        tabColors = tabColorsLegacy + tabColorsHangar
+        tabColors = tabColorsLegacy
         col1 = (tab(u'Основное', tabMain) +
-                tab(u'Цвета', tabColors))
+                tab(u'Цвета', tabColors) +
+                tab(u'Ангар', tabHangar))
 
     previewSource, _bw, _bh, previewW, previewH = _menuPreviewRender()
     _PREVIEW['source'] = previewSource
     _PREVIEW['key'] = (previewSource, previewW, previewH)
     col2 = [
-        label(u'<b>Предпросмотр боевой панели</b>'),
+        label(u'<b>Предпросмотр панели</b>'),
         {'type': 'Image', 'varName': 'marksLivePreview',
          'source': previewSource,
          'width': previewW, 'height': previewH,
          'align': 'center', 'valign': 'center',
          'containerWidth': _PREVIEW_CONTAINER_W,
          'containerHeight': _PREVIEW_CONTAINER_H},
+        radio(u'<b>Режим предпросмотра</b>', 'previewTarget',
+              [u'Боевая панель', u'Панель в ангаре'],
+              u'Что показывать на превью',
+              u'Переключает картинку предпросмотра между боевой панелью и панелью в ангаре (с порогами 65 / 85 / 95 / 100%).',
+              inline=True),
         radio(u'<b>Состояние отметки (превью)</b>', 'previewState',
               [u'Плюс (+)', u'Минус (−)', u'Ноль (0)', u'Большой +'],
               u'Состояние для предпросмотра',
-              u'Переключает пример на картинке выше, чтобы сразу проверить все 4 состояния в бою.',
+              u'Переключает пример (0 / 1 / 2 / 3 звезды: 43.28% / 70.64% / 85.47% / 97.83%) на картинке выше.',
               inline=True),
     ]
     if showV3:
@@ -4237,28 +4764,34 @@ def _menuTemplate(tpl, ver, showV3=True):
             vis(radio(u'<b>Клавиша Alt (превью)</b>', 'previewAlt',
                       [u'Без Alt (обычный вид)', u'Зажат Alt'],
                       u'Проверка нажатия Alt',
-                      u'Позволяет прямо на превью выше посмотреть, как выглядит панель без Alt и при нажатом Alt (также можно просто зажать Alt на клавиатуре).',
+                      u'Позволяет прямо на превью выше посмотреть, как выглядит боевая панель без Alt и при нажатом Alt (также можно просто зажать Alt на клавиатуре).',
                       inline=True),
-                'battlePanelVariant', 2))
+                'battlePanelVariant', 0))
     col2.append(
         radio(u'<b>Вариант боевой панели</b>', 'battlePanelVariant',
-              [u'Вариант 1 — полная панель',
-               u'Вариант 2 — % и урон',
-               u'Вариант 3 — Тактический / Pro'],
-              u'Вариант панели',
-              u'Вариант 1: классическая полная панель. Вариант 2: только % и урон. '
-              u'Вариант 3: тактическая рамка, звёзды, гибкие полоски и полный контроль ассиста.',
+              [u'Вариант 1 — Киберспорт',
+               u'Вариант 2 — Отметка Корбена'],
+              u'Вариант боевой панели',
+              u'Вариант 1 (Киберспорт): тактическая рамка, звёзды, гибкие полоски, ассист и темп. '
+              u'Вариант 2 (Отметка Корбена): минималистичный крупный % и строка «набито / нужно».',
               inline=False))
     if showV3:
         col2.append(
-            vis(actionBtn('v3ResetPreset', u'Сбросить пресет 3', u'Эталон «Тактический / Pro»',
-                          u'Сброс настроек Варианта 3',
-                          u'Возвращает все визуальные настройки Варианта 3 к виду по умолчанию.'),
-                'battlePanelVariant', 2))
-    col2.append(
+            vis(actionBtn('v3ResetPreset', u'Сбросить Вариант 1', u'Эталон «Киберспорт»',
+                          u'Сброс настроек Варианта 1',
+                          u'Возвращает все визуальные настройки боевой панели «Киберспорт» к виду по умолчанию.'),
+                'battlePanelVariant', 0))
+    col2.extend([
+        actionBtn('vhResetPreset', u'Сбросить ангар', u'Эталон панели в ангаре',
+                  u'Сброс настроек ангарной панели',
+                  u'Возвращает все визуальные настройки панели в ангаре к виду по умолчанию.'),
         actionBtn('resetPosition', u'Сбросить позицию', u'Позиция панели в бою',
-                  u'Сброс позиции',
-                  u'Возвращает боевую панель на стандартные координаты на экране.'))
+                  u'Сброс боевой позиции',
+                  u'Возвращает боевую панель на стандартные координаты на экране.'),
+        actionBtn('resetHangarPosition', u'Сбросить позицию', u'Позиция панели в ангаре',
+                  u'Сброс позиции в ангаре',
+                  u'Возвращает ангарную панель на стандартные координаты на экране.'),
+    ])
     return {'modDisplayName': u'Три отметки на стволе',
             'modVersion': MOD_VERSION,
             'column1': col1, 'column2': col2}
@@ -4702,21 +5235,31 @@ if _GF_OK:
             if editing:
                 data['ui']['s'] = 1.0       # страница настроек не масштабируется
             battleView = not editing and data.get('mode') == 'b'
+            hangarView = not editing and data.get('mode') == 'h'
             preset = int(data['ui'].get('preset', 0)) if battleView else 0
-            if battleView and preset == 2:
+            if (battleView and preset == 0) or hangarView:
                 v3d = data.get('v3d') or _PREVIEW_SAMPLES_V3['plus']
-                m = _v3Metrics(g_config, v3d, alt=bool(v3d.get('alt', False)))
+                if hangarView:
+                    v3d = dict(v3d)
+                    v3d['isHangar'] = True
+                    mCfg = _vhToV3Cfg(g_config)
+                    uiScaleVal = float(data['ui'].get('hs', data['ui']['s']))
+                    anchor = 0
+                else:
+                    mCfg = g_config
+                    uiScaleVal = float(data['ui']['s'])
+                    anchor = _cfgInt('v3Anchor', 0, 5)
+                m = _v3Metrics(mCfg, v3d, alt=bool(v3d.get('alt', False)))
                 data['v3m'] = [m['winW'], m['winH']]
-                geo = (data['ui']['s'], editing, 2, m['winW'], m['winH'])
+                geo = (uiScaleVal, editing, 'vh' if hangarView else 'v3', m['winW'], m['winH'])
                 if geo != self._geoKey:
                     prevGeo = self._geoKey
                     self._geoKey = geo
-                    self.ui = data['ui']['s']
+                    self.ui = uiScaleVal
                     newW = float(m['winW']) * self.ui
                     newH = float(m['winH']) * self.ui
                     dx, dy = 0.0, 0.0
                     if prevGeo is not None and (self.wPx, self.hPx) != (newW, newH):
-                        anchor = _cfgInt('v3Anchor', 0, 5)
                         dW = _pxW(newW - self.wPx)
                         dH = _pxH(newH - self.hPx)
                         dx = 0.0 if anchor in (0, 3) else (-0.5 * dW if anchor in (1, 4) else -dW)
@@ -5149,7 +5692,7 @@ class _BattleController(object):
             if kill:
                 _logOnce(('killcam', how), 'panel hidden during the shot replay (%s)' % how)
                 return True
-        if _cfgInt('battlePreset', 0, 2) == 2:
+        if _cfgInt('battlePreset', 0, 1) == 0:
             if bool(g_config.get('v3HideInSniper', False)) and _sniperActive():
                 return True
         return False
@@ -5203,7 +5746,7 @@ class _BattleController(object):
             _pump()
             _pollConfig()
             altChanged = False
-            if _cfgInt('battlePreset', 0, 2) == 2:
+            if _cfgInt('battlePreset', 0, 1) == 0:
                 altNow = _altIsDown()
                 sniperNow = _sniperActive()
                 if altNow != self._lastAlt or sniperNow != self._lastSniper:
@@ -5286,11 +5829,11 @@ class _BattleController(object):
         if abs(target - self._shownBar) < 0.002:
             self._shownBar = target
 
-        preset = _cfgInt('battlePreset', 0, 2)
+        preset = _cfgInt('battlePreset', 0, 1)
         v3d = None
         assist = None
         parts = self._parts() or {}
-        if preset == 2:
+        if preset == 0:
             tHold = int(round(projEma))
             t65, t85, t95, t100 = _v3Thresholds(self._intCD, mark, self._shownPct, self._ema) if hasRating else (0, 0, 0, 0)
             if self._shownPct < 65.0:
@@ -5695,6 +6238,9 @@ class _HangarController(object):
     def _update(self):
         if self._panel is None:
             return
+        if not g_config.get('hangarPanel', True):
+            self._hide()
+            return
         try:
             st = getattr(self._panel, 'settings', None)
             if st is not None and st.open:
@@ -5728,29 +6274,42 @@ class _HangarController(object):
                     limits = _serverCurve(mark, curve)[0].thresholds()
                 except Exception:
                     _logError('hangar curve')
-            self._panel.mini = bool(g_config.get('minHangar', False))
+            hasRating = bool(rating > 0 and ema > 0)
+            t65, t85, t95, t100 = _v3Thresholds(intCD, mark, rating, ema) if hasRating else (0, 0, 0, 0)
+            self._panel.mini = False
             payload = {
-                'min': self._panel.mini,
-                'nodata': not (rating > 0 and ema > 0),
+                'min': False,
+                'nodata': not hasRating,
                 'pct': (u'%.2f%%' % rating) if rating > 0 else u'--.--%',
                 'bar': round(max(0.0, min(100.0, rating)), 2),
                 'marks': int(marks),
                 'ema': _fmt(ema) if ema > 0 else u'—',
+                't65': (u'~' + _fmt(t65)) if (hasRating and 0 < t65 < 30000) else u'—',
+                't85': (u'~' + _fmt(t85)) if (hasRating and 0 < t85 < 30000) else u'—',
+                't95': (u'~' + _fmt(t95)) if (hasRating and 0 < t95 < 30000) else u'—',
+                't100': (u'~' + _fmt(t100)) if (hasRating and 0 < t100 < 30000) else u'—',
+                'v3d': {
+                    'isHangar': True,
+                    'mini': False,
+                    'pct': round(rating, 2) if hasRating else 0.0,
+                    'bar': round(max(0.0, min(100.0, rating)), 2) if hasRating else 0.0,
+                    'delta': None,
+                    'sDelta': None,
+                    'dmg': int(round(ema)) if hasRating else 0,
+                    'tHold': 0,
+                    'tMark': 0,
+                    'tPlus1': 0,
+                    't65': int(t65),
+                    't85': int(t85),
+                    't95': int(t95),
+                    't100': int(t100),
+                    'marks': int(marks),
+                    'big': False,
+                    'isSpg': False,
+                    'alt': False,
+                    'hasRating': hasRating,
+                },
             }
-            stats = None
-            if limits is None and rating > 0 and ema > 0:
-                key = (round(rating, 2), int(ema))
-                if self._statKey != key:
-                    self._statKey = key
-                    self._statCache = _calcStatistics(rating, ema)
-                stats = self._statCache
-            for idx, thr in enumerate(self.THRESHOLDS):
-                v = limits[idx] if limits else None
-                if v is None:
-                    v = stats.get(int(thr)) if stats else None
-                payload['t%d' % int(thr)] = \
-                    u'~' + _fmt(int(math.ceil(v))) \
-                    if v is not None and v < 30000 else u'—'
             self._lastPayload = dict(payload)
             self._panel.push(payload)
         except Exception:
@@ -5785,7 +6344,7 @@ class _HangarController(object):
         self._dragCbID = BigWorld.callback(interval, self._dragTick)
 
     def _pollDrag(self):
-        _panelDragPoll(self, self._panel, 'minHangar')
+        _panelDragPoll(self, self._panel, None)
         if getattr(self, '_needRefresh', False):
             self._needRefresh = False
             self._update()

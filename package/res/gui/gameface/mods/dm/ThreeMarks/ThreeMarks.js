@@ -16,25 +16,26 @@
 
     /* настройки внешнего вида приходят из config.json (p.ui) */
     var DEF_UI = {
-        s: 1, preset: 2, v3: null, bg: 0.82, up: '#86EF6A', dn: '#FF6060', zr: '#EAEAEA',
+        s: 1, hs: 1, preset: 0, v3: null, vh: null, bg: 0.82, up: '#86EF6A', dn: '#FF6060', zr: '#EAEAEA',
         bUp: '#8FE37D', bDn: '#FF6060', bZr: '#DDE6EE', bH: '#F0F2F6',
         trk: 0.18, tick: '#FFFFFF', pct: '#F4F4F4', pctSign: false,
         glow: true, band: 0.02,
         big: '#B07CFF', bBig: '#B07CFF', bigFrom: 4,
         dmgSign: true, dmg: '#86EF6A', proj: '#EAEAEA',
         bSign: true, bStd: '#8FE37D', bigDmg: true,
-        onlyPct: true, alpha: 1
+        onlyPct: false, alpha: 1
     };
     var DEF_V3 = {
         den: 1, minW: 0, anc: 0, hs: false,
         fs: 0, rad: 5, cc: '#FFFFFF', ca: 0.90, ba: 0.28, bgc: '#0B1016', bgo: 0.48,
         sp: 0, ss: 0, sd: false, sz: 15, sg: 6, sgl: true, son: '#FFFFFF', sof: '#9AA3AE',
         ho: 0, dec: 1, di: 0, dc: 0,
-        bs: 0, bsc: 0, bh: 4, bet: true, bcur: true, bmk: false, bcm: 0, bcc: '#A7D080',
+        bs: 0, bsc: 0, bh: 4, bth: 2, bet: true, bcur: true, bmk: false, bcm: 0, bcc: '#A7D080',
         dmgOn: true, dl: 0, dlc: '\u0421\u0443\u043c. \u0443\u0440\u043e\u043d', sep: 1, ddyn: true,
         ash: 0, am: 0, ap: 0, ahz: false,
         tsh: 0, tmm: 0, tp: 0,
-        up: '#A7D080', dn: '#E57373', zr: '#9AA3AE', big: '#B07CFF', tm: '#FFFFFF', tmu: '#B8BDC4'
+        up: '#A7D080', dn: '#E57373', zr: '#9AA3AE', big: '#B07CFF', tm: '#FFFFFF', tmu: '#B8BDC4',
+        hThr: true, h100: true
     };
     var V3_TRACK_RUNS = [
         [6, 1, 2, 2], [8, 1, 1, 1], [10, 1, 1, 1], [6, 2, 6, 2], [4, 3, 1, 1],
@@ -451,6 +452,24 @@
         return items;
     }
 
+    function v3ResolveHangarRows(v, d) {
+        if (!d.isHangar || d.mini || v.hThr === false) return [];
+        var sep = v3Int(v, 'sep', 0, 2);
+        var hasRating = (d.hasRating !== false);
+        var pct = num(d.pct, 0);
+        var show100 = (v.h100 !== false);
+        function mkCell(pLbl, key) {
+            var val = Math.max(0, Math.round(num(d[key], 0)));
+            var valStr = (hasRating && val > 0 && val < 30000) ? ('~' + v3FmtNum(val, sep)) : '\u2014';
+            var lbl = pLbl + '%';
+            var done = (hasRating && val > 0 && pct >= pLbl);
+            return { pct: pLbl, val: val, done: done, lbl: lbl, valStr: valStr, text: lbl + ' ' + valStr };
+        }
+        var row1 = [mkCell(65, 't65'), mkCell(85, 't85')];
+        var row2 = show100 ? [mkCell(95, 't95'), mkCell(100, 't100')] : [mkCell(95, 't95')];
+        return [row1, row2];
+    }
+
     function v3DeltaInfo(v, d, u) {
         var hasRating = (d.hasRating !== false);
         var pct = num(d.pct, 0);
@@ -632,24 +651,37 @@
     }
 
     function v3AssistIconInner(ch, ox, oy, size, color, opacity) {
+        var s = size / 16.0;
         var cx = ox + size * 0.5, cy = oy + size * 0.5;
         if (ch === 'spot') {
-            return '<circle cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="1.8" fill="' + color + '" fill-opacity="' + opacity.toFixed(2) + '"/>' +
-                '<path d="M ' + (cx - 3.2).toFixed(1) + ' ' + (cy - 3.2).toFixed(1) + ' A 4.2 4.2 0 0 0 ' + (cx - 3.2).toFixed(1) + ' ' + (cy + 3.2).toFixed(1) +
-                ' M ' + (cx - 5.4).toFixed(1) + ' ' + (cy - 4.8).toFixed(1) + ' A 6.6 6.6 0 0 0 ' + (cx - 5.4).toFixed(1) + ' ' + (cy + 4.8).toFixed(1) +
-                ' M ' + (cx + 3.2).toFixed(1) + ' ' + (cy - 3.2).toFixed(1) + ' A 4.2 4.2 0 0 1 ' + (cx + 3.2).toFixed(1) + ' ' + (cy + 3.2).toFixed(1) +
-                ' M ' + (cx + 5.4).toFixed(1) + ' ' + (cy - 4.8).toFixed(1) + ' A 6.6 6.6 0 0 1 ' + (cx + 5.4).toFixed(1) + ' ' + (cy + 4.8).toFixed(1) +
-                '" fill="none" stroke="' + color + '" stroke-width="1.4" stroke-linecap="round" stroke-opacity="' + opacity.toFixed(2) + '"/>';
+            var r1 = 3.5 * s, dx1 = 2.68 * s, dy1 = 2.25 * s;
+            var r2 = 5.8 * s, dx2 = 4.31 * s, dy2 = 3.88 * s;
+            var sw = 1.25 * s;
+            return '<circle cx="' + cx.toFixed(2) + '" cy="' + cy.toFixed(2) + '" r="' + (1.45 * s).toFixed(2) + '" fill="' + color + '" fill-opacity="' + opacity.toFixed(2) + '"/>' +
+                '<path d="M ' + (cx - dx1).toFixed(2) + ' ' + (cy - dy1).toFixed(2) + ' A ' + r1.toFixed(2) + ' ' + r1.toFixed(2) + ' 0 0 0 ' + (cx - dx1).toFixed(2) + ' ' + (cy + dy1).toFixed(2) +
+                ' M ' + (cx - dx2).toFixed(2) + ' ' + (cy - dy2).toFixed(2) + ' A ' + r2.toFixed(2) + ' ' + r2.toFixed(2) + ' 0 0 0 ' + (cx - dx2).toFixed(2) + ' ' + (cy + dy2).toFixed(2) +
+                ' M ' + (cx + dx1).toFixed(2) + ' ' + (cy - dy1).toFixed(2) + ' A ' + r1.toFixed(2) + ' ' + r1.toFixed(2) + ' 0 0 1 ' + (cx + dx1).toFixed(2) + ' ' + (cy + dy1).toFixed(2) +
+                ' M ' + (cx + dx2).toFixed(2) + ' ' + (cy - dy2).toFixed(2) + ' A ' + r2.toFixed(2) + ' ' + r2.toFixed(2) + ' 0 0 1 ' + (cx + dx2).toFixed(2) + ' ' + (cy + dy2).toFixed(2) +
+                '" fill="none" stroke="' + color + '" stroke-width="' + sw.toFixed(2) + '" stroke-linecap="round" stroke-opacity="' + opacity.toFixed(2) + '"/>';
         }
         if (ch === 'track') {
-            var x0 = ox + (size - 16) * 0.5, y0 = oy + (size - 16) * 0.5;
-            var out = [];
-            for (var i = 0; i < V3_TRACK_RUNS.length; i += 1) {
-                var r = V3_TRACK_RUNS[i];
-                var rop = opacity * (r[3] === 2 ? 1.0 : 0.45);
-                out.push('<rect x="' + (x0 + r[0]).toFixed(1) + '" y="' + (y0 + r[1]).toFixed(1) + '" width="' + r[2] + '" height="1" fill="' + color + '" fill-opacity="' + rop.toFixed(2) + '"/>');
+            var ca = Math.cos(-35.0 * Math.PI / 180.0);
+            var sa = Math.sin(-35.0 * Math.PI / 180.0);
+            function rot(dx, dy) {
+                return [cx + (dx * ca - dy * sa) * s, cy + (dx * sa + dy * ca) * s];
             }
-            return out.join('');
+            var rxs = [-2.1, 2.1], rails = [];
+            for (var ri = 0; ri < rxs.length; ri += 1) {
+                var p0 = rot(rxs[ri], -3.8), p1 = rot(rxs[ri], 3.8);
+                rails.push('M ' + p0[0].toFixed(2) + ' ' + p0[1].toFixed(2) + ' L ' + p1[0].toFixed(2) + ' ' + p1[1].toFixed(2));
+            }
+            var tys = [-3.8, 0.0, 3.8], treads = [];
+            for (var ti = 0; ti < tys.length; ti += 1) {
+                var t0 = rot(-4.0, tys[ti]), t1 = rot(4.0, tys[ti]);
+                treads.push('M ' + t0[0].toFixed(2) + ' ' + t0[1].toFixed(2) + ' L ' + t1[0].toFixed(2) + ' ' + t1[1].toFixed(2));
+            }
+            return '<path d="' + rails.join(' ') + '" fill="none" stroke="' + color + '" stroke-width="' + (1.15 * s).toFixed(2) + '" stroke-linecap="round" stroke-opacity="' + (opacity * 0.85).toFixed(2) + '"/>' +
+                '<path d="' + treads.join(' ') + '" fill="none" stroke="' + color + '" stroke-width="' + (1.3 * s).toFixed(2) + '" stroke-linecap="round" stroke-opacity="' + opacity.toFixed(2) + '"/>';
         }
         return '';
     }
@@ -689,15 +721,21 @@
     }
 
     function v3ComputeMetrics(v, d, u) {
+        var isHangar = !!d.isHangar;
         var den = v3Int(v, 'den', 0, 2);
         var spec = [[10, 7, 4, 24, 14, 13, 13], [12, 9, 6, 26, 15, 14, 14], [15, 11, 8, 28, 16, 15, 15]][den];
         var padX = spec[0], padY = spec[1], gapRow = spec[2];
         var pctSize = spec[3], deltaSize = spec[4], dmgSize = spec[5], astSize = spec[6];
 
         var dInfo = v3DeltaInfo(v, d, u);
+        if (isHangar) dInfo.showDelta = false;
         var tInfo = v3TargetInfo(v, d);
-        var ast = v3ResolveAssist(v, d);
-        var thr = v3ResolveTempo(v, d);
+        if (isHangar && !(d.hasRating !== false && tInfo.dmg > 0)) {
+            tInfo.dmgStr = '\u2014';
+        }
+        var ast = isHangar ? { items: [], activeCh: null, maxAst: 0, altExp: false } : v3ResolveAssist(v, d);
+        var thr = isHangar ? [] : v3ResolveTempo(v, d);
+        var hRows = isHangar ? v3ResolveHangarRows(v, d) : [];
 
         var frameStyle = v3Int(v, 'fs', 0, 3);
         var starsPos = v3Int(v, 'sp', 0, 5);
@@ -716,13 +754,19 @@
         var showDmg = !!v.dmgOn;
         var dmgLblMode = v3Int(v, 'dl', 0, 2);
         var dmgLblText = '';
-        if (dmgLblMode === 0) {
-            dmgLblText = '\u0421\u0443\u043c. \u0443\u0440\u043e\u043d';
-        } else if (dmgLblMode === 1) {
-            dmgLblText = String(v.dlc || '').replace(/[\r\n]/g, ' ').slice(0, 24);
+        var dmgValStr;
+        if (isHangar) {
+            dmgLblText = '\u0421\u0440. \u0443\u0440\u043e\u043d';
+            dmgValStr = tInfo.dmgStr;
+        } else {
+            if (dmgLblMode === 0) {
+                dmgLblText = '\u0421\u0443\u043c. \u0443\u0440\u043e\u043d';
+            } else if (dmgLblMode === 1) {
+                dmgLblText = String(v.dlc || '').replace(/[\r\n]/g, ' ').slice(0, 24);
+            }
+            dmgValStr = tInfo.dmgStr + ' / ' + tInfo.tgtStr;
         }
         var lblW = dmgLblText ? v3Advance(dmgLblText, dmgSize) : 0;
-        var dmgValStr = tInfo.dmgStr + ' / ' + tInfo.tgtStr;
         var dmgRowMinW = showDmg ? (lblW + (lblW > 0 ? 12 : 0) + v3Advance(dmgValStr, dmgSize)) : 0;
 
         var astIconSize = Math.max(14, astSize + 1);
@@ -738,12 +782,12 @@
         var astInside = (v3Int(v, 'ap', 0, 1) === 0);
 
         var thrSize = Math.max(11, astSize - 1);
-        var thrIconSize = thrSize;
-        var thrItemGap = 12;
+        var thrIconSize = 0;
+        var thrItemGap = 14;
         var thrWidths = [];
         var sumThrW = 0;
         for (var ti = 0; ti < thr.length; ti += 1) {
-            var tw = thrIconSize + 4 + v3Advance(thr[ti].text, thrSize);
+            var tw = v3Advance(thr[ti].text, thrSize);
             thrWidths.push(tw);
             sumThrW += tw;
         }
@@ -780,12 +824,14 @@
 
         var barStyle = v3Int(v, 'bs', 0, 3);
         var barH = v3Int(v, 'bh', 2, 10);
+        var trackH = v3Int(v, 'bth', 1, 10);
+        var effBarH = Math.max(barH, trackH);
         var barY = null, barBlockH = 0;
         if (barStyle !== 3) {
             y += gapRow;
             barY = y;
-            barBlockH = Math.max(barH, v.bcur ? 10 : barH,
-                ((barStyle === 0 || barStyle === 2) && v.bet) ? 8 : barH);
+            barBlockH = Math.max(effBarH, v.bcur ? 10 : effBarH,
+                ((barStyle === 0 || barStyle === 2) && v.bet) ? 8 : effBarH);
             y += barBlockH;
         }
 
@@ -806,10 +852,22 @@
         }
 
         var thrY = null;
-        var thrH = Math.max(thrSize + 2, thrIconSize);
+        var thrH = thrSize + 2;
         if (thr.length && thrInside) {
             y += (astY !== null) ? gapRow : (gapRow + 1);
             thrY = y;
+            y += thrH;
+        }
+
+        var hSepY = null, hRow1Y = null, hRow2Y = null;
+        if (hRows.length) {
+            y += gapRow + 1;
+            hSepY = y;
+            y += gapRow;
+            hRow1Y = y;
+            y += thrH;
+            y += Math.max(3, gapRow - 1);
+            hRow2Y = y;
             y += thrH;
         }
 
@@ -825,6 +883,9 @@
                 if (dmgY !== null) dmgY += deltaShift;
                 if (astY !== null) astY += deltaShift;
                 if (thrY !== null) thrY += deltaShift;
+                if (hSepY !== null) hSepY += deltaShift;
+                if (hRow1Y !== null) hRow1Y += deltaShift;
+                if (hRow2Y !== null) hRow2Y += deltaShift;
             }
         }
 
@@ -887,7 +948,11 @@
             headerY: fy + headerY, headerH: headerH,
             pctSize: pctSize, deltaSize: deltaSize,
             dInfo: dInfo, tInfo: tInfo, ast: ast, thr: thr,
-            barStyle: barStyle, barY: barY !== null ? (fy + barY) : null, barH: barH, barBlockH: barBlockH,
+            isHangar: isHangar, hRows: hRows,
+            hSepY: hSepY !== null ? (fy + hSepY) : null,
+            hRow1Y: hRow1Y !== null ? (fy + hRow1Y) : null,
+            hRow2Y: hRow2Y !== null ? (fy + hRow2Y) : null,
+            barStyle: barStyle, barY: barY !== null ? (fy + barY) : null, barH: barH, trackH: trackH, barBlockH: barBlockH,
             dmgY: dmgY !== null ? (fy + dmgY) : null, dmgH: dmgH, dmgSize: dmgSize,
             dmgLblText: dmgLblText, dmgLblMode: dmgLblMode,
             astY: astInside ? (astY !== null ? (fy + astY) : null) : astBelowY,
@@ -1003,13 +1068,38 @@
         elV3.appendChild(thrRow);
         v3Dom.thrRow = thrRow;
         v3Dom.thrItems = thrItems;
+
+        var thrRow2 = document.createElement('div');
+        thrRow2.className = 'v3-astwrap v3-thrwrap v3-thrwrap2';
+        var thrItems2 = [];
+        for (var tj2 = 0; tj2 < 2; tj2 += 1) {
+            var tbox2 = document.createElement('div');
+            tbox2.className = 'v3-astitem v3-thritem';
+            tbox2.style.display = 'none';
+            var tico2 = document.createElement('img');
+            tico2.className = 'v3-astico v3-thrico';
+            tico2.style.display = 'none';
+            var tlbl2 = document.createElement('span');
+            tlbl2.className = 'v3-asttxt v3-thrlbl';
+            var ttxt2 = document.createElement('span');
+            ttxt2.className = 'v3-asttxt v3-thrval';
+            tbox2.appendChild(tico2);
+            tbox2.appendChild(tlbl2);
+            tbox2.appendChild(ttxt2);
+            thrRow2.appendChild(tbox2);
+            thrItems2.push({ box: tbox2, ico: tico2, lbl: tlbl2, txt: ttxt2 });
+        }
+        elV3.appendChild(thrRow2);
+        v3Dom.thrRow2 = thrRow2;
+        v3Dom.thrItems2 = thrItems2;
         return v3Dom;
     }
 
-    function renderV3(p, u) {
+    function renderV3(p, u, isHangar) {
         var dom = ensureV3Dom();
-        var v = readV3Ui(u.v3);
+        var v = readV3Ui(isHangar ? (u.vh || u.v3) : u.v3);
         var d = p.v3d || {
+            isHangar: !!isHangar,
             pct: parseFloat(p.pct) || 0,
             bar: p.bar || 0,
             delta: parseFloat(p.delta),
@@ -1019,6 +1109,7 @@
             marks: p.marks || 0, big: !!p.big, isSpg: false, alt: false,
             hasRating: (p.pct && p.pct !== '--.--%')
         };
+        if (isHangar) d.isHangar = true;
         var m = v3ComputeMetrics(v, d, u);
         var winW = (p.v3m && p.v3m[0]) ? Math.max(1, Math.round(p.v3m[0])) : m.winW;
         var winH = (p.v3m && p.v3m[1]) ? Math.max(1, Math.round(p.v3m[1])) : m.winH;
@@ -1117,8 +1208,10 @@
         var ratio = v3BarRatio(v, d, m.tInfo.dmg, m.tInfo.tgt);
         var barCol = v3BarColor(v, barPctVal, m.dInfo.accent);
         if (m.barStyle !== 3 && m.barY !== null) {
-            var bx = m.cx, bw = m.cw, bh = m.barH;
+            var bx = m.cx, bw = m.cw, bh = m.barH, trackH = m.trackH;
             var by = m.barY + (m.barBlockH - bh) * 0.5;
+            var trackY = by + (bh - trackH) * 0.5;
+            var effBH = Math.max(bh, trackH);
             dom.barWrap.style.display = 'block';
             dom.barWrap.style.left = bx + 'px';
             dom.barWrap.style.top = by + 'px';
@@ -1139,7 +1232,7 @@
                     var sw = usableW * weights[sIdx];
                     var s0 = spans[sIdx][0], s1 = spans[sIdx][1];
                     var segFill = clamp((curPct - s0) / Math.max(1e-6, s1 - s0), 0, 1);
-                    parts.push('<rect x="' + segX.toFixed(1) + '" y="' + by.toFixed(1) + '" width="' + sw.toFixed(1) + '" height="' + bh.toFixed(1) + '" rx="1" fill="#0B1016" fill-opacity="0.55" stroke="#FFFFFF" stroke-width="0.7" stroke-opacity="0.32"/>');
+                    parts.push('<rect x="' + segX.toFixed(1) + '" y="' + trackY.toFixed(1) + '" width="' + sw.toFixed(1) + '" height="' + trackH.toFixed(1) + '" rx="1" fill="#FFFFFF" fill-opacity="0.22"/>');
                     if (segFill > 0.005) {
                         var sfw = Math.max(1, sw * segFill);
                         sf.style.display = 'block';
@@ -1156,7 +1249,7 @@
                     segX += sw + segGap;
                 }
                 if (v.bcur) {
-                    var segCurH = Math.max(10, bh + 6);
+                    var segCurH = Math.max(10, effBH + 6);
                     var segCurX = clamp(curFillX - 1.25, 0, Math.max(0, bw - 2.5));
                     dom.barCur.style.display = 'block';
                     dom.barCur.style.left = segCurX.toFixed(1) + 'px';
@@ -1167,20 +1260,20 @@
                 }
             } else {
                 for (var hi = 0; hi < dom.segFills.length; hi += 1) dom.segFills[hi].style.display = 'none';
-                var trackH = (m.barStyle === 0 && bh <= 4) ? 2 : bh;
-                var trackY = by + (bh - trackH) * 0.5;
                 parts.push('<rect x="' + bx.toFixed(1) + '" y="' + trackY.toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + trackH.toFixed(1) + '" rx="1" fill="#FFFFFF" fill-opacity="0.22"/>');
                 if (v.bet) {
-                    var tickH = Math.max(8, bh + 4);
+                    var tickH = Math.max(8, effBH + 4);
                     var tickTop = by + (bh - tickH) * 0.5;
                     parts.push('<rect x="' + bx.toFixed(1) + '" y="' + tickTop.toFixed(1) + '" width="1.2" height="' + tickH.toFixed(1) + '" fill="#FFFFFF" fill-opacity="0.45"/>');
                     parts.push('<rect x="' + (bx + bw - 1.2).toFixed(1) + '" y="' + tickTop.toFixed(1) + '" width="1.2" height="' + tickH.toFixed(1) + '" fill="#FFFFFF" fill-opacity="0.45"/>');
                 }
                 if (v.bmk && v3Int(v, 'bsc', 0, 1) === 0) {
+                    var markH = effBH + 3;
+                    var markTop = by + (bh - markH) * 0.5;
                     var ths = [65, 85, 95];
                     for (var ti = 0; ti < ths.length; ti += 1) {
                         var tx = bx + bw * (ths[ti] / 100);
-                        parts.push('<rect x="' + (tx - 0.5).toFixed(1) + '" y="' + (by - 1.5).toFixed(1) + '" width="1.0" height="' + (bh + 3).toFixed(1) + '" fill="#FFFFFF" fill-opacity="0.40"/>');
+                        parts.push('<rect x="' + (tx - 0.5).toFixed(1) + '" y="' + markTop.toFixed(1) + '" width="1.0" height="' + markH.toFixed(1) + '" fill="#FFFFFF" fill-opacity="0.40"/>');
                     }
                 }
                 var fillW = clamp(bw * ratio, 0, bw);
@@ -1193,7 +1286,7 @@
                     dom.barFill.style.display = 'none';
                 }
                 if (v.bcur) {
-                    var curH = Math.max(10, bh + 6);
+                    var curH = Math.max(10, effBH + 6);
                     var curRelX = clamp(fillW - 1.25, 0, Math.max(0, bw - 2.5));
                     dom.barCur.style.display = 'block';
                     dom.barCur.style.left = curRelX.toFixed(1) + 'px';
@@ -1223,21 +1316,31 @@
             } else {
                 dom.dmgLbl.style.display = 'none';
             }
-            var dmgCol = v.ddyn
-                ? ((m.tInfo.tgt > 0 && m.tInfo.dmg >= m.tInfo.tgt) || m.dInfo.kind === 'plus' || m.dInfo.kind === 'big'
-                    ? v.up : (m.dInfo.kind === 'minus' ? v.dn : v.tm))
-                : v.tm;
-            dom.dmgMain.style.display = 'block';
-            dom.dmgMain.textContent = m.tInfo.dmgStr;
-            dom.dmgMain.style.color = dmgCol;
-            dom.dmgMain.style.fontSize = m.dmgSize + 'px';
-            dom.dmgMain.style.textShadow = txtShadow;
-            dom.dmgSec.style.display = 'block';
-            dom.dmgSec.style.marginLeft = '4px';
-            dom.dmgSec.textContent = '/ ' + m.tInfo.tgtStr;
-            dom.dmgSec.style.color = v.tmu;
-            dom.dmgSec.style.fontSize = m.dmgSize + 'px';
-            dom.dmgSec.style.textShadow = txtShadow;
+            if (m.isHangar) {
+                var emaCol = (d.hasRating !== false && m.tInfo.dmg > 0) ? v.up : v.tmu;
+                dom.dmgMain.style.display = 'block';
+                dom.dmgMain.textContent = m.tInfo.dmgStr;
+                dom.dmgMain.style.color = emaCol;
+                dom.dmgMain.style.fontSize = m.dmgSize + 'px';
+                dom.dmgMain.style.textShadow = txtShadow;
+                dom.dmgSec.style.display = 'none';
+            } else {
+                var dmgCol = v.ddyn
+                    ? ((m.tInfo.tgt > 0 && m.tInfo.dmg >= m.tInfo.tgt) || m.dInfo.kind === 'plus' || m.dInfo.kind === 'big'
+                        ? v.up : (m.dInfo.kind === 'minus' ? v.dn : v.tm))
+                    : v.tm;
+                dom.dmgMain.style.display = 'block';
+                dom.dmgMain.textContent = m.tInfo.dmgStr;
+                dom.dmgMain.style.color = dmgCol;
+                dom.dmgMain.style.fontSize = m.dmgSize + 'px';
+                dom.dmgMain.style.textShadow = txtShadow;
+                dom.dmgSec.style.display = 'block';
+                dom.dmgSec.style.marginLeft = '4px';
+                dom.dmgSec.textContent = '/ ' + m.tInfo.tgtStr;
+                dom.dmgSec.style.color = v.tmu;
+                dom.dmgSec.style.fontSize = m.dmgSize + 'px';
+                dom.dmgSec.style.textShadow = txtShadow;
+            }
         } else {
             dom.dmgRow.style.display = 'none';
         }
@@ -1275,11 +1378,55 @@
             dom.astRow.style.display = 'none';
         }
 
-        /* Tempo / Thresholds row DOM */
-        if (m.thr && m.thr.length && m.thrY !== null) {
+        /* Tempo / Hangar Thresholds rows DOM (no star icons - % and value only) */
+        var spacePx = Math.max(2, Math.round(0.24 * m.thrSize));
+        if (m.hRows && m.hRows.length) {
+            if (m.hSepY !== null) {
+                parts.push('<line x1="' + m.cx.toFixed(1) + '" y1="' + m.hSepY.toFixed(1) + '" x2="' + (m.cx + m.cw).toFixed(1) + '" y2="' + m.hSepY.toFixed(1) + '" stroke="' + v.cc + '" stroke-width="1.0" stroke-opacity="0.18"/>');
+            }
+            var hDomRows = [
+                { row: dom.thrRow, items: dom.thrItems, data: m.hRows[0] || [], y: m.hRow1Y },
+                { row: dom.thrRow2, items: dom.thrItems2, data: m.hRows[1] || [], y: m.hRow2Y }
+            ];
+            for (var hr = 0; hr < hDomRows.length; hr += 1) {
+                var hdr = hDomRows[hr];
+                if (hdr.data.length && hdr.y !== null) {
+                    hdr.row.style.display = 'flex';
+                    hdr.row.style.left = m.cx.toFixed(1) + 'px';
+                    hdr.row.style.top = hdr.y + 'px';
+                    hdr.row.style.width = m.cw.toFixed(1) + 'px';
+                    hdr.row.style.height = m.thrH + 'px';
+                    hdr.row.style.justifyContent = (hdr.data.length > 1) ? 'space-between' : 'center';
+                    for (var hk = 0; hk < hdr.items.length; hk += 1) {
+                        var hDom = hdr.items[hk];
+                        if (hk < hdr.data.length) {
+                            var hit = hdr.data[hk];
+                            var hlCol = hit.done ? v.up : v.tmu;
+                            var hvCol = hit.done ? v.up : v.tm;
+                            hDom.box.style.display = 'flex';
+                            hDom.box.style.marginLeft = '0px';
+                            hDom.ico.style.display = 'none';
+                            hDom.lbl.textContent = hit.lbl;
+                            hDom.lbl.style.color = hlCol;
+                            hDom.lbl.style.fontSize = m.thrSize + 'px';
+                            hDom.lbl.style.textShadow = txtShadow;
+                            hDom.txt.textContent = hit.valStr;
+                            hDom.txt.style.marginLeft = spacePx + 'px';
+                            hDom.txt.style.color = hvCol;
+                            hDom.txt.style.fontSize = m.thrSize + 'px';
+                            hDom.txt.style.textShadow = txtShadow;
+                        } else {
+                            hDom.box.style.display = 'none';
+                        }
+                    }
+                } else {
+                    hdr.row.style.display = 'none';
+                }
+            }
+        } else if (m.thr && m.thr.length && m.thrY !== null) {
+            dom.thrRow2.style.display = 'none';
             var tBaseW = m.cw;
             var tBaseX = m.cx;
-            var spacePx = Math.max(2, Math.round(0.24 * m.thrSize));
             dom.thrRow.style.display = 'flex';
             dom.thrRow.style.left = tBaseX.toFixed(1) + 'px';
             dom.thrRow.style.top = m.thrY + 'px';
@@ -1290,16 +1437,11 @@
                 var tDom = dom.thrItems[kt];
                 if (kt < m.thr.length) {
                     var tit = m.thr[kt];
-                    var sCol = tit.done ? v.up : v.son;
                     var lCol = tit.done ? v.up : v.tmu;
                     var vCol = tit.done ? v.up : v.tm;
-                    var sop = tit.done ? 0.96 : 0.82;
                     tDom.box.style.display = 'flex';
                     tDom.box.style.marginLeft = (kt > 0) ? (m.thrItemGap + 'px') : '0px';
-                    tDom.ico.style.width = m.thrIconSize + 'px';
-                    tDom.ico.style.height = m.thrIconSize + 'px';
-                    tDom.ico.style.marginRight = '4px';
-                    tDom.ico.src = v3TempoStarUri(m.thrIconSize, sCol, sop);
+                    tDom.ico.style.display = 'none';
                     tDom.lbl.textContent = tit.lbl;
                     tDom.lbl.style.color = lCol;
                     tDom.lbl.style.fontSize = m.thrSize + 'px';
@@ -1315,6 +1457,7 @@
             }
         } else {
             dom.thrRow.style.display = 'none';
+            dom.thrRow2.style.display = 'none';
         }
 
         var svgStr = '<svg xmlns="http://www.w3.org/2000/svg" width="' + winW + '" height="' + winH + '" viewBox="0 0 ' + winW + ' ' + winH + '">' + parts.join('') + '</svg>';
@@ -1387,7 +1530,8 @@
         var u = readUi(p.ui);
         // Непрозрачность всей панели настраивается отдельно от её фона.
         var alpha = clamp(num(u.alpha, 1), 0, 1);
-        var ui = clamp(num(u.s, 1), 0.5, 2.5);
+        var isHangarMode = (p.mode === 'h');
+        var ui = (p.mode === 's') ? 1 : clamp(num(isHangarMode ? (u.hs !== undefined ? u.hs : u.s) : u.s, 1), 0.5, 2.5);
         if (ui !== curUi) { curUi = ui; doResize(); }
 
         if (p.mode === 's') {
@@ -1412,11 +1556,11 @@
             return;
         }
 
-        if (p.mode !== 'h' && Number(u.preset) === 2) {
+        if (isHangarMode || Number(u.preset) === 0 || Number(u.preset) === 2) {
             elPanel.style.display = 'none';
             elV3.style.display = 'block';
             elV3.style.opacity = (alpha * (p.dim ? 0.4 : 1)).toFixed(3);
-            var v3Dims = renderV3(p, u);
+            var v3Dims = renderV3(p, u, isHangarMode);
             var v3Key = v3Dims[0] + 'x' + v3Dims[1];
             SIZES.v3 = v3Dims;
             if (curMode !== 'v3' || lastV3Key !== v3Key) {
