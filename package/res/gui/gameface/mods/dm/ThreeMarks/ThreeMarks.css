@@ -304,6 +304,41 @@ html, body { background: transparent; overflow: hidden; }
   border: 1px solid rgba(0, 0, 0, 0.55);
   transition: width 0.20s ease, background-color 0.18s ease;
 }
+#tm-v3 .v3-bartxt-wrap {
+  position: absolute;
+  display: none;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+}
+#tm-v3 .v3-bartxt-box {
+  position: relative;
+  display: block;
+  flex: 0 0 auto;
+  font-weight: 700;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+#tm-v3 .v3-bartxt-base {
+  display: block;
+  white-space: nowrap;
+  color: rgba(255, 255, 255, 0.25);
+}
+#tm-v3 .v3-bartxt-clip {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 0%;
+  overflow: hidden;
+  transition: width 0.20s ease;
+}
+#tm-v3 .v3-bartxt-fill {
+  display: block;
+  white-space: nowrap;
+  transition: color 0.18s ease;
+}
 #tm-v3 .v3-dmg {
   position: absolute;
   display: none;

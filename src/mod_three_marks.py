@@ -81,7 +81,7 @@ _WINDOW_W, _WINDOW_H = (244, 96)
 _HWINDOW_W, _HWINDOW_H = (244, 144)
 _PCT_WINDOW_W, _PCT_WINDOW_H = (220, 72)
 
-MOD_VERSION = '10.12.6'
+MOD_VERSION = '10.12.7'
 _WG_API_URL = 'https://api.worldoftanks.%s/wot/tanks/mastery/?application_id=%s&distribution=damage&percentile=%s&tank_id=%s'
 _WG_HISTORY_URL = 'https://poliroid.me/gunmarks/api/v2/data/%s/vehicle/%s/%s'
 
@@ -113,6 +113,8 @@ _V3_DEFAULTS = {
     'v3BarScale': 0,
     'v3BarHeight': 4,
     'v3BarTrackHeight': 2,
+    'v3BarCustomText': u'KIBERSPORT',
+    'v3BarTextSize': 15,
     'v3BarEndTicks': True,
     'v3BarCursor': True,
     'v3BarMarks': False,
@@ -161,13 +163,14 @@ _VH_DEFAULTS = {
     'vhBarScale': 0,
     'vhBarHeight': 4,
     'vhBarTrackHeight': 2,
+    'vhBarCustomText': u'KIBERSPORT',
+    'vhBarTextSize': 15,
     'vhBarEndTicks': True,
     'vhBarCursor': True,
     'vhBarMarks': False,
     'vhBarColor': '#A7D080',
     'vhShowEma': True,
     'vhShowThresholds': True,
-    'vhShow100': True,
     'vhThousandsSep': 1,
     'vhTextMain': '#FFFFFF',
     'vhTextMuted': '#B8BDC4',
@@ -339,6 +342,8 @@ def _loadConfig():
         preset = 0
     cfg['battlePreset'] = preset
     cfg['battlePercentOnly'] = (preset == 1)
+    cfg['hangarOnlyRandom'] = True
+    cfg['hideUnderWindows'] = False
     _saveJson(CONFIG_PATH, cfg)
     g_config = cfg
     _cfgStamp[0] = _mtime(CONFIG_PATH)
@@ -548,10 +553,12 @@ def _v3UiPayload():
         'dec': _cfgInt('v3PctDecimals', 0, 1),
         'di': _cfgInt('v3DeltaIcon', 0, 3),
         'dc': _cfgInt('v3DeltaColorMode', 0, 1),
-        'bs': _cfgInt('v3BarStyle', 0, 3),
+        'bs': _cfgInt('v3BarStyle', 0, 4),
         'bsc': _cfgInt('v3BarScale', 0, 1),
         'bh': _cfgInt('v3BarHeight', 2, 10),
         'bth': _cfgInt('v3BarTrackHeight', 1, 10),
+        'bt': _cfgStr('v3BarCustomText', u'KIBERSPORT', 24) or u'KIBERSPORT',
+        'bts': _cfgInt('v3BarTextSize', 10, 26),
         'bet': bool(g_config.get('v3BarEndTicks', True)),
         'bcur': bool(g_config.get('v3BarCursor', True)),
         'bmk': bool(g_config.get('v3BarMarks', False)),
@@ -610,6 +617,8 @@ def _vhToV3Cfg(cfg=None):
         'v3BarScale': src.get('vhBarScale', 0),
         'v3BarHeight': src.get('vhBarHeight', 4),
         'v3BarTrackHeight': src.get('vhBarTrackHeight', 2),
+        'v3BarCustomText': src.get('vhBarCustomText', u'KIBERSPORT'),
+        'v3BarTextSize': src.get('vhBarTextSize', 15),
         'v3BarEndTicks': src.get('vhBarEndTicks', True),
         'v3BarCursor': src.get('vhBarCursor', True),
         'v3BarMarks': src.get('vhBarMarks', False),
@@ -634,7 +643,7 @@ def _vhToV3Cfg(cfg=None):
         'v3TextMain': src.get('vhTextMain', '#FFFFFF'),
         'v3TextMuted': src.get('vhTextMuted', '#B8BDC4'),
         'vhShowThresholds': src.get('vhShowThresholds', True),
-        'vhShow100': src.get('vhShow100', True),
+        'vhShow100': True,
     }
 
 
@@ -662,10 +671,12 @@ def _vhUiPayload():
         'dec': _cfgInt('vhPctDecimals', 0, 1),
         'di': 3,
         'dc': 0,
-        'bs': _cfgInt('vhBarStyle', 0, 3),
+        'bs': _cfgInt('vhBarStyle', 0, 4),
         'bsc': _cfgInt('vhBarScale', 0, 1),
         'bh': _cfgInt('vhBarHeight', 2, 10),
         'bth': _cfgInt('vhBarTrackHeight', 1, 10),
+        'bt': _cfgStr('vhBarCustomText', u'KIBERSPORT', 24) or u'KIBERSPORT',
+        'bts': _cfgInt('vhBarTextSize', 10, 26),
         'bet': bool(g_config.get('vhBarEndTicks', True)),
         'bcur': bool(g_config.get('vhBarCursor', True)),
         'bmk': bool(g_config.get('vhBarMarks', False)),
@@ -690,7 +701,7 @@ def _vhUiPayload():
         'tm': _cfgColor('vhTextMain'),
         'tmu': _cfgColor('vhTextMuted'),
         'hThr': bool(g_config.get('vhShowThresholds', True)),
-        'h100': bool(g_config.get('vhShow100', True)),
+        'h100': True,
     }
 
 
@@ -2569,18 +2580,17 @@ def _v3ResolveHangarRows(cfg, sample):
     sep = _cfgInt('v3ThousandsSep', 0, 2, cfg)
     hasRating = bool(sample.get('hasRating', True))
     pct = float(sample.get('pct', 0.0) or 0.0)
-    show100 = bool(cfg.get('vhShow100', True))
 
     def mkCell(pLbl, key):
         val = max(0, int(sample.get(key, 0) or 0))
-        valStr = (u'~' + _v3FmtNum(val, sep)) if (hasRating and 0 < val < 30000) else u'\u2014'
+        valStr = _v3FmtNum(val, sep) if (hasRating and 0 < val < 30000) else u'\u2014'
         lbl = u'%d%%' % int(pLbl)
         done = bool(hasRating and val > 0 and pct >= float(pLbl))
         return {'pct': int(pLbl), 'val': val, 'done': done,
                 'lbl': lbl, 'valStr': valStr, 'text': u'%s %s' % (lbl, valStr)}
 
     row1 = [mkCell(65, 't65'), mkCell(85, 't85')]
-    row2 = [mkCell(95, 't95'), mkCell(100, 't100')] if show100 else [mkCell(95, 't95')]
+    row2 = [mkCell(95, 't95'), mkCell(100, 't100')]
     return [row1, row2]
 
 
@@ -2649,6 +2659,27 @@ def _v3Metrics(cfg, sample=None, alt=False):
     thrInside = (_cfgInt('v3TempoPlace', 0, 1, cfg) == 0)
 
     barMinW = (156, 178, 200)[den]
+    barStyle = _cfgInt('v3BarStyle', 0, 4, cfg)
+    barH = _cfgInt('v3BarHeight', 2, 10, cfg)
+    trackH = _cfgInt('v3BarTrackHeight', 1, 10, cfg)
+    barText = (_cfgStr('v3BarCustomText', u'KIBERSPORT', 24, cfg) or u'KIBERSPORT') if barStyle == 4 else u''
+    barTextSize = _cfgInt('v3BarTextSize', 10, 26, cfg)
+    barTextW = _svgAdvance(barText, barTextSize) if barStyle == 4 else 0.0
+    barTextMinW = int(math.ceil(barTextW + 8.0)) if barStyle == 4 else 0
+
+    hCol0W = 0
+    hCol1W = 0
+    hColGap = 16
+    if hRows and len(hRows) >= 2:
+        lblW0 = int(math.ceil(_svgAdvance(u'95%', thrSize))) + 5
+        valW0 = int(math.ceil(max(_svgAdvance(hRows[0][0]['valStr'], thrSize),
+                                  _svgAdvance(hRows[1][0]['valStr'], thrSize))))
+        hCol0W = lblW0 + valW0
+        lblW1 = int(math.ceil(_svgAdvance(u'100%', thrSize))) + 5
+        valW1 = int(math.ceil(max(_svgAdvance(hRows[0][1]['valStr'], thrSize),
+                                  _svgAdvance(hRows[1][1]['valStr'], thrSize))))
+        hCol1W = lblW1 + valW1
+
     minWOpt = _cfgInt('v3MinWidth', 0, 360, cfg)
     minContentW = max(0, minWOpt - 2 * padX) if minWOpt > 0 else 0
 
@@ -2656,7 +2687,7 @@ def _v3Metrics(cfg, sample=None, alt=False):
     minBracket = max(12, radius + 8)
     starsMinFrameW = (starsSpan + 12 + 2 * minBracket) if (starsPos in (0, 1) and frameStyle != 3) else (starsSpan + 8 if starsPos in (0, 1) else 0)
 
-    cw = int(math.ceil(max(barMinW, headerMinW, dmgRowMinW,
+    cw = int(math.ceil(max(barMinW, barTextMinW, headerMinW, dmgRowMinW,
                            minContentW, starsMinFrameW - 2 * padX)))
 
     framed = (frameStyle != 3)
@@ -2676,13 +2707,15 @@ def _v3Metrics(cfg, sample=None, alt=False):
     headerY = y
     y += headerH
 
-    barStyle = _cfgInt('v3BarStyle', 0, 3, cfg)
-    barH = _cfgInt('v3BarHeight', 2, 10, cfg)
-    trackH = _cfgInt('v3BarTrackHeight', 1, 10, cfg)
     effBarH = max(barH, trackH)
     barY = None
     barBlockH = 0
-    if barStyle != 3:
+    if barStyle == 4:
+        y += gapRow
+        barY = y
+        barBlockH = int(round(barTextSize * 1.18))
+        y += barBlockH
+    elif barStyle != 3:
         y += gapRow
         barY = y
         barBlockH = max(effBarH, 10 if bool(cfg.get('v3BarCursor', True)) else effBarH,
@@ -2719,7 +2752,7 @@ def _v3Metrics(cfg, sample=None, alt=False):
         y += gapRow
         hRow1Y = y
         y += thrH
-        y += max(3, gapRow - 1)
+        y += 2
         hRow2Y = y
         y += thrH
 
@@ -2819,6 +2852,7 @@ def _v3Metrics(cfg, sample=None, alt=False):
         'kind': kind, 'deltaAccent': deltaAccent, 'showDelta': showDelta,
         'deltaIconW': deltaIconW, 'pctW': pctW, 'deltaW': deltaW,
         'barY': (fy + barY) if barY is not None else None, 'barH': barH, 'trackH': trackH, 'barBlockH': barBlockH,
+        'barStyle': barStyle, 'barText': barText, 'barTextSize': barTextSize, 'barTextW': barTextW,
         'dmgY': (fy + dmgY) if dmgY is not None else None, 'dmgH': dmgH, 'dmgSize': dmgSize,
         'dmg': dmg, 'tgt': tgt, 'dmgStr': dmgStr, 'tgtStr': tgtStr, 'remStr': remStr,
         'dmgLblText': dmgLblText, 'dmgLblMode': dmgLblMode, 'dmgValStr': dmgValStr,
@@ -2830,6 +2864,7 @@ def _v3Metrics(cfg, sample=None, alt=False):
         'thrH': thrH, 'thrSize': thrSize, 'thrIconSize': thrIconSize, 'thrItemGap': thrItemGap,
         'thrItems': thrItems, 'thrWidths': thrWidths, 'thrRowMinW': thrRowMinW, 'thrInside': thrInside,
         'isHangar': isHangar, 'hRows': hRows,
+        'hCol0W': hCol0W, 'hCol1W': hCol1W, 'hColGap': hColGap,
         'hSepY': (fy + hSepY) if hSepY is not None else None,
         'hRow1Y': (fy + hRow1Y) if hRow1Y is not None else None,
         'hRow2Y': (fy + hRow2Y) if hRow2Y is not None else None,
@@ -3025,9 +3060,28 @@ def _v3BarColor(cfg, pct, kind, deltaAccent):
 def _v3BarSvg(cfg, m, sample, ratio, barCol):
     bx = float(m['cx'])
     bw = float(m['cw'])
-    barStyle = _cfgInt('v3BarStyle', 0, 3, cfg)
+    barStyle = _cfgInt('v3BarStyle', 0, 4, cfg)
     if barStyle == 3 or m['barY'] is None:
         return u''
+    if barStyle == 4:
+        bTxt = m.get('barText') or _cfgStr('v3BarCustomText', u'KIBERSPORT', 24, cfg) or u'KIBERSPORT'
+        bSz = int(m.get('barTextSize', _cfgInt('v3BarTextSize', 10, 26, cfg)))
+        tw = max(1.0, float(m.get('barTextW') or _svgAdvance(bTxt, bSz)))
+        tx0 = bx + (bw - tw) * 0.5
+        ty = float(m['barY']) + float(bSz) * 0.90
+        fillW = max(0.0, min(tw, tw * ratio))
+        safe = _svgEsc(bTxt)
+        out = [
+            u'<text x="%.1f" y="%.1f" text-anchor="start" font-family="%s" font-size="%d" font-weight="700" fill="#FFFFFF" fill-opacity="0.25">%s</text>' % (
+                tx0, ty, _SVG_FONT, bSz, safe)
+        ]
+        if fillW > 0.2:
+            out.append(
+                u'<defs><clipPath id="v3tc"><rect x="%.1f" y="%.1f" width="%.1f" height="%.1f"/></clipPath></defs>'
+                u'<g clip-path="url(#v3tc)">%s</g>' % (
+                    tx0, float(m['barY']) - 2.0, fillW, float(m['barBlockH']) + 6.0,
+                    _svgText(tx0, ty, bTxt, barCol, bSz, anchor=u'start', shadow=True, shadowOp=0.85)))
+        return u''.join(out)
     bh = float(m['barH'])
     trackH = float(m.get('trackH', _cfgInt('v3BarTrackHeight', 1, 10, cfg)))
     by = float(m['barY']) + (float(m['barBlockH']) - bh) * 0.5
@@ -3268,46 +3322,38 @@ def _v3BuildSvg(cfg, sample, alt=False):
                                   anchor=u'start', shadow=True, shadowOp=shadowOp))
             curX += tWidths[idx] + tGap
 
-    # 8. Hangar 2x2 thresholds grid (65% / 85% / 95% / 100%)
+    # 8. Hangar 2x2 thresholds grid (65% / 85% / 95% / 100%, compact centered columns)
     if m.get('hRows'):
         if m.get('hSepY') is not None:
             sy = float(m['hSepY'])
             parts.append(u'<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="%s" stroke-width="1.0" stroke-opacity="0.18"/>' % (
                 cx, sy, cx + cw, sy, cornerCol))
         tSz = float(m['thrSize'])
+        col0W = float(m.get('hCol0W') or 68.0)
+        col1W = float(m.get('hCol1W') or 72.0)
+        colGap = float(m.get('hColGap') or 16.0)
+        totalGridW = col0W + colGap + col1W
+        gx0 = cx + (cw - totalGridW) * 0.5
+        gx1 = gx0 + col0W + colGap
         for rowY, rowItems in ((m.get('hRow1Y'), m['hRows'][0]),
                                (m.get('hRow2Y'), m['hRows'][1] if len(m['hRows']) > 1 else [])):
             if rowY is None or not rowItems:
                 continue
             tbY = float(rowY) + tSz * 0.92
-            if len(rowItems) == 2:
+            if len(rowItems) >= 2:
                 it0, it1 = rowItems[0], rowItems[1]
                 lCol0 = plusCol if it0['done'] else textMuted
                 vCol0 = plusCol if it0['done'] else textMain
-                parts.append(_svgText(cx, tbY, it0['lbl'], lCol0, m['thrSize'],
+                parts.append(_svgText(gx0, tbY, it0['lbl'], lCol0, m['thrSize'],
                                       anchor=u'start', shadow=True, shadowOp=shadowOp))
-                parts.append(_svgText(cx + _svgAdvance(it0['lbl'] + u' ', m['thrSize']), tbY,
-                                      it0['valStr'], vCol0, m['thrSize'],
-                                      anchor=u'start', shadow=True, shadowOp=shadowOp))
+                parts.append(_svgText(gx0 + col0W, tbY, it0['valStr'], vCol0, m['thrSize'],
+                                      anchor=u'end', shadow=True, shadowOp=shadowOp))
                 lCol1 = plusCol if it1['done'] else textMuted
                 vCol1 = plusCol if it1['done'] else textMain
-                w1 = _svgAdvance(it1['lbl'] + u' ' + it1['valStr'], m['thrSize'])
-                x1 = cx + cw - w1
-                parts.append(_svgText(x1, tbY, it1['lbl'], lCol1, m['thrSize'],
+                parts.append(_svgText(gx1, tbY, it1['lbl'], lCol1, m['thrSize'],
                                       anchor=u'start', shadow=True, shadowOp=shadowOp))
-                parts.append(_svgText(cx + cw, tbY, it1['valStr'], vCol1, m['thrSize'],
+                parts.append(_svgText(gx1 + col1W, tbY, it1['valStr'], vCol1, m['thrSize'],
                                       anchor=u'end', shadow=True, shadowOp=shadowOp))
-            else:
-                it0 = rowItems[0]
-                lCol0 = plusCol if it0['done'] else textMuted
-                vCol0 = plusCol if it0['done'] else textMain
-                w0 = _svgAdvance(it0['lbl'] + u' ' + it0['valStr'], m['thrSize'])
-                x0 = cx + (cw - w0) * 0.5
-                parts.append(_svgText(x0, tbY, it0['lbl'], lCol0, m['thrSize'],
-                                      anchor=u'start', shadow=True, shadowOp=shadowOp))
-                parts.append(_svgText(x0 + _svgAdvance(it0['lbl'] + u' ', m['thrSize']), tbY,
-                                      it0['valStr'], vCol0, m['thrSize'],
-                                      anchor=u'start', shadow=True, shadowOp=shadowOp))
 
     body = u'<g opacity="%.3f">%s</g>' % (panelOp, u''.join(parts))
     svg = u'<svg xmlns="http://www.w3.org/2000/svg" width="%d" height="%d" viewBox="0 0 %d %d">%s</svg>' % (
@@ -3549,10 +3595,11 @@ _MENU_V3_INT = (
     ('v3PctDecimals', 0, 1),
     ('v3DeltaIcon', 0, 3),
     ('v3DeltaColorMode', 0, 1),
-    ('v3BarStyle', 0, 3),
+    ('v3BarStyle', 0, 4),
     ('v3BarScale', 0, 1),
     ('v3BarHeight', 2, 10),
     ('v3BarTrackHeight', 1, 10),
+    ('v3BarTextSize', 10, 26),
     ('v3BarColorMode', 0, 2),
     ('v3DamageLabel', 0, 2),
     ('v3ThousandsSep', 0, 2),
@@ -3579,7 +3626,7 @@ _MENU_V3_BOOL = (
     'v3DamageDynColor',
     'v3AssistHideZero',
 )
-_MENU_V3_STR = ('v3DamageCustomLabel',)
+_MENU_V3_STR = ('v3DamageCustomLabel', 'v3BarCustomText', 'vhBarCustomText')
 _MENU_V3_COLORS = (
     'v3CornerColor',
     'v3BgColor',
@@ -3603,10 +3650,11 @@ _MENU_VH_INT = (
     ('vhStarsSize', 10, 22),
     ('vhStarsGap', 2, 14),
     ('vhPctDecimals', 0, 1),
-    ('vhBarStyle', 0, 3),
+    ('vhBarStyle', 0, 4),
     ('vhBarScale', 0, 1),
     ('vhBarHeight', 2, 10),
     ('vhBarTrackHeight', 1, 10),
+    ('vhBarTextSize', 10, 26),
     ('vhThousandsSep', 0, 2),
 )
 _MENU_VH_FLOAT = (
@@ -3617,8 +3665,6 @@ _MENU_VH_FLOAT = (
 )
 _MENU_VH_BOOL = (
     'hangarPanel',
-    'hangarOnlyRandom',
-    'hideUnderWindows',
     'vhStarsDivider',
     'vhStarsGlow',
     'vhBarEndTicks',
@@ -3626,7 +3672,6 @@ _MENU_VH_BOOL = (
     'vhBarMarks',
     'vhShowEma',
     'vhShowThresholds',
-    'vhShow100',
 )
 _MENU_VH_COLORS = (
     'vhBarColor',
@@ -4439,10 +4484,18 @@ def _menuTemplate(tpl, ver, showV3=True):
                      [u'Тактическая (трек + курсор)',
                       u'Пороги 65 / 85 / 95 / 100%',
                       u'Сплошная',
-                      u'Без полоски'],
+                      u'Без полоски',
+                      u'Свой текст (с заполнением)'],
                      u'Стиль полоски прогресса',
-                     u'Тактическая: тонкий трек с засечками | — | и ярким маркером. Пороги: 4 сегмента 65 / 85 / 95 / 100%.'),
+                     u'Тактическая: тонкий трек с засечками | — | и ярким маркером. Пороги: 4 сегмента 65 / 85 / 95 / 100%. Свой текст: надпись, заполняемая цветом по мере роста отметки.'),
             'battlePanelVariant', 0),
+        visAll(textInput(u'Текст вместо полоски', 'v3BarCustomText',
+                         u'Свой текст полоски',
+                         u'Текст, который заполняется цветом прогресса отметки (до 24 символов).'),
+               (('battlePanelVariant', 0), ('v3BarStyle', 4))),
+        visAll(slider(u'Размер текста полоски (px)', 'v3BarTextSize', 10, 26, 1, f0,
+                      u'Размер текста полоски', u'Размер шрифта заполняемого текста в пикселях.'),
+               (('battlePanelVariant', 0), ('v3BarStyle', 4))),
         visAll(dropdown(u'Масштаб полоски', 'v3BarScale',
                         [u'0 — 100%', u'До следующей отметки'],
                         u'Шкала полоски',
@@ -4450,23 +4503,23 @@ def _menuTemplate(tpl, ver, showV3=True):
                (('battlePanelVariant', 0), ('v3BarStyle', 3, '!='))),
         visAll(slider(u'Высота заполненной полоски (px)', 'v3BarHeight', 2, 10, 1, f0,
                       u'Толщина заполненной полоски', u'Высота закрашенной линии прогресса.'),
-               (('battlePanelVariant', 0), ('v3BarStyle', 3, '!='))),
+               (('battlePanelVariant', 0), ('v3BarStyle', [0, 1, 2]))),
         visAll(slider(u'Толщина незаполненной полоски (px)', 'v3BarTrackHeight', 1, 10, 1, f0,
                       u'Толщина пустой белой полоски', u'Высота белой незаполненной линии трека прогресса.'),
-               (('battlePanelVariant', 0), ('v3BarStyle', 3, '!='))),
+               (('battlePanelVariant', 0), ('v3BarStyle', [0, 1, 2]))),
         visAll(dropdown(u'Цвет полоски', 'v3BarColorMode',
                         [u'Тактический зелёный',
                          u'По изменению (+ / − / 0)',
                          u'Свой цвет'],
                         u'Цвет полоски',
-                        u'Определяет логику окрашивания заполненной части полоски.'),
+                        u'Определяет логику окрашивания заполненной части полоски или текста.'),
                (('battlePanelVariant', 0), ('v3BarStyle', 3, '!='))),
         visAll(check(u'Крайние засечки | — |', 'v3BarEndTicks',
                      u'Засечки по краям', u'Вертикальные ограничители | в начале и в конце полоски.'),
                (('battlePanelVariant', 0), ('v3BarStyle', [0, 2]))),
         visAll(check(u'Вертикальный курсор на значении', 'v3BarCursor',
                      u'Маркер-курсор', u'Яркая светлая риска точно на текущем заполнении полоски.'),
-               (('battlePanelVariant', 0), ('v3BarStyle', 3, '!='))),
+               (('battlePanelVariant', 0), ('v3BarStyle', [0, 1, 2]))),
         visAll(check(u'Риски порогов 65 / 85 / 95%', 'v3BarMarks',
                      u'Отметки 65 / 85 / 95%', u'Тонкие деления на полоске в точках получения 1, 2 и 3 отметок (при шкале 0–100%).'),
                (('battlePanelVariant', 0), ('v3BarStyle', [0, 2]), ('v3BarScale', 0))),
@@ -4600,14 +4653,6 @@ def _menuTemplate(tpl, ver, showV3=True):
         label(u'<b>Панель в ангаре (стиль «Киберспорт»)</b>'),
         check(u'Показывать панель в ангаре', 'hangarPanel',
               u'Панель в ангаре', u'Включает или выключает виджет отметок в ангаре.'),
-        vis(check(u'Только в режиме «Случайный бой»', 'hangarOnlyRandom',
-                  u'Режим боя в ангаре',
-                  u'Скрывает ангарную панель в режимах, где отметки не считаются (Натиск, события и др.).'),
-            'hangarPanel', True),
-        vis(check(u'Скрывать под крупными окнами в ангаре', 'hideUnderWindows',
-                  u'Окна поверх ангара',
-                  u'Прячет панель ангара, когда открыто полноэкранное окно или диалог.'),
-            'hangarPanel', True),
         vis(slider(u'Размер панели в ангаре', 'vhScale', 0.5, 2.5, 0.05, f2,
                    u'Масштаб в ангаре', u'Отдельный размер панели в ангаре (независимо от боевой панели).'),
             'hangarPanel', True),
@@ -4664,25 +4709,33 @@ def _menuTemplate(tpl, ver, showV3=True):
                      [u'Тактическая (трек + курсор)',
                       u'Пороги 65 / 85 / 95 / 100%',
                       u'Сплошная',
-                      u'Без полоски'],
-                     u'Стиль полоски в ангаре', u'Вид полоски прогресса на ангарной панели.'),
+                      u'Без полоски',
+                      u'Свой текст (с заполнением)'],
+                     u'Стиль полоски в ангаре', u'Вид полоски прогресса или заполняемого текста на ангарной панели.'),
             'hangarPanel', True),
+        visAll(textInput(u'Текст вместо полоски (ангар)', 'vhBarCustomText',
+                         u'Свой текст полоски в ангаре',
+                         u'Текст, который заполняется цветом прогресса отметки в ангаре (до 24 символов).'),
+               (('hangarPanel', True), ('vhBarStyle', 4))),
+        visAll(slider(u'Размер текста полоски (px, ангар)', 'vhBarTextSize', 10, 26, 1, f0,
+                      u'Размер текста полоски', u'Размер шрифта заполняемого текста в ангаре.'),
+               (('hangarPanel', True), ('vhBarStyle', 4))),
         visAll(dropdown(u'Масштаб полоски (ангар)', 'vhBarScale',
                         [u'0 — 100%', u'До следующей отметки'],
                         u'Шкала полоски в ангаре', u'Полная шкала 0–100% или прогресс внутри текущего интервала.'),
                (('hangarPanel', True), ('vhBarStyle', 3, '!='))),
         visAll(slider(u'Высота заполненной полоски (px, ангар)', 'vhBarHeight', 2, 10, 1, f0,
                       u'Высота полоски', u'Толщина заполненной части полоски в ангаре.'),
-               (('hangarPanel', True), ('vhBarStyle', 3, '!='))),
+               (('hangarPanel', True), ('vhBarStyle', [0, 1, 2]))),
         visAll(slider(u'Толщина незаполненной полоски (px, ангар)', 'vhBarTrackHeight', 1, 10, 1, f0,
                       u'Толщина белой полоски', u'Толщина пустой белой части полоски в ангаре.'),
-               (('hangarPanel', True), ('vhBarStyle', 3, '!='))),
+               (('hangarPanel', True), ('vhBarStyle', [0, 1, 2]))),
         visAll(check(u'Крайние засечки | — | (ангар)', 'vhBarEndTicks',
                      u'Засечки по краям', u'Вертикальные ограничители в начале и конце полоски.'),
                (('hangarPanel', True), ('vhBarStyle', [0, 2]))),
         visAll(check(u'Вертикальный курсор на значении (ангар)', 'vhBarCursor',
                      u'Курсор полоски', u'Яркая вертикальная риска на текущем проценте.'),
-               (('hangarPanel', True), ('vhBarStyle', 3, '!='))),
+               (('hangarPanel', True), ('vhBarStyle', [0, 1, 2]))),
         visAll(check(u'Риски порогов 65 / 85 / 95% (ангар)', 'vhBarMarks',
                      u'Деления порогов', u'Тонкие деления 65 / 85 / 95% на полоске в ангаре.'),
                (('hangarPanel', True), ('vhBarStyle', [0, 2]), ('vhBarScale', 0))),
@@ -4692,9 +4745,6 @@ def _menuTemplate(tpl, ver, showV3=True):
         vis(check(u'Показывать пороги отметок (65 / 85 / 95 / 100%)', 'vhShowThresholds',
                   u'Таблица порогов в ангаре', u'Показывает требуемый средний урон для 65%, 85%, 95% и 100%.'),
             'hangarPanel', True),
-        visAll(check(u'Показывать порог 100% отметки', 'vhShow100',
-                     u'Порог 100%', u'Добавляет расчёт среднего суммарного урона на 100% отметки рядом с 95%.'),
-               (('hangarPanel', True), ('vhShowThresholds', True))),
         vis(dropdown(u'Разделитель тысяч (ангар)', 'vhThousandsSep',
                      [u'Пробел (3 308)', u'Запятая (3,308)', u'Без разделителя (3308)'],
                      u'Формат чисел в ангаре', u'Разделитель тысяч для среднего урона и порогов в ангаре.'),
@@ -6284,10 +6334,10 @@ class _HangarController(object):
                 'bar': round(max(0.0, min(100.0, rating)), 2),
                 'marks': int(marks),
                 'ema': _fmt(ema) if ema > 0 else u'—',
-                't65': (u'~' + _fmt(t65)) if (hasRating and 0 < t65 < 30000) else u'—',
-                't85': (u'~' + _fmt(t85)) if (hasRating and 0 < t85 < 30000) else u'—',
-                't95': (u'~' + _fmt(t95)) if (hasRating and 0 < t95 < 30000) else u'—',
-                't100': (u'~' + _fmt(t100)) if (hasRating and 0 < t100 < 30000) else u'—',
+                't65': _fmt(t65) if (hasRating and 0 < t65 < 30000) else u'—',
+                't85': _fmt(t85) if (hasRating and 0 < t85 < 30000) else u'—',
+                't95': _fmt(t95) if (hasRating and 0 < t95 < 30000) else u'—',
+                't100': _fmt(t100) if (hasRating and 0 < t100 < 30000) else u'—',
                 'v3d': {
                     'isHangar': True,
                     'mini': False,

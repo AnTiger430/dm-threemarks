@@ -30,7 +30,7 @@
         fs: 0, rad: 5, cc: '#FFFFFF', ca: 0.90, ba: 0.28, bgc: '#0B1016', bgo: 0.48,
         sp: 0, ss: 0, sd: false, sz: 15, sg: 6, sgl: true, son: '#FFFFFF', sof: '#9AA3AE',
         ho: 0, dec: 1, di: 0, dc: 0,
-        bs: 0, bsc: 0, bh: 4, bth: 2, bet: true, bcur: true, bmk: false, bcm: 0, bcc: '#A7D080',
+        bs: 0, bsc: 0, bh: 4, bth: 2, bt: 'KIBERSPORT', bts: 15, bet: true, bcur: true, bmk: false, bcm: 0, bcc: '#A7D080',
         dmgOn: true, dl: 0, dlc: '\u0421\u0443\u043c. \u0443\u0440\u043e\u043d', sep: 1, ddyn: true,
         ash: 0, am: 0, ap: 0, ahz: false,
         tsh: 0, tmm: 0, tp: 0,
@@ -457,17 +457,17 @@
         var sep = v3Int(v, 'sep', 0, 2);
         var hasRating = (d.hasRating !== false);
         var pct = num(d.pct, 0);
-        var show100 = (v.h100 !== false);
         function mkCell(pLbl, key) {
             var val = Math.max(0, Math.round(num(d[key], 0)));
-            var valStr = (hasRating && val > 0 && val < 30000) ? ('~' + v3FmtNum(val, sep)) : '\u2014';
+            var valStr = (hasRating && val > 0 && val < 30000) ? v3FmtNum(val, sep) : '\u2014';
             var lbl = pLbl + '%';
             var done = (hasRating && val > 0 && pct >= pLbl);
             return { pct: pLbl, val: val, done: done, lbl: lbl, valStr: valStr, text: lbl + ' ' + valStr };
         }
-        var row1 = [mkCell(65, 't65'), mkCell(85, 't85')];
-        var row2 = show100 ? [mkCell(95, 't95'), mkCell(100, 't100')] : [mkCell(95, 't95')];
-        return [row1, row2];
+        return [
+            [mkCell(65, 't65'), mkCell(85, 't85')],
+            [mkCell(95, 't95'), mkCell(100, 't100')]
+        ];
     }
 
     function v3DeltaInfo(v, d, u) {
@@ -795,6 +795,24 @@
         var thrInside = (v3Int(v, 'tp', 0, 1) === 0);
 
         var barMinW = [156, 178, 200][den];
+        var barStyle = v3Int(v, 'bs', 0, 4);
+        var barH = v3Int(v, 'bh', 2, 10);
+        var trackH = v3Int(v, 'bth', 1, 10);
+        var barText = (barStyle === 4) ? (String(v.bt || '').replace(/[\r\n]/g, ' ').slice(0, 24) || 'KIBERSPORT') : '';
+        var barTextSize = v3Int(v, 'bts', 10, 26);
+        var barTextW = (barStyle === 4) ? v3Advance(barText, barTextSize) : 0;
+        var barTextMinW = (barStyle === 4) ? Math.ceil(barTextW + 8) : 0;
+
+        var hCol0W = 0, hCol1W = 0, hColGap = 16;
+        if (hRows && hRows.length >= 2) {
+            var lblW0 = Math.ceil(v3Advance('95%', thrSize)) + 5;
+            var valW0 = Math.ceil(Math.max(v3Advance(hRows[0][0].valStr, thrSize), v3Advance(hRows[1][0].valStr, thrSize)));
+            hCol0W = lblW0 + valW0;
+            var lblW1 = Math.ceil(v3Advance('100%', thrSize)) + 5;
+            var valW1 = Math.ceil(Math.max(v3Advance(hRows[0][1].valStr, thrSize), v3Advance(hRows[1][1].valStr, thrSize)));
+            hCol1W = lblW1 + valW1;
+        }
+
         var minWOpt = v3Int(v, 'minW', 0, 360);
         var minContentW = minWOpt > 0 ? Math.max(0, minWOpt - 2 * padX) : 0;
         var radius = v3Int(v, 'rad', 0, 14);
@@ -803,7 +821,7 @@
             ? (starsSpan + 12 + 2 * minBracket)
             : ((starsPos === 0 || starsPos === 1) ? (starsSpan + 8) : 0);
 
-        var cw = Math.ceil(Math.max(barMinW, headerMinW, dmgRowMinW,
+        var cw = Math.ceil(Math.max(barMinW, barTextMinW, headerMinW, dmgRowMinW,
             minContentW, starsMinFrameW - 2 * padX));
 
         var framed = (frameStyle !== 3);
@@ -822,12 +840,14 @@
         var headerY = y;
         y += headerH;
 
-        var barStyle = v3Int(v, 'bs', 0, 3);
-        var barH = v3Int(v, 'bh', 2, 10);
-        var trackH = v3Int(v, 'bth', 1, 10);
         var effBarH = Math.max(barH, trackH);
         var barY = null, barBlockH = 0;
-        if (barStyle !== 3) {
+        if (barStyle === 4) {
+            y += gapRow;
+            barY = y;
+            barBlockH = Math.round(barTextSize * 1.18);
+            y += barBlockH;
+        } else if (barStyle !== 3) {
             y += gapRow;
             barY = y;
             barBlockH = Math.max(effBarH, v.bcur ? 10 : effBarH,
@@ -866,7 +886,7 @@
             y += gapRow;
             hRow1Y = y;
             y += thrH;
-            y += Math.max(3, gapRow - 1);
+            y += 2;
             hRow2Y = y;
             y += thrH;
         }
@@ -949,10 +969,12 @@
             pctSize: pctSize, deltaSize: deltaSize,
             dInfo: dInfo, tInfo: tInfo, ast: ast, thr: thr,
             isHangar: isHangar, hRows: hRows,
+            hCol0W: hCol0W, hCol1W: hCol1W, hColGap: hColGap,
             hSepY: hSepY !== null ? (fy + hSepY) : null,
             hRow1Y: hRow1Y !== null ? (fy + hRow1Y) : null,
             hRow2Y: hRow2Y !== null ? (fy + hRow2Y) : null,
             barStyle: barStyle, barY: barY !== null ? (fy + barY) : null, barH: barH, trackH: trackH, barBlockH: barBlockH,
+            barText: barText, barTextSize: barTextSize, barTextW: barTextW,
             dmgY: dmgY !== null ? (fy + dmgY) : null, dmgH: dmgH, dmgSize: dmgSize,
             dmgLblText: dmgLblText, dmgLblMode: dmgLblMode,
             astY: astInside ? (astY !== null ? (fy + astY) : null) : astBelowY,
@@ -1006,6 +1028,23 @@
         barWrap.appendChild(barCur);
         elV3.appendChild(barWrap);
 
+        var barTxtWrap = document.createElement('div');
+        barTxtWrap.className = 'v3-bartxt-wrap';
+        barTxtWrap.style.display = 'none';
+        var barTxtBox = document.createElement('div');
+        barTxtBox.className = 'v3-bartxt-box';
+        var barTxtBase = document.createElement('span');
+        barTxtBase.className = 'v3-bartxt-base';
+        var barTxtClip = document.createElement('div');
+        barTxtClip.className = 'v3-bartxt-clip';
+        var barTxtFill = document.createElement('span');
+        barTxtFill.className = 'v3-bartxt-fill';
+        barTxtClip.appendChild(barTxtFill);
+        barTxtBox.appendChild(barTxtBase);
+        barTxtBox.appendChild(barTxtClip);
+        barTxtWrap.appendChild(barTxtBox);
+        elV3.appendChild(barTxtWrap);
+
         var dmgRow = document.createElement('div');
         dmgRow.className = 'v3-dmg';
         var dmgLbl = document.createElement('span');
@@ -1043,6 +1082,7 @@
         v3Dom = {
             bgImg: bgImg, hdr: hdr, pct: pctSpan, delWrap: delWrap, delIco: delIco, delTxt: delTxt,
             barWrap: barWrap, barFill: barFill, barCur: barCur, segFills: segFills,
+            barTxtWrap: barTxtWrap, barTxtBox: barTxtBox, barTxtBase: barTxtBase, barTxtClip: barTxtClip, barTxtFill: barTxtFill,
             dmgRow: dmgRow, dmgLbl: dmgLbl, dmgMain: dmgMain, dmgSec: dmgSec,
             astRow: astRow, astItems: astItems
         };
@@ -1207,7 +1247,24 @@
         var barPctVal = clamp(num(d.pct, 0), 0, 100);
         var ratio = v3BarRatio(v, d, m.tInfo.dmg, m.tInfo.tgt);
         var barCol = v3BarColor(v, barPctVal, m.dInfo.accent);
-        if (m.barStyle !== 3 && m.barY !== null) {
+        if (m.barStyle === 4 && m.barY !== null) {
+            dom.barWrap.style.display = 'none';
+            dom.barTxtWrap.style.display = 'flex';
+            dom.barTxtWrap.style.left = m.cx + 'px';
+            dom.barTxtWrap.style.top = m.barY + 'px';
+            dom.barTxtWrap.style.width = m.cw + 'px';
+            dom.barTxtWrap.style.height = m.barBlockH + 'px';
+            dom.barTxtBase.textContent = m.barText;
+            dom.barTxtBase.style.fontSize = m.barTextSize + 'px';
+            dom.barTxtBase.style.lineHeight = m.barBlockH + 'px';
+            dom.barTxtFill.textContent = m.barText;
+            dom.barTxtFill.style.fontSize = m.barTextSize + 'px';
+            dom.barTxtFill.style.lineHeight = m.barBlockH + 'px';
+            dom.barTxtFill.style.color = barCol;
+            dom.barTxtFill.style.textShadow = txtShadow;
+            dom.barTxtClip.style.width = clamp(ratio * 100, 0, 100).toFixed(2) + '%';
+        } else if (m.barStyle !== 3 && m.barY !== null) {
+            dom.barTxtWrap.style.display = 'none';
             var bx = m.cx, bw = m.cw, bh = m.barH, trackH = m.trackH;
             var by = m.barY + (m.barBlockH - bh) * 0.5;
             var trackY = by + (bh - trackH) * 0.5;
@@ -1298,6 +1355,7 @@
             }
         } else {
             dom.barWrap.style.display = 'none';
+            dom.barTxtWrap.style.display = 'none';
         }
 
         /* Damage row DOM */
@@ -1396,22 +1454,25 @@
                     hdr.row.style.top = hdr.y + 'px';
                     hdr.row.style.width = m.cw.toFixed(1) + 'px';
                     hdr.row.style.height = m.thrH + 'px';
-                    hdr.row.style.justifyContent = (hdr.data.length > 1) ? 'space-between' : 'center';
+                    hdr.row.style.justifyContent = 'center';
                     for (var hk = 0; hk < hdr.items.length; hk += 1) {
                         var hDom = hdr.items[hk];
                         if (hk < hdr.data.length) {
                             var hit = hdr.data[hk];
                             var hlCol = hit.done ? v.up : v.tmu;
                             var hvCol = hit.done ? v.up : v.tm;
+                            var colW = (hk === 0) ? m.hCol0W : m.hCol1W;
                             hDom.box.style.display = 'flex';
-                            hDom.box.style.marginLeft = '0px';
+                            hDom.box.style.width = colW + 'px';
+                            hDom.box.style.justifyContent = 'space-between';
+                            hDom.box.style.marginLeft = (hk > 0) ? (m.hColGap + 'px') : '0px';
                             hDom.ico.style.display = 'none';
                             hDom.lbl.textContent = hit.lbl;
                             hDom.lbl.style.color = hlCol;
                             hDom.lbl.style.fontSize = m.thrSize + 'px';
                             hDom.lbl.style.textShadow = txtShadow;
                             hDom.txt.textContent = hit.valStr;
-                            hDom.txt.style.marginLeft = spacePx + 'px';
+                            hDom.txt.style.marginLeft = '4px';
                             hDom.txt.style.color = hvCol;
                             hDom.txt.style.fontSize = m.thrSize + 'px';
                             hDom.txt.style.textShadow = txtShadow;
@@ -1440,6 +1501,8 @@
                     var lCol = tit.done ? v.up : v.tmu;
                     var vCol = tit.done ? v.up : v.tm;
                     tDom.box.style.display = 'flex';
+                    tDom.box.style.width = '';
+                    tDom.box.style.justifyContent = '';
                     tDom.box.style.marginLeft = (kt > 0) ? (m.thrItemGap + 'px') : '0px';
                     tDom.ico.style.display = 'none';
                     tDom.lbl.textContent = tit.lbl;
