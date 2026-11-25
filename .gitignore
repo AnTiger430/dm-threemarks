@@ -2,6 +2,7 @@
 __pycache__/
 dist/
 *.wotmod
+*.mtmod
 *.zip
 package/res/scripts/
 *.log

@@ -1,6 +1,6 @@
 <root>
     <id>dm.threemarks</id>
-    <version>10.12.7</version>
+    <version>10.12.45</version>
     <n>Три отметки на стволе</n>
     <description>Прогноз отметки в бою и панель в ангаре. Три пресета дизайна, включая Вариант 3 «Тактический / Pro» (рамка с вырезом, звёзды в 6 позициях, тактическая и пороговая полоски, каналы засвета и гусениц) и живой предпросмотр в Aslain Mod Menu. Журнал: mods/configs/three_marks/three_marks.log</description>
 </root>

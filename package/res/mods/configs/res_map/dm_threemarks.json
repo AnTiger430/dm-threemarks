@@ -1,0 +1,12 @@
+[
+  {
+    "type": "Layout",
+    "path": "coui://gui/gameface/mods/dm/ThreeMarks/ThreeMarks.html",
+    "parameters": {
+      "extension": "",
+      "entrance": "ThreeMarks",
+      "impl": "gameface"
+    },
+    "itemID": "mods/dm/ThreeMarks/layoutID"
+  }
+]

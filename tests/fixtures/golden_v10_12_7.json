@@ -1,0 +1,1921 @@
+{
+  "curve_row": {
+    "damageOf": [
+      0.0, 
+      300.0, 
+      600.0, 
+      1366.6666666666667, 
+      1850.0, 
+      2143.6000000000004, 
+      2700.0, 
+      3300.0, 
+      3750.0, 
+      3800.0
+    ], 
+    "percentOf": [
+      0.0, 
+      10.0, 
+      20.0, 
+      40.0, 
+      65.0, 
+      78.33333333333333, 
+      85.0, 
+      95.0, 
+      100.0, 
+      100.0
+    ], 
+    "explains": [
+      true, 
+      false, 
+      true, 
+      false
+    ], 
+    "thresholds": [
+      1850.0, 
+      2700.0, 
+      3300.0, 
+      3800.0
+    ], 
+    "cell": [
+      0, 
+      1000, 
+      2000, 
+      4000, 
+      6500, 
+      7833, 
+      8500, 
+      9500, 
+      10000, 
+      10000
+    ], 
+    "points": [
+      [
+        20.0, 
+        600.0
+      ], 
+      [
+        40.0, 
+        1100.0
+      ], 
+      [
+        55.0, 
+        1500.0
+      ], 
+      [
+        65.0, 
+        1850.0
+      ], 
+      [
+        75.0, 
+        2250.0
+      ], 
+      [
+        85.0, 
+        2700.0
+      ], 
+      [
+        95.0, 
+        3300.0
+      ], 
+      [
+        100.0, 
+        3800.0
+      ]
+    ], 
+    "bool": true, 
+    "wholeDamage": [
+      0.0, 
+      300.0, 
+      600.0, 
+      1367.0, 
+      1850.0, 
+      2144.0, 
+      2700.0, 
+      3300.0, 
+      3750.0, 
+      3800.0
+    ], 
+    "exact": true, 
+    "day": 738999
+  }, 
+  "preview_cases": {
+    "0_0_plus": {
+      "dw": 174, 
+      "bw": 193, 
+      "bh": 124, 
+      "dh": 112, 
+      "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"193\" height=\"124\" viewBox=\"0 0 193 124\"><g opacity=\"1.000\"><rect x=\"6.0\" y=\"14.0\" width=\"181.0\" height=\"104.0\" rx=\"14\" fill=\"#0B1016\" fill-opacity=\"0.200\"/><path d=\"M 133.5 14.0 H 173.0 A 14.0 14.0 0 0 1 187.0 28.0 V 104.0 A 14.0 14.0 0 0 1 173.0 118.0 H 20.0 A 14.0 14.0 0 0 1 6.0 104.0 V 28.0 A 14.0 14.0 0 0 1 20.0 14.0 H 59.5\" fill=\"none\" stroke=\"#FFFFFF\" stroke-width=\"1.0\" stroke-opacity=\"0.220\"/><path d=\"M 6.0 32.0 V 28.0 A 14.0 14.0 0 0 1 20.0 14.0 H 24.0\" fill=\"none\" stroke=\"#FFFFFF\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-opacity=\"0.500\"/><path d=\"M 169.0 14.0 H 173.0 A 14.0 14.0 0 0 1 187.0 28.0 V 32.0\" fill=\"none\" stroke=\"#FFFFFF\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-opacity=\"0.500\"/><path d=\"M 187.0 100.0 V 104.0 A 14.0 14.0 0 0 1 173.0 118.0 H 169.0\" fill=\"none\" stroke=\"#FFFFFF\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-opacity=\"0.500\"/><path d=\"M 24.0 118.0 H 20.0 A 14.0 14.0 0 0 1 6.0 104.0 V 100.0\" fill=\"none\" stroke=\"#FFFFFF\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-opacity=\"0.500\"/><polygon points=\"73.50,6.00 75.52,11.22 81.11,11.53 76.77,15.06 78.20,20.47 73.50,17.44 68.80,20.47 70.23,15.06 65.89,11.53 71.48,11.22\" fill=\"#9AA3AE\" fill-opacity=\"0.10\" stroke=\"#9AA3AE\" stroke-width=\"1.15\" stroke-opacity=\"0.55\"/><polygon points=\"96.50,6.00 98.52,11.22 104.11,11.53 99.77,15.06 101.20,20.47 96.50,17.44 91.80,20.47 93.23,15.06 88.89,11.53 94.48,11.22\" fill=\"#9AA3AE\" fill-opacity=\"0.10\" stroke=\"#9AA3AE\" stroke-width=\"1.15\" stroke-opacity=\"0.55\"/><polygon points=\"119.50,6.00 121.52,11.22 127.11,11.53 122.77,15.06 124.20,20.47 119.50,17.44 114.80,20.47 116.23,15.06 111.89,11.53 117.48,11.22\" fill=\"#9AA3AE\" fill-opacity=\"0.10\" stroke=\"#9AA3AE\" stroke-width=\"1.15\" stroke-opacity=\"0.55\"/><text x=\"18.5\" y=\"49.6\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"24\" font-weight=\"700\" fill=\"#000000\" fill-opacity=\"0.54\">43.28%</text><text x=\"18.5\" y=\"48.6\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"24\" font-weight=\"700\" fill=\"#FFFFFF\">43.28%</text><path d=\"M 111.7 46.7 L 119.7 38.7 M 114.7 38.7 L 119.7 38.7 L 119.7 43.7\" fill=\"none\" stroke=\"#A7D080\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><text x=\"126.2\" y=\"48.2\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"14\" font-weight=\"700\" fill=\"#000000\" fill-opacity=\"0.54\">+1.25%</text><text x=\"126.2\" y=\"47.2\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"14\" font-weight=\"700\" fill=\"#A7D080\">+1.25%</text><rect x=\"16.0\" y=\"63.0\" width=\"161.0\" height=\"2.0\" rx=\"1\" fill=\"#FFFFFF\" fill-opacity=\"0.22\"/><rect x=\"16.0\" y=\"60.0\" width=\"1.2\" height=\"8.0\" fill=\"#FFFFFF\" fill-opacity=\"0.45\"/><rect x=\"175.8\" y=\"60.0\" width=\"1.2\" height=\"8.0\" fill=\"#FFFFFF\" fill-opacity=\"0.45\"/><rect x=\"120.2\" y=\"60.5\" width=\"1.0\" height=\"7.0\" fill=\"#FFFFFF\" fill-opacity=\"0.40\"/><rect x=\"152.3\" y=\"60.5\" width=\"1.0\" height=\"7.0\" fill=\"#FFFFFF\" fill-opacity=\"0.40\"/><rect x=\"168.4\" y=\"60.5\" width=\"1.0\" height=\"7.0\" fill=\"#FFFFFF\" fill-opacity=\"0.40\"/><rect x=\"16.0\" y=\"62.0\" width=\"69.7\" height=\"4.0\" rx=\"1\" fill=\"#A7D080\"/><rect x=\"84.4\" y=\"59.0\" width=\"2.5\" height=\"10.0\" rx=\"0.8\" fill=\"#FFFFFF\" fill-opacity=\"0.95\"/><text x=\"16.0\" y=\"86.0\" text-anchor=\"start\" font-family=\"Warhelios\" font-size=\"13\" font-weight=\"400\" fill=\"#000000\" fill-opacity=\"0.54\">Сум. урон</text><text x=\"16.0\" y=\"85.0\" text-anchor=\"start\" font-family=\"Warhelios\" font-size=\"13\" font-weight=\"400\" fill=\"#B8BDC4\">Сум. урон</text><text x=\"134.9\" y=\"86.0\" text-anchor=\"end\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"13\" font-weight=\"700\" fill=\"#000000\" fill-opacity=\"0.54\">1850</text><text x=\"134.9\" y=\"85.0\" text-anchor=\"end\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"13\" font-weight=\"700\" fill=\"#A7D080\">1850</text><text x=\"177.0\" y=\"86.0\" text-anchor=\"end\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"13\" font-weight=\"700\" fill=\"#000000\" fill-opacity=\"0.54\">/ 1480</text><text x=\"177.0\" y=\"85.0\" text-anchor=\"end\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"13\" font-weight=\"700\" fill=\"#B8BDC4\">/ 1480</text><circle cx=\"57.70\" cy=\"102.50\" r=\"1.45\" fill=\"#A7D080\" fill-opacity=\"1.00\"/><path d=\"M 55.02 100.25 A 3.50 3.50 0 0 0 55.02 104.75 M 53.39 98.62 A 5.80 5.80 0 0 0 53.39 106.38 M 60.38 100.25 A 3.50 3.50 0 0 1 60.38 104.75 M 62.01 98.62 A 5.80 5.80 0 0 1 62.01 106.38\" fill=\"none\" stroke=\"#A7D080\" stroke-width=\"1.25\" stroke-linecap=\"round\" stroke-opacity=\"1.00\"/><text x=\"70.7\" y=\"108.8\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"15\" font-weight=\"700\" fill=\"#000000\" fill-opacity=\"0.54\">750</text><text x=\"70.7\" y=\"107.8\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"15\" font-weight=\"700\" fill=\"#A7D080\">750</text><path d=\"M 124.33 96.37 L 128.03 100.07 L 127.12 100.99 L 128.94 102.81 L 127.68 104.07 L 125.53 101.91 L 126.50 100.94 L 123.46 97.90 L 122.49 98.87 L 120.33 96.72 L 121.59 95.46 L 123.41 97.28 Z M 121.50 99.20 L 125.20 102.90 L 124.29 103.82 L 126.11 105.64 L 124.86 106.90 L 122.70 104.74 L 123.67 103.77 L 120.63 100.73 L 119.66 101.70 L 117.50 99.54 L 118.76 98.29 L 120.58 100.11 Z M 118.67 102.03 L 122.37 105.73 L 121.46 106.64 L 123.29 108.47 L 122.03 109.73 L 119.87 107.57 L 120.84 106.60 L 117.80 103.56 L 116.83 104.53 L 114.67 102.37 L 115.93 101.11 L 117.76 102.94 Z\" fill=\"#B8BDC4\" fill-opacity=\"0.82\"/><text x=\"134.9\" y=\"108.8\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"15\" font-weight=\"700\" fill=\"#000000\" fill-opacity=\"0.54\">0</text><text x=\"134.9\" y=\"107.8\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"15\" font-weight=\"700\" fill=\"#B8BDC4\">0</text></g></svg>"
+    }, 
+    "0_1_minus": {
+      "dw": 198, 
+      "bw": 220, 
+      "bh": 72, 
+      "dh": 65, 
+      "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"220\" height=\"72\" viewBox=\"0 0 220 72\"><g opacity=\"1.000\"><text x=\"110.0\" y=\"32.0\" text-anchor=\"middle\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"22\" font-weight=\"700\" fill=\"#000000\" fill-opacity=\"0.85\">70.64%</text><text x=\"110.0\" y=\"31.0\" text-anchor=\"middle\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"22\" font-weight=\"700\" fill=\"#FF6060\">70.64%</text><text x=\"102.8\" y=\"58.0\" text-anchor=\"end\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"15\" font-weight=\"700\" fill=\"#000000\" fill-opacity=\"0.85\">1 120</text><text x=\"102.8\" y=\"57.0\" text-anchor=\"end\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"15\" font-weight=\"700\" fill=\"#FF6060\">1 120</text><text x=\"106.8\" y=\"58.0\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"15\" font-weight=\"700\" fill=\"#000000\" fill-opacity=\"0.85\">/ 2 320</text><text x=\"106.8\" y=\"57.0\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"15\" font-weight=\"700\" fill=\"#EAEAEA\">/ 2 320</text></g></svg>"
+    }, 
+    "1_0_zero": {
+      "dw": 210, 
+      "bw": 191, 
+      "bh": 147, 
+      "dh": 162, 
+      "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"191\" height=\"147\" viewBox=\"0 0 191 147\"><g opacity=\"1.000\"><rect x=\"6.0\" y=\"17.0\" width=\"179.0\" height=\"124.0\" rx=\"5\" fill=\"#131313\" fill-opacity=\"0.600\"/><path d=\"M 141.5 17.0 H 180.0 A 5.0 5.0 0 0 1 185.0 22.0 V 136.0 A 5.0 5.0 0 0 1 180.0 141.0 H 11.0 A 5.0 5.0 0 0 1 6.0 136.0 V 22.0 A 5.0 5.0 0 0 1 11.0 17.0 H 49.5\" fill=\"none\" stroke=\"#FFFFFF\" stroke-width=\"1.0\" stroke-opacity=\"0.200\"/><polygon points=\"66.50,6.00 69.28,13.17 76.96,13.60 71.00,18.46 72.97,25.90 66.50,21.73 60.03,25.90 62.00,18.46 56.04,13.60 63.72,13.17\" fill=\"#FFFFFF\" fill-opacity=\"0.24\" stroke=\"#FFFFFF\" stroke-width=\"2.0\" stroke-opacity=\"0.22\"/><polygon points=\"66.50,6.00 69.28,13.17 76.96,13.60 71.00,18.46 72.97,25.90 66.50,21.73 60.03,25.90 62.00,18.46 56.04,13.60 63.72,13.17\" fill=\"#FFFFFF\" fill-opacity=\"0.96\"/><polygon points=\"95.50,6.00 98.28,13.17 105.96,13.60 100.00,18.46 101.97,25.90 95.50,21.73 89.03,25.90 91.00,18.46 85.04,13.60 92.72,13.17\" fill=\"#FFFFFF\" fill-opacity=\"0.24\" stroke=\"#FFFFFF\" stroke-width=\"2.0\" stroke-opacity=\"0.22\"/><polygon points=\"95.50,6.00 98.28,13.17 105.96,13.60 100.00,18.46 101.97,25.90 95.50,21.73 89.03,25.90 91.00,18.46 85.04,13.60 92.72,13.17\" fill=\"#FFFFFF\" fill-opacity=\"0.96\"/><polygon points=\"124.50,6.00 127.28,13.17 134.96,13.60 129.00,18.46 130.97,25.90 124.50,21.73 118.03,25.90 120.00,18.46 114.04,13.60 121.72,13.17\" fill=\"#9AA3AE\" fill-opacity=\"0.10\" stroke=\"#9AA3AE\" stroke-width=\"1.15\" stroke-opacity=\"0.55\"/><text x=\"16.0\" y=\"54.6\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"24\" font-weight=\"700\" fill=\"#FFFFFF\">85.47%</text><rect x=\"16.0\" y=\"69.0\" width=\"159.0\" height=\"2.0\" rx=\"1\" fill=\"#FFFFFF\" fill-opacity=\"0.22\"/><rect x=\"16.0\" y=\"66.0\" width=\"1.2\" height=\"8.0\" fill=\"#FFFFFF\" fill-opacity=\"0.45\"/><rect x=\"173.8\" y=\"66.0\" width=\"1.2\" height=\"8.0\" fill=\"#FFFFFF\" fill-opacity=\"0.45\"/><rect x=\"118.9\" y=\"66.5\" width=\"1.0\" height=\"7.0\" fill=\"#FFFFFF\" fill-opacity=\"0.40\"/><rect x=\"150.7\" y=\"66.5\" width=\"1.0\" height=\"7.0\" fill=\"#FFFFFF\" fill-opacity=\"0.40\"/><rect x=\"166.5\" y=\"66.5\" width=\"1.0\" height=\"7.0\" fill=\"#FFFFFF\" fill-opacity=\"0.40\"/><rect x=\"16.0\" y=\"68.0\" width=\"135.9\" height=\"4.0\" rx=\"1\" fill=\"#A7D080\"/><rect x=\"150.6\" y=\"65.0\" width=\"2.5\" height=\"10.0\" rx=\"0.8\" fill=\"#FFFFFF\" fill-opacity=\"0.95\"/><text x=\"16.0\" y=\"91.0\" text-anchor=\"start\" font-family=\"Warhelios\" font-size=\"13\" font-weight=\"400\" fill=\"#B8BDC4\">Суммарный урон</text><text x=\"175.0\" y=\"91.0\" text-anchor=\"end\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"13\" font-weight=\"700\" fill=\"#A7D080\">2890</text><line x1=\"16.0\" y1=\"100.0\" x2=\"175.0\" y2=\"100.0\" stroke=\"#FFFFFF\" stroke-width=\"1.0\" stroke-opacity=\"0.18\"/><text x=\"25.0\" y=\"115.0\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"12\" font-weight=\"700\" fill=\"#A7D080\">65%</text><text x=\"84.0\" y=\"115.0\" text-anchor=\"end\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"12\" font-weight=\"700\" fill=\"#A7D080\">2150</text><text x=\"100.0\" y=\"115.0\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"12\" font-weight=\"700\" fill=\"#A7D080\">85%</text><text x=\"166.0\" y=\"115.0\" text-anchor=\"end\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"12\" font-weight=\"700\" fill=\"#A7D080\">2890</text><text x=\"25.0\" y=\"131.0\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"12\" font-weight=\"700\" fill=\"#B8BDC4\">95%</text><text x=\"84.0\" y=\"131.0\" text-anchor=\"end\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"12\" font-weight=\"700\" fill=\"#FFFFFF\">3450</text><text x=\"100.0\" y=\"131.0\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"12\" font-weight=\"700\" fill=\"#B8BDC4\">100%</text><text x=\"166.0\" y=\"131.0\" text-anchor=\"end\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"12\" font-weight=\"700\" fill=\"#FFFFFF\">3920</text></g></svg>"
+    }
+  }, 
+  "serverCurve": {
+    "non_exact": [
+      739000, 
+      0.10499999999998977, 
+      true
+    ], 
+    "stale": [
+      739000, 
+      0.0, 
+      false
+    ], 
+    "zero_avg": [
+      739000, 
+      0.0, 
+      false
+    ], 
+    "exact": [
+      739000, 
+      0.0, 
+      true
+    ]
+  }, 
+  "calcStatistics": {
+    "45.2_1200": {
+      "95": 2770, 
+      "65": 1970, 
+      "85": 2500
+    }, 
+    "91.0_3100": {
+      "95": 3236.363736263736, 
+      "65": 2214.385714285714, 
+      "85": 2895.7043956043954
+    }, 
+    "72.5_2400": {
+      "95": 3550, 
+      "65": 2151.8241379310343, 
+      "85": 2813.8931034482757
+    }
+  }, 
+  "menu": {
+    "values": {
+      "vhBarStyle": 0, 
+      "previewStateHangar": 0, 
+      "vhStarsGap": 7, 
+      "v3ShowDamage": true, 
+      "bigByDamage": true, 
+      "v3AssistHideZero": false, 
+      "v3StarsDivider": false, 
+      "vhBarHeight": 4, 
+      "v3Anchor": 1, 
+      "v3BgOpacity": 0.2, 
+      "v3TempoSize": 13, 
+      "v3TextMuted": "#B8BDC4", 
+      "v3DamageLabel": 0, 
+      "hideAfterDeath": false, 
+      "v3DamageCustomLabel": "Сум. урон", 
+      "vhPctDecimals": 1, 
+      "previewState": 0, 
+      "vhFrameStyle": 2, 
+      "v3FrameStyle": 0, 
+      "v3Font": 2, 
+      "v3TempoShow": 1, 
+      "vhStarsGlow": true, 
+      "v3ThousandsSep": 2, 
+      "v3AccentPlus": "#A7D080", 
+      "bigDamageFactor": 2.0, 
+      "vhBarTextSize": 15, 
+      "previewAlt": 0, 
+      "vhBarMarks": true, 
+      "colorPlus": "#86EF6A", 
+      "v3BarCursor": true, 
+      "v3BarTextSize": 15, 
+      "v3BarCustomText": "KIBERSPORT", 
+      "v3BarCustomColor": "#A7D080", 
+      "v3BarColorMode": 0, 
+      "v3TempoPlace": 0, 
+      "colorDmg": "#86EF6A", 
+      "colorZero": "#EAEAEA", 
+      "vhThousandsSep": 2, 
+      "vhStarOffColor": "#9AA3AE", 
+      "v3HeaderOrder": 2, 
+      "v3AccentMinus": "#E57373", 
+      "colorBig": "#B07CFF", 
+      "v3MinWidth": 0, 
+      "v3AssistPlace": 0, 
+      "v3CornerAlpha": 0.5, 
+      "v3CornerColor": "#FFFFFF", 
+      "vhBarCustomText": "KIBERSPORT", 
+      "vhBarTrackHeight": 2, 
+      "vhFont": 2, 
+      "v3Density": 0, 
+      "vhStarsSize": 22, 
+      "v3PctDecimals": 1, 
+      "vhTextMain": "#FFFFFF", 
+      "vhStarOnColor": "#FFFFFF", 
+      "v3DamageDynColor": true, 
+      "zeroBand": 0.02, 
+      "vhBorderAlpha": 0.2, 
+      "v3StarsPos": 0, 
+      "v3BarTrackHeight": 2, 
+      "v3AssistShow": 0, 
+      "pctColor": "#F4F4F4", 
+      "v3DeltaIcon": 1, 
+      "vhBarCursor": true, 
+      "v3StarsGap": 7, 
+      "v3TextMain": "#FFFFFF", 
+      "vhStarsStyle": 0, 
+      "v3BarEndTicks": true, 
+      "battlePanelVariant": 0, 
+      "v3AssistMode": 0, 
+      "v3StarsGlow": true, 
+      "hideInIntro": true, 
+      "v3BarHeight": 4, 
+      "v3AccentBig": "#B07CFF", 
+      "vhBarEndTicks": true, 
+      "battleSection": 0, 
+      "uiScale": 0.9, 
+      "v3DeltaColorMode": 0, 
+      "bigFrom": 4.0, 
+      "v3TempoMode": 0, 
+      "v3Radius": 14, 
+      "v3StarsSize": 16, 
+      "dmgFollowsSign": true, 
+      "previewTarget": 0, 
+      "vhDensity": 0, 
+      "vhCornerColor": "#FFFFFF", 
+      "vhRadius": 5, 
+      "vhScale": 1.1, 
+      "colorMinus": "#FF6060", 
+      "vhBarScale": 0, 
+      "panelOpacity": 1.0, 
+      "v3BorderAlpha": 0.22, 
+      "v3AssistSize": 15, 
+      "vhTextMuted": "#B8BDC4", 
+      "hangarSection": 0, 
+      "v3StarsStyle": 0, 
+      "v3BarScale": 0, 
+      "vhBarColor": "#A7D080", 
+      "v3BarMarks": true, 
+      "colorProj": "#EAEAEA", 
+      "vhCornerAlpha": 0.0, 
+      "hideInKillcam": true, 
+      "v3StarOnColor": "#FFFFFF", 
+      "vhStarsPos": 0, 
+      "vhShowThresholds": true, 
+      "vhBgOpacity": 0.6, 
+      "v3AccentZero": "#9AA3AE", 
+      "vhStarsDivider": false, 
+      "v3BarStyle": 0, 
+      "v3BgColor": "#0B1016", 
+      "vhShowEma": true, 
+      "hangarPanel": true, 
+      "vhBgColor": "#131313", 
+      "v3StarOffColor": "#9AA3AE"
+    }, 
+    "converts": {
+      "v3BarStyle_clamp": 3, 
+      "v3ShowDamage_bool": false, 
+      "v3CornerColor_int": "#12AB34", 
+      "v3BarCustomText_nl": "ABC DEF 1234567890123456", 
+      "v3BarTextSize_float": 18, 
+      "v3CornerColor_list": "#FF8000", 
+      "v3BgOpacity_clamp": 1.0
+    }, 
+    "defaults": {
+      "vhBarStyle": 0, 
+      "previewStateHangar": 0, 
+      "vhStarsGap": 7, 
+      "v3ShowDamage": true, 
+      "bigByDamage": true, 
+      "v3AssistHideZero": false, 
+      "v3StarsDivider": false, 
+      "vhBarHeight": 4, 
+      "v3Anchor": 1, 
+      "v3BgOpacity": 0.2, 
+      "v3TempoSize": 13, 
+      "v3TextMuted": "#B8BDC4", 
+      "v3DamageLabel": 0, 
+      "hideAfterDeath": false, 
+      "v3DamageCustomLabel": "Сум. урон", 
+      "vhPctDecimals": 1, 
+      "previewState": 0, 
+      "vhFrameStyle": 2, 
+      "v3FrameStyle": 0, 
+      "v3Font": 2, 
+      "v3TempoShow": 1, 
+      "vhStarsGlow": true, 
+      "v3ThousandsSep": 2, 
+      "v3AccentPlus": "#A7D080", 
+      "bigDamageFactor": 2.0, 
+      "vhBarTextSize": 15, 
+      "previewAlt": 0, 
+      "vhBarMarks": true, 
+      "colorPlus": "#86EF6A", 
+      "v3BarCursor": true, 
+      "v3BarTextSize": 15, 
+      "v3BarCustomText": "KIBERSPORT", 
+      "v3BarCustomColor": "#A7D080", 
+      "v3BarColorMode": 0, 
+      "v3TempoPlace": 0, 
+      "colorDmg": "#86EF6A", 
+      "colorZero": "#EAEAEA", 
+      "vhThousandsSep": 2, 
+      "vhStarOffColor": "#9AA3AE", 
+      "v3HeaderOrder": 2, 
+      "v3AccentMinus": "#E57373", 
+      "colorBig": "#B07CFF", 
+      "v3MinWidth": 0, 
+      "v3AssistPlace": 0, 
+      "v3CornerAlpha": 0.5, 
+      "v3CornerColor": "#FFFFFF", 
+      "vhBarCustomText": "KIBERSPORT", 
+      "vhBarTrackHeight": 2, 
+      "vhFont": 2, 
+      "v3Density": 0, 
+      "vhStarsSize": 22, 
+      "v3PctDecimals": 1, 
+      "vhTextMain": "#FFFFFF", 
+      "vhStarOnColor": "#FFFFFF", 
+      "v3DamageDynColor": true, 
+      "zeroBand": 0.02, 
+      "vhBorderAlpha": 0.2, 
+      "v3StarsPos": 0, 
+      "v3BarTrackHeight": 2, 
+      "v3AssistShow": 0, 
+      "pctColor": "#F4F4F4", 
+      "v3DeltaIcon": 1, 
+      "vhBarCursor": true, 
+      "v3StarsGap": 7, 
+      "v3TextMain": "#FFFFFF", 
+      "vhStarsStyle": 0, 
+      "v3BarEndTicks": true, 
+      "battlePanelVariant": 0, 
+      "v3AssistMode": 0, 
+      "v3StarsGlow": true, 
+      "hideInIntro": true, 
+      "v3BarHeight": 4, 
+      "v3AccentBig": "#B07CFF", 
+      "vhBarEndTicks": true, 
+      "battleSection": 0, 
+      "uiScale": 0.9, 
+      "v3DeltaColorMode": 0, 
+      "bigFrom": 4.0, 
+      "v3TempoMode": 0, 
+      "v3Radius": 14, 
+      "v3StarsSize": 16, 
+      "dmgFollowsSign": true, 
+      "previewTarget": 0, 
+      "vhDensity": 0, 
+      "vhCornerColor": "#FFFFFF", 
+      "vhRadius": 5, 
+      "vhScale": 1.1, 
+      "colorMinus": "#FF6060", 
+      "vhBarScale": 0, 
+      "panelOpacity": 1.0, 
+      "v3BorderAlpha": 0.22, 
+      "v3AssistSize": 15, 
+      "vhTextMuted": "#B8BDC4", 
+      "hangarSection": 0, 
+      "v3StarsStyle": 0, 
+      "v3BarScale": 0, 
+      "vhBarColor": "#A7D080", 
+      "v3BarMarks": true, 
+      "colorProj": "#EAEAEA", 
+      "vhCornerAlpha": 0.0, 
+      "hideInKillcam": true, 
+      "v3StarOnColor": "#FFFFFF", 
+      "vhStarsPos": 0, 
+      "vhShowThresholds": true, 
+      "vhBgOpacity": 0.6, 
+      "v3AccentZero": "#9AA3AE", 
+      "vhStarsDivider": false, 
+      "v3BarStyle": 0, 
+      "v3BgColor": "#0B1016", 
+      "vhShowEma": true, 
+      "hangarPanel": true, 
+      "vhBgColor": "#131313", 
+      "v3StarOffColor": "#9AA3AE"
+    }
+  }, 
+  "calcPercent": [
+    2151.8241379310343, 
+    2416.651724137931
+  ], 
+  "curve_exact": {
+    "damageOf": [
+      0.0, 
+      300.0, 
+      600.0, 
+      1366.6666666666667, 
+      1850.0, 
+      2143.6000000000004, 
+      2700.0, 
+      3300.0, 
+      3750.0, 
+      3800.0
+    ], 
+    "percentOf": [
+      0.0, 
+      10.0, 
+      20.0, 
+      40.0, 
+      65.0, 
+      78.33333333333333, 
+      85.0, 
+      95.0, 
+      100.0, 
+      100.0
+    ], 
+    "explains": [
+      true, 
+      false, 
+      true, 
+      false
+    ], 
+    "thresholds": [
+      1850.0, 
+      2700.0, 
+      3300.0, 
+      3800.0
+    ], 
+    "cell": [
+      0, 
+      1000, 
+      2000, 
+      4000, 
+      6500, 
+      7833, 
+      8500, 
+      9500, 
+      10000, 
+      10000
+    ], 
+    "points": [
+      [
+        20.0, 
+        600.0
+      ], 
+      [
+        40.0, 
+        1100.0
+      ], 
+      [
+        55.0, 
+        1500.0
+      ], 
+      [
+        65.0, 
+        1850.0
+      ], 
+      [
+        75.0, 
+        2250.0
+      ], 
+      [
+        85.0, 
+        2700.0
+      ], 
+      [
+        95.0, 
+        3300.0
+      ], 
+      [
+        100.0, 
+        3800.0
+      ]
+    ], 
+    "bool": true, 
+    "wholeDamage": [
+      0.0, 
+      300.0, 
+      600.0, 
+      1367.0, 
+      1850.0, 
+      2144.0, 
+      2700.0, 
+      3300.0, 
+      3750.0, 
+      3800.0
+    ], 
+    "exact": true, 
+    "day": 739000
+  }, 
+  "forecast": {
+    "exact_500": [
+      64.22, 
+      -0.7800000000000011, 
+      1823.0, 
+      1823.2673267326732
+    ], 
+    "zero_avg_2000": [
+      65.07, 
+      0.06999999999999318, 
+      1853.0, 
+      1852.970297029703
+    ], 
+    "exact_3200": [
+      65.67, 
+      0.6700000000000017, 
+      1877.0, 
+      1876.7326732673268
+    ], 
+    "non_exact_2500": [
+      65.43, 
+      0.3300000000000125, 
+      1863.0, 
+      1862.8712871287128
+    ]
+  }, 
+  "currentPercent": {
+    "stale": [
+      65.0, 
+      true
+    ], 
+    "exact": [
+      65.0, 
+      false
+    ]
+  }, 
+  "v3Thresholds": {
+    "fallback": [
+      0, 
+      0, 
+      0, 
+      0
+    ], 
+    "curve": [
+      0, 
+      0, 
+      0, 
+      0
+    ]
+  }, 
+  "epoch": {
+    "byClock_after_9utc": 738838, 
+    "byClock_before_9utc": 738838, 
+    "holds_fresh": true, 
+    "day_late_hold": 739000, 
+    "holds_expired": false
+  }, 
+  "v3_cases": {
+    "battle_barstyle4_customtext": {
+      "metrics": {
+        "astH": 17, 
+        "thrRowMinW": 138.3424, 
+        "thrH": 15, 
+        "starGap": 7, 
+        "dmgLblText": "Сум. урон", 
+        "sideBorderStars": false, 
+        "astIconSize": 16, 
+        "hSepY": null, 
+        "starsCoords": [
+          [
+            73.5, 
+            14
+          ], 
+          [
+            96.5, 
+            14
+          ], 
+          [
+            119.5, 
+            14
+          ]
+        ], 
+        "tgt": 3750, 
+        "astItemGap": 18, 
+        "deltaIconW": 12, 
+        "astSize": 15, 
+        "astY": 105, 
+        "cy": 27, 
+        "cx": 16, 
+        "deltaSize": 14, 
+        "thrY": 126, 
+        "cw": 161, 
+        "hColGap": 16, 
+        "headerY": 27, 
+        "hRow2Y": null, 
+        "starsSpan": 62, 
+        "deltaW": 64.3536, 
+        "barY": 59, 
+        "isHangar": false, 
+        "starsPos": 0, 
+        "activeCh": "track", 
+        "deltaText": "+4.65%", 
+        "fx": 6, 
+        "astWidths": [
+          54.6, 
+          54.6
+        ], 
+        "starSize": 16, 
+        "showDelta": true, 
+        "dmgValStr": "6820 / 3750", 
+        "maxAst": 2700, 
+        "barH": 4, 
+        "hRows": [], 
+        "dmgLblMode": 0, 
+        "dmgLblSize": 13, 
+        "altExp": false, 
+        "barTextW": 108.0576, 
+        "thrIconSize": 0, 
+        "barBlockH": 21, 
+        "fw": 181, 
+        "astItems": [
+          {
+            "active": false, 
+            "text": "1200", 
+            "ch": "spot", 
+            "val": 1200
+          }, 
+          {
+            "active": true, 
+            "text": "2700", 
+            "ch": "track", 
+            "val": 2700
+          }
+        ], 
+        "fy": 14, 
+        "headerH": 28, 
+        "divLine": null, 
+        "winW": 193, 
+        "barText": "CYBER PRO", 
+        "padY": 7, 
+        "winH": 154, 
+        "thrItemGap": 14, 
+        "tgtStr": "3750", 
+        "astRowMinW": 127.2, 
+        "fh": 134, 
+        "padX": 10, 
+        "deltaAccent": "#B07CFF", 
+        "thrWidths": [
+          58.53120000000001, 
+          65.8112
+        ], 
+        "barTextSize": 18, 
+        "dmgH": 16, 
+        "astInside": true, 
+        "kind": "big", 
+        "dmg": 6820, 
+        "hCol1W": 0, 
+        "trackH": 2, 
+        "barStyle": 3, 
+        "hCol0W": 0, 
+        "pctSize": 24, 
+        "dmgStr": "6820", 
+        "dmgSize": 13, 
+        "dmgY": 84, 
+        "thrInside": true, 
+        "hRow1Y": null, 
+        "thrSize": 13, 
+        "pctText": "97.83%", 
+        "pctW": 81.71520000000001, 
+        "remStr": "0", 
+        "thrItems": [
+          {
+            "val": 3450, 
+            "text": "95% 3450", 
+            "pct": 95, 
+            "valStr": "3450", 
+            "done": true, 
+            "lbl": "95%"
+          }, 
+          {
+            "val": 3920, 
+            "text": "100% 3920", 
+            "pct": 100, 
+            "valStr": "3920", 
+            "done": true, 
+            "lbl": "100%"
+          }
+        ]
+      }, 
+      "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"193\" height=\"154\" viewBox=\"0 0 193 154\"><g opacity=\"1.000\"><rect x=\"6.0\" y=\"14.0\" width=\"181.0\" height=\"134.0\" rx=\"14\" fill=\"#0B1016\" fill-opacity=\"0.200\"/><path d=\"M 133.5 14.0 H 173.0 A 14.0 14.0 0 0 1 187.0 28.0 V 134.0 A 14.0 14.0 0 0 1 173.0 148.0 H 20.0 A 14.0 14.0 0 0 1 6.0 134.0 V 28.0 A 14.0 14.0 0 0 1 20.0 14.0 H 59.5\" fill=\"none\" stroke=\"#FFFFFF\" stroke-width=\"1.0\" stroke-opacity=\"0.220\"/><path d=\"M 6.0 32.0 V 28.0 A 14.0 14.0 0 0 1 20.0 14.0 H 24.0\" fill=\"none\" stroke=\"#FFFFFF\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-opacity=\"0.500\"/><path d=\"M 169.0 14.0 H 173.0 A 14.0 14.0 0 0 1 187.0 28.0 V 32.0\" fill=\"none\" stroke=\"#FFFFFF\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-opacity=\"0.500\"/><path d=\"M 187.0 130.0 V 134.0 A 14.0 14.0 0 0 1 173.0 148.0 H 169.0\" fill=\"none\" stroke=\"#FFFFFF\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-opacity=\"0.500\"/><path d=\"M 24.0 148.0 H 20.0 A 14.0 14.0 0 0 1 6.0 134.0 V 130.0\" fill=\"none\" stroke=\"#FFFFFF\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-opacity=\"0.500\"/><polygon points=\"73.50,6.00 75.52,11.22 81.11,11.53 76.77,15.06 78.20,20.47 73.50,17.44 68.80,20.47 70.23,15.06 65.89,11.53 71.48,11.22\" fill=\"#FFFFFF\" fill-opacity=\"0.24\" stroke=\"#FFFFFF\" stroke-width=\"2.0\" stroke-opacity=\"0.22\"/><polygon points=\"73.50,6.00 75.52,11.22 81.11,11.53 76.77,15.06 78.20,20.47 73.50,17.44 68.80,20.47 70.23,15.06 65.89,11.53 71.48,11.22\" fill=\"#FFFFFF\" fill-opacity=\"0.96\"/><polygon points=\"96.50,6.00 98.52,11.22 104.11,11.53 99.77,15.06 101.20,20.47 96.50,17.44 91.80,20.47 93.23,15.06 88.89,11.53 94.48,11.22\" fill=\"#FFFFFF\" fill-opacity=\"0.24\" stroke=\"#FFFFFF\" stroke-width=\"2.0\" stroke-opacity=\"0.22\"/><polygon points=\"96.50,6.00 98.52,11.22 104.11,11.53 99.77,15.06 101.20,20.47 96.50,17.44 91.80,20.47 93.23,15.06 88.89,11.53 94.48,11.22\" fill=\"#FFFFFF\" fill-opacity=\"0.96\"/><polygon points=\"119.50,6.00 121.52,11.22 127.11,11.53 122.77,15.06 124.20,20.47 119.50,17.44 114.80,20.47 116.23,15.06 111.89,11.53 117.48,11.22\" fill=\"#FFFFFF\" fill-opacity=\"0.24\" stroke=\"#FFFFFF\" stroke-width=\"2.0\" stroke-opacity=\"0.22\"/><polygon points=\"119.50,6.00 121.52,11.22 127.11,11.53 122.77,15.06 124.20,20.47 119.50,17.44 114.80,20.47 116.23,15.06 111.89,11.53 117.48,11.22\" fill=\"#FFFFFF\" fill-opacity=\"0.96\"/><text x=\"18.5\" y=\"49.6\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"24\" font-weight=\"700\" fill=\"#000000\" fill-opacity=\"0.54\">97.83%</text><text x=\"18.5\" y=\"48.6\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"24\" font-weight=\"700\" fill=\"#FFFFFF\">97.83%</text><path d=\"M 111.7 46.7 L 119.7 38.7 M 114.7 38.7 L 119.7 38.7 L 119.7 43.7\" fill=\"none\" stroke=\"#B07CFF\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><text x=\"126.2\" y=\"48.2\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"14\" font-weight=\"700\" fill=\"#000000\" fill-opacity=\"0.54\">+4.65%</text><text x=\"126.2\" y=\"47.2\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"14\" font-weight=\"700\" fill=\"#B07CFF\">+4.65%</text><defs><clipPath id=\"v3tb\" shape-rendering=\"optimizeSpeed\"><rect x=\"16.0\" y=\"57.0\" width=\"161.0\" height=\"27.0\"/></clipPath><clipPath id=\"v3tc\" shape-rendering=\"optimizeSpeed\"><rect x=\"42.0\" y=\"57.0\" width=\"106.0\" height=\"27.0\"/></clipPath></defs><g clip-path=\"url(#v3tb)\"><rect x=\"0.0\" y=\"57.0\" width=\"1.0\" height=\"27.0\" fill=\"#000000\" fill-opacity=\"0.01\"/><rect x=\"192.0\" y=\"57.0\" width=\"1.0\" height=\"27.0\" fill=\"#000000\" fill-opacity=\"0.01\"/><text x=\"96.5\" y=\"75.6\" text-anchor=\"middle\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"18\" font-weight=\"700\" fill=\"#FFFFFF\" fill-opacity=\"0.25\">CYBER PRO</text></g><g clip-path=\"url(#v3tc)\"><rect x=\"0.0\" y=\"57.0\" width=\"1.0\" height=\"27.0\" fill=\"#000000\" fill-opacity=\"0.01\"/><rect x=\"192.0\" y=\"57.0\" width=\"1.0\" height=\"27.0\" fill=\"#000000\" fill-opacity=\"0.01\"/><text x=\"96.5\" y=\"76.6\" text-anchor=\"middle\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"18\" font-weight=\"700\" fill=\"#000000\" fill-opacity=\"0.85\">CYBER PRO</text><text x=\"96.5\" y=\"75.6\" text-anchor=\"middle\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"18\" font-weight=\"700\" fill=\"#B07CFF\">CYBER PRO</text></g><text x=\"16.0\" y=\"97.0\" text-anchor=\"start\" font-family=\"Warhelios\" font-size=\"13\" font-weight=\"400\" fill=\"#000000\" fill-opacity=\"0.54\">Сум. урон</text><text x=\"16.0\" y=\"96.0\" text-anchor=\"start\" font-family=\"Warhelios\" font-size=\"13\" font-weight=\"400\" fill=\"#B8BDC4\">Сум. урон</text><text x=\"134.9\" y=\"97.0\" text-anchor=\"end\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"13\" font-weight=\"700\" fill=\"#000000\" fill-opacity=\"0.54\">6820</text><text x=\"134.9\" y=\"96.0\" text-anchor=\"end\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"13\" font-weight=\"700\" fill=\"#B07CFF\">6820</text><text x=\"177.0\" y=\"97.0\" text-anchor=\"end\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"13\" font-weight=\"700\" fill=\"#000000\" fill-opacity=\"0.54\">/ 3750</text><text x=\"177.0\" y=\"96.0\" text-anchor=\"end\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"13\" font-weight=\"700\" fill=\"#B8BDC4\">/ 3750</text><circle cx=\"40.90\" cy=\"113.50\" r=\"1.45\" fill=\"#B8BDC4\" fill-opacity=\"0.82\"/><path d=\"M 38.22 111.25 A 3.50 3.50 0 0 0 38.22 115.75 M 36.59 109.62 A 5.80 5.80 0 0 0 36.59 117.38 M 43.58 111.25 A 3.50 3.50 0 0 1 43.58 115.75 M 45.21 109.62 A 5.80 5.80 0 0 1 45.21 117.38\" fill=\"none\" stroke=\"#B8BDC4\" stroke-width=\"1.25\" stroke-linecap=\"round\" stroke-opacity=\"0.82\"/><text x=\"53.9\" y=\"119.8\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"15\" font-weight=\"700\" fill=\"#000000\" fill-opacity=\"0.54\">1200</text><text x=\"53.9\" y=\"118.8\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"15\" font-weight=\"700\" fill=\"#B8BDC4\">1200</text><path d=\"M 115.93 107.37 L 119.63 111.07 L 118.72 111.99 L 120.54 113.81 L 119.28 115.07 L 117.13 112.91 L 118.10 111.94 L 115.06 108.90 L 114.09 109.87 L 111.93 107.72 L 113.19 106.46 L 115.01 108.28 Z M 113.10 110.20 L 116.80 113.90 L 115.89 114.82 L 117.71 116.64 L 116.46 117.90 L 114.30 115.74 L 115.27 114.77 L 112.23 111.73 L 111.26 112.70 L 109.10 110.54 L 110.36 109.29 L 112.18 111.11 Z M 110.27 113.03 L 113.97 116.73 L 113.06 117.64 L 114.89 119.47 L 113.63 120.73 L 111.47 118.57 L 112.44 117.60 L 109.40 114.56 L 108.43 115.53 L 106.27 113.37 L 107.53 112.11 L 109.36 113.94 Z\" fill=\"#A7D080\" fill-opacity=\"1.00\"/><text x=\"126.5\" y=\"119.8\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"15\" font-weight=\"700\" fill=\"#000000\" fill-opacity=\"0.54\">2700</text><text x=\"126.5\" y=\"118.8\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"15\" font-weight=\"700\" fill=\"#A7D080\">2700</text><text x=\"27.3\" y=\"139.0\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"13\" font-weight=\"700\" fill=\"#000000\" fill-opacity=\"0.54\">95%</text><text x=\"27.3\" y=\"138.0\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"13\" font-weight=\"700\" fill=\"#B8BDC4\">95%</text><text x=\"56.7\" y=\"139.0\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"13\" font-weight=\"700\" fill=\"#000000\" fill-opacity=\"0.54\">3450</text><text x=\"56.7\" y=\"138.0\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"13\" font-weight=\"700\" fill=\"#FFFFFF\">3450</text><text x=\"99.9\" y=\"139.0\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"13\" font-weight=\"700\" fill=\"#000000\" fill-opacity=\"0.54\">100%</text><text x=\"99.9\" y=\"138.0\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"13\" font-weight=\"700\" fill=\"#B8BDC4\">100%</text><text x=\"136.6\" y=\"139.0\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"13\" font-weight=\"700\" fill=\"#000000\" fill-opacity=\"0.54\">3920</text><text x=\"136.6\" y=\"138.0\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"13\" font-weight=\"700\" fill=\"#FFFFFF\">3920</text></g></svg>", 
+      "bw": 193, 
+      "bh": 154
+    }, 
+    "battle_default_plus_noalt": {
+      "metrics": {
+        "astH": 17, 
+        "thrRowMinW": 0, 
+        "thrH": 15, 
+        "starGap": 7, 
+        "dmgLblText": "Сум. урон", 
+        "sideBorderStars": false, 
+        "astIconSize": 16, 
+        "hSepY": null, 
+        "starsCoords": [
+          [
+            73.5, 
+            14
+          ], 
+          [
+            96.5, 
+            14
+          ], 
+          [
+            119.5, 
+            14
+          ]
+        ], 
+        "tgt": 1480, 
+        "astItemGap": 18, 
+        "deltaIconW": 12, 
+        "astSize": 15, 
+        "astY": 94, 
+        "cy": 27, 
+        "cx": 16, 
+        "deltaSize": 14, 
+        "thrY": null, 
+        "cw": 161, 
+        "hColGap": 16, 
+        "headerY": 27, 
+        "hRow2Y": null, 
+        "starsSpan": 62, 
+        "deltaW": 64.3536, 
+        "barY": 59, 
+        "isHangar": false, 
+        "starsPos": 0, 
+        "activeCh": "spot", 
+        "deltaText": "+1.25%", 
+        "fx": 6, 
+        "astWidths": [
+          46.2, 
+          29.4
+        ], 
+        "starSize": 16, 
+        "showDelta": true, 
+        "dmgValStr": "1850 / 1480", 
+        "maxAst": 750, 
+        "barH": 4, 
+        "hRows": [], 
+        "dmgLblMode": 0, 
+        "dmgLblSize": 13, 
+        "altExp": false, 
+        "barTextW": 0.0, 
+        "thrIconSize": 0, 
+        "barBlockH": 10, 
+        "fw": 181, 
+        "astItems": [
+          {
+            "active": true, 
+            "text": "750", 
+            "ch": "spot", 
+            "val": 750
+          }, 
+          {
+            "active": false, 
+            "text": "0", 
+            "ch": "track", 
+            "val": 0
+          }
+        ], 
+        "fy": 14, 
+        "headerH": 28, 
+        "divLine": null, 
+        "winW": 193, 
+        "barText": "", 
+        "padY": 7, 
+        "winH": 124, 
+        "thrItemGap": 14, 
+        "tgtStr": "1480", 
+        "astRowMinW": 93.6, 
+        "fh": 104, 
+        "padX": 10, 
+        "deltaAccent": "#A7D080", 
+        "thrWidths": [], 
+        "barTextSize": 15, 
+        "dmgH": 16, 
+        "astInside": true, 
+        "kind": "plus", 
+        "dmg": 1850, 
+        "hCol1W": 0, 
+        "trackH": 2, 
+        "barStyle": 0, 
+        "hCol0W": 0, 
+        "pctSize": 24, 
+        "dmgStr": "1850", 
+        "dmgSize": 13, 
+        "dmgY": 73, 
+        "thrInside": true, 
+        "hRow1Y": null, 
+        "thrSize": 13, 
+        "pctText": "43.28%", 
+        "pctW": 81.71520000000001, 
+        "remStr": "0", 
+        "thrItems": []
+      }, 
+      "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"193\" height=\"124\" viewBox=\"0 0 193 124\"><g opacity=\"1.000\"><rect x=\"6.0\" y=\"14.0\" width=\"181.0\" height=\"104.0\" rx=\"14\" fill=\"#0B1016\" fill-opacity=\"0.200\"/><path d=\"M 133.5 14.0 H 173.0 A 14.0 14.0 0 0 1 187.0 28.0 V 104.0 A 14.0 14.0 0 0 1 173.0 118.0 H 20.0 A 14.0 14.0 0 0 1 6.0 104.0 V 28.0 A 14.0 14.0 0 0 1 20.0 14.0 H 59.5\" fill=\"none\" stroke=\"#FFFFFF\" stroke-width=\"1.0\" stroke-opacity=\"0.220\"/><path d=\"M 6.0 32.0 V 28.0 A 14.0 14.0 0 0 1 20.0 14.0 H 24.0\" fill=\"none\" stroke=\"#FFFFFF\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-opacity=\"0.500\"/><path d=\"M 169.0 14.0 H 173.0 A 14.0 14.0 0 0 1 187.0 28.0 V 32.0\" fill=\"none\" stroke=\"#FFFFFF\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-opacity=\"0.500\"/><path d=\"M 187.0 100.0 V 104.0 A 14.0 14.0 0 0 1 173.0 118.0 H 169.0\" fill=\"none\" stroke=\"#FFFFFF\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-opacity=\"0.500\"/><path d=\"M 24.0 118.0 H 20.0 A 14.0 14.0 0 0 1 6.0 104.0 V 100.0\" fill=\"none\" stroke=\"#FFFFFF\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-opacity=\"0.500\"/><polygon points=\"73.50,6.00 75.52,11.22 81.11,11.53 76.77,15.06 78.20,20.47 73.50,17.44 68.80,20.47 70.23,15.06 65.89,11.53 71.48,11.22\" fill=\"#9AA3AE\" fill-opacity=\"0.10\" stroke=\"#9AA3AE\" stroke-width=\"1.15\" stroke-opacity=\"0.55\"/><polygon points=\"96.50,6.00 98.52,11.22 104.11,11.53 99.77,15.06 101.20,20.47 96.50,17.44 91.80,20.47 93.23,15.06 88.89,11.53 94.48,11.22\" fill=\"#9AA3AE\" fill-opacity=\"0.10\" stroke=\"#9AA3AE\" stroke-width=\"1.15\" stroke-opacity=\"0.55\"/><polygon points=\"119.50,6.00 121.52,11.22 127.11,11.53 122.77,15.06 124.20,20.47 119.50,17.44 114.80,20.47 116.23,15.06 111.89,11.53 117.48,11.22\" fill=\"#9AA3AE\" fill-opacity=\"0.10\" stroke=\"#9AA3AE\" stroke-width=\"1.15\" stroke-opacity=\"0.55\"/><text x=\"18.5\" y=\"49.6\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"24\" font-weight=\"700\" fill=\"#000000\" fill-opacity=\"0.54\">43.28%</text><text x=\"18.5\" y=\"48.6\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"24\" font-weight=\"700\" fill=\"#FFFFFF\">43.28%</text><path d=\"M 111.7 46.7 L 119.7 38.7 M 114.7 38.7 L 119.7 38.7 L 119.7 43.7\" fill=\"none\" stroke=\"#A7D080\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><text x=\"126.2\" y=\"48.2\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"14\" font-weight=\"700\" fill=\"#000000\" fill-opacity=\"0.54\">+1.25%</text><text x=\"126.2\" y=\"47.2\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"14\" font-weight=\"700\" fill=\"#A7D080\">+1.25%</text><rect x=\"16.0\" y=\"63.0\" width=\"161.0\" height=\"2.0\" rx=\"1\" fill=\"#FFFFFF\" fill-opacity=\"0.22\"/><rect x=\"16.0\" y=\"60.0\" width=\"1.2\" height=\"8.0\" fill=\"#FFFFFF\" fill-opacity=\"0.45\"/><rect x=\"175.8\" y=\"60.0\" width=\"1.2\" height=\"8.0\" fill=\"#FFFFFF\" fill-opacity=\"0.45\"/><rect x=\"120.2\" y=\"60.5\" width=\"1.0\" height=\"7.0\" fill=\"#FFFFFF\" fill-opacity=\"0.40\"/><rect x=\"152.3\" y=\"60.5\" width=\"1.0\" height=\"7.0\" fill=\"#FFFFFF\" fill-opacity=\"0.40\"/><rect x=\"168.4\" y=\"60.5\" width=\"1.0\" height=\"7.0\" fill=\"#FFFFFF\" fill-opacity=\"0.40\"/><rect x=\"16.0\" y=\"62.0\" width=\"69.7\" height=\"4.0\" rx=\"1\" fill=\"#A7D080\"/><rect x=\"84.4\" y=\"59.0\" width=\"2.5\" height=\"10.0\" rx=\"0.8\" fill=\"#FFFFFF\" fill-opacity=\"0.95\"/><text x=\"16.0\" y=\"86.0\" text-anchor=\"start\" font-family=\"Warhelios\" font-size=\"13\" font-weight=\"400\" fill=\"#000000\" fill-opacity=\"0.54\">Сум. урон</text><text x=\"16.0\" y=\"85.0\" text-anchor=\"start\" font-family=\"Warhelios\" font-size=\"13\" font-weight=\"400\" fill=\"#B8BDC4\">Сум. урон</text><text x=\"134.9\" y=\"86.0\" text-anchor=\"end\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"13\" font-weight=\"700\" fill=\"#000000\" fill-opacity=\"0.54\">1850</text><text x=\"134.9\" y=\"85.0\" text-anchor=\"end\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"13\" font-weight=\"700\" fill=\"#A7D080\">1850</text><text x=\"177.0\" y=\"86.0\" text-anchor=\"end\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"13\" font-weight=\"700\" fill=\"#000000\" fill-opacity=\"0.54\">/ 1480</text><text x=\"177.0\" y=\"85.0\" text-anchor=\"end\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"13\" font-weight=\"700\" fill=\"#B8BDC4\">/ 1480</text><circle cx=\"57.70\" cy=\"102.50\" r=\"1.45\" fill=\"#A7D080\" fill-opacity=\"1.00\"/><path d=\"M 55.02 100.25 A 3.50 3.50 0 0 0 55.02 104.75 M 53.39 98.62 A 5.80 5.80 0 0 0 53.39 106.38 M 60.38 100.25 A 3.50 3.50 0 0 1 60.38 104.75 M 62.01 98.62 A 5.80 5.80 0 0 1 62.01 106.38\" fill=\"none\" stroke=\"#A7D080\" stroke-width=\"1.25\" stroke-linecap=\"round\" stroke-opacity=\"1.00\"/><text x=\"70.7\" y=\"108.8\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"15\" font-weight=\"700\" fill=\"#000000\" fill-opacity=\"0.54\">750</text><text x=\"70.7\" y=\"107.8\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"15\" font-weight=\"700\" fill=\"#A7D080\">750</text><path d=\"M 124.33 96.37 L 128.03 100.07 L 127.12 100.99 L 128.94 102.81 L 127.68 104.07 L 125.53 101.91 L 126.50 100.94 L 123.46 97.90 L 122.49 98.87 L 120.33 96.72 L 121.59 95.46 L 123.41 97.28 Z M 121.50 99.20 L 125.20 102.90 L 124.29 103.82 L 126.11 105.64 L 124.86 106.90 L 122.70 104.74 L 123.67 103.77 L 120.63 100.73 L 119.66 101.70 L 117.50 99.54 L 118.76 98.29 L 120.58 100.11 Z M 118.67 102.03 L 122.37 105.73 L 121.46 106.64 L 123.29 108.47 L 122.03 109.73 L 119.87 107.57 L 120.84 106.60 L 117.80 103.56 L 116.83 104.53 L 114.67 102.37 L 115.93 101.11 L 117.76 102.94 Z\" fill=\"#B8BDC4\" fill-opacity=\"0.82\"/><text x=\"134.9\" y=\"108.8\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"15\" font-weight=\"700\" fill=\"#000000\" fill-opacity=\"0.54\">0</text><text x=\"134.9\" y=\"107.8\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"15\" font-weight=\"700\" fill=\"#B8BDC4\">0</text></g></svg>", 
+      "bw": 193, 
+      "bh": 124
+    }, 
+    "battle_default_minus_alt": {
+      "metrics": {
+        "astH": 17, 
+        "thrRowMinW": 131.06240000000003, 
+        "thrH": 15, 
+        "starGap": 7, 
+        "dmgLblText": "Сум. урон", 
+        "sideBorderStars": false, 
+        "astIconSize": 16, 
+        "hSepY": null, 
+        "starsCoords": [
+          [
+            73.5, 
+            14
+          ], 
+          [
+            96.5, 
+            14
+          ], 
+          [
+            119.5, 
+            14
+          ]
+        ], 
+        "tgt": 2320, 
+        "astItemGap": 18, 
+        "deltaIconW": 12, 
+        "astSize": 15, 
+        "astY": 94, 
+        "cy": 27, 
+        "cx": 16, 
+        "deltaSize": 14, 
+        "thrY": 115, 
+        "cw": 161, 
+        "hColGap": 16, 
+        "headerY": 27, 
+        "hRow2Y": null, 
+        "starsSpan": 62, 
+        "deltaW": 64.3536, 
+        "barY": 59, 
+        "isHangar": false, 
+        "starsPos": 0, 
+        "activeCh": "track", 
+        "deltaText": "-1.15%", 
+        "fx": 6, 
+        "astWidths": [
+          29.4, 
+          46.2
+        ], 
+        "starSize": 16, 
+        "showDelta": true, 
+        "dmgValStr": "1420 / 2320", 
+        "maxAst": 520, 
+        "barH": 4, 
+        "hRows": [], 
+        "dmgLblMode": 0, 
+        "dmgLblSize": 13, 
+        "altExp": false, 
+        "barTextW": 0.0, 
+        "thrIconSize": 0, 
+        "barBlockH": 10, 
+        "fw": 181, 
+        "astItems": [
+          {
+            "active": false, 
+            "text": "0", 
+            "ch": "spot", 
+            "val": 0
+          }, 
+          {
+            "active": true, 
+            "text": "520", 
+            "ch": "track", 
+            "val": 520
+          }
+        ], 
+        "fy": 14, 
+        "headerH": 28, 
+        "divLine": null, 
+        "winW": 193, 
+        "barText": "", 
+        "padY": 7, 
+        "winH": 143, 
+        "thrItemGap": 14, 
+        "tgtStr": "2320", 
+        "astRowMinW": 93.6, 
+        "fh": 123, 
+        "padX": 10, 
+        "deltaAccent": "#E57373", 
+        "thrWidths": [
+          58.53120000000001, 
+          58.53120000000001
+        ], 
+        "barTextSize": 15, 
+        "dmgH": 16, 
+        "astInside": true, 
+        "kind": "minus", 
+        "dmg": 1420, 
+        "hCol1W": 0, 
+        "trackH": 2, 
+        "barStyle": 0, 
+        "hCol0W": 0, 
+        "pctSize": 24, 
+        "dmgStr": "1420", 
+        "dmgSize": 13, 
+        "dmgY": 73, 
+        "thrInside": true, 
+        "hRow1Y": null, 
+        "thrSize": 13, 
+        "pctText": "70.64%", 
+        "pctW": 81.71520000000001, 
+        "remStr": "900", 
+        "thrItems": [
+          {
+            "val": 2890, 
+            "text": "85% 2890", 
+            "pct": 85, 
+            "valStr": "2890", 
+            "done": false, 
+            "lbl": "85%"
+          }, 
+          {
+            "val": 3450, 
+            "text": "95% 3450", 
+            "pct": 95, 
+            "valStr": "3450", 
+            "done": false, 
+            "lbl": "95%"
+          }
+        ]
+      }, 
+      "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"193\" height=\"143\" viewBox=\"0 0 193 143\"><g opacity=\"1.000\"><rect x=\"6.0\" y=\"14.0\" width=\"181.0\" height=\"123.0\" rx=\"14\" fill=\"#0B1016\" fill-opacity=\"0.200\"/><path d=\"M 133.5 14.0 H 173.0 A 14.0 14.0 0 0 1 187.0 28.0 V 123.0 A 14.0 14.0 0 0 1 173.0 137.0 H 20.0 A 14.0 14.0 0 0 1 6.0 123.0 V 28.0 A 14.0 14.0 0 0 1 20.0 14.0 H 59.5\" fill=\"none\" stroke=\"#FFFFFF\" stroke-width=\"1.0\" stroke-opacity=\"0.220\"/><path d=\"M 6.0 32.0 V 28.0 A 14.0 14.0 0 0 1 20.0 14.0 H 24.0\" fill=\"none\" stroke=\"#FFFFFF\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-opacity=\"0.500\"/><path d=\"M 169.0 14.0 H 173.0 A 14.0 14.0 0 0 1 187.0 28.0 V 32.0\" fill=\"none\" stroke=\"#FFFFFF\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-opacity=\"0.500\"/><path d=\"M 187.0 119.0 V 123.0 A 14.0 14.0 0 0 1 173.0 137.0 H 169.0\" fill=\"none\" stroke=\"#FFFFFF\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-opacity=\"0.500\"/><path d=\"M 24.0 137.0 H 20.0 A 14.0 14.0 0 0 1 6.0 123.0 V 119.0\" fill=\"none\" stroke=\"#FFFFFF\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-opacity=\"0.500\"/><polygon points=\"73.50,6.00 75.52,11.22 81.11,11.53 76.77,15.06 78.20,20.47 73.50,17.44 68.80,20.47 70.23,15.06 65.89,11.53 71.48,11.22\" fill=\"#FFFFFF\" fill-opacity=\"0.24\" stroke=\"#FFFFFF\" stroke-width=\"2.0\" stroke-opacity=\"0.22\"/><polygon points=\"73.50,6.00 75.52,11.22 81.11,11.53 76.77,15.06 78.20,20.47 73.50,17.44 68.80,20.47 70.23,15.06 65.89,11.53 71.48,11.22\" fill=\"#FFFFFF\" fill-opacity=\"0.96\"/><polygon points=\"96.50,6.00 98.52,11.22 104.11,11.53 99.77,15.06 101.20,20.47 96.50,17.44 91.80,20.47 93.23,15.06 88.89,11.53 94.48,11.22\" fill=\"#9AA3AE\" fill-opacity=\"0.10\" stroke=\"#9AA3AE\" stroke-width=\"1.15\" stroke-opacity=\"0.55\"/><polygon points=\"119.50,6.00 121.52,11.22 127.11,11.53 122.77,15.06 124.20,20.47 119.50,17.44 114.80,20.47 116.23,15.06 111.89,11.53 117.48,11.22\" fill=\"#9AA3AE\" fill-opacity=\"0.10\" stroke=\"#9AA3AE\" stroke-width=\"1.15\" stroke-opacity=\"0.55\"/><text x=\"18.5\" y=\"49.6\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"24\" font-weight=\"700\" fill=\"#000000\" fill-opacity=\"0.54\">70.64%</text><text x=\"18.5\" y=\"48.6\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"24\" font-weight=\"700\" fill=\"#FFFFFF\">70.64%</text><path d=\"M 111.7 38.7 L 119.7 46.7 M 114.7 46.7 L 119.7 46.7 L 119.7 41.7\" fill=\"none\" stroke=\"#E57373\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><text x=\"126.2\" y=\"48.2\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"14\" font-weight=\"700\" fill=\"#000000\" fill-opacity=\"0.54\">-1.15%</text><text x=\"126.2\" y=\"47.2\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"14\" font-weight=\"700\" fill=\"#E57373\">-1.15%</text><rect x=\"16.0\" y=\"63.0\" width=\"161.0\" height=\"2.0\" rx=\"1\" fill=\"#FFFFFF\" fill-opacity=\"0.22\"/><rect x=\"16.0\" y=\"60.0\" width=\"1.2\" height=\"8.0\" fill=\"#FFFFFF\" fill-opacity=\"0.45\"/><rect x=\"175.8\" y=\"60.0\" width=\"1.2\" height=\"8.0\" fill=\"#FFFFFF\" fill-opacity=\"0.45\"/><rect x=\"120.2\" y=\"60.5\" width=\"1.0\" height=\"7.0\" fill=\"#FFFFFF\" fill-opacity=\"0.40\"/><rect x=\"152.3\" y=\"60.5\" width=\"1.0\" height=\"7.0\" fill=\"#FFFFFF\" fill-opacity=\"0.40\"/><rect x=\"168.4\" y=\"60.5\" width=\"1.0\" height=\"7.0\" fill=\"#FFFFFF\" fill-opacity=\"0.40\"/><rect x=\"16.0\" y=\"62.0\" width=\"113.7\" height=\"4.0\" rx=\"1\" fill=\"#A7D080\"/><rect x=\"128.5\" y=\"59.0\" width=\"2.5\" height=\"10.0\" rx=\"0.8\" fill=\"#FFFFFF\" fill-opacity=\"0.95\"/><text x=\"16.0\" y=\"86.0\" text-anchor=\"start\" font-family=\"Warhelios\" font-size=\"13\" font-weight=\"400\" fill=\"#000000\" fill-opacity=\"0.54\">Сум. урон</text><text x=\"16.0\" y=\"85.0\" text-anchor=\"start\" font-family=\"Warhelios\" font-size=\"13\" font-weight=\"400\" fill=\"#B8BDC4\">Сум. урон</text><text x=\"134.9\" y=\"86.0\" text-anchor=\"end\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"13\" font-weight=\"700\" fill=\"#000000\" fill-opacity=\"0.54\">1420</text><text x=\"134.9\" y=\"85.0\" text-anchor=\"end\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"13\" font-weight=\"700\" fill=\"#E57373\">1420</text><text x=\"177.0\" y=\"86.0\" text-anchor=\"end\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"13\" font-weight=\"700\" fill=\"#000000\" fill-opacity=\"0.54\">/ 2320</text><text x=\"177.0\" y=\"85.0\" text-anchor=\"end\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"13\" font-weight=\"700\" fill=\"#B8BDC4\">/ 2320</text><circle cx=\"57.70\" cy=\"102.50\" r=\"1.45\" fill=\"#B8BDC4\" fill-opacity=\"0.82\"/><path d=\"M 55.02 100.25 A 3.50 3.50 0 0 0 55.02 104.75 M 53.39 98.62 A 5.80 5.80 0 0 0 53.39 106.38 M 60.38 100.25 A 3.50 3.50 0 0 1 60.38 104.75 M 62.01 98.62 A 5.80 5.80 0 0 1 62.01 106.38\" fill=\"none\" stroke=\"#B8BDC4\" stroke-width=\"1.25\" stroke-linecap=\"round\" stroke-opacity=\"0.82\"/><text x=\"70.7\" y=\"108.8\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"15\" font-weight=\"700\" fill=\"#000000\" fill-opacity=\"0.54\">0</text><text x=\"70.7\" y=\"107.8\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"15\" font-weight=\"700\" fill=\"#B8BDC4\">0</text><path d=\"M 107.53 96.37 L 111.23 100.07 L 110.32 100.99 L 112.14 102.81 L 110.88 104.07 L 108.73 101.91 L 109.70 100.94 L 106.66 97.90 L 105.69 98.87 L 103.53 96.72 L 104.79 95.46 L 106.61 97.28 Z M 104.70 99.20 L 108.40 102.90 L 107.49 103.82 L 109.31 105.64 L 108.06 106.90 L 105.90 104.74 L 106.87 103.77 L 103.83 100.73 L 102.86 101.70 L 100.70 99.54 L 101.96 98.29 L 103.78 100.11 Z M 101.87 102.03 L 105.57 105.73 L 104.66 106.64 L 106.49 108.47 L 105.23 109.73 L 103.07 107.57 L 104.04 106.60 L 101.00 103.56 L 100.03 104.53 L 97.87 102.37 L 99.13 101.11 L 100.96 102.94 Z\" fill=\"#A7D080\" fill-opacity=\"1.00\"/><text x=\"118.1\" y=\"108.8\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"15\" font-weight=\"700\" fill=\"#000000\" fill-opacity=\"0.54\">520</text><text x=\"118.1\" y=\"107.8\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"15\" font-weight=\"700\" fill=\"#A7D080\">520</text><text x=\"31.0\" y=\"128.0\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"13\" font-weight=\"700\" fill=\"#000000\" fill-opacity=\"0.54\">85%</text><text x=\"31.0\" y=\"127.0\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"13\" font-weight=\"700\" fill=\"#B8BDC4\">85%</text><text x=\"60.4\" y=\"128.0\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"13\" font-weight=\"700\" fill=\"#000000\" fill-opacity=\"0.54\">2890</text><text x=\"60.4\" y=\"127.0\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"13\" font-weight=\"700\" fill=\"#FFFFFF\">2890</text><text x=\"103.5\" y=\"128.0\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"13\" font-weight=\"700\" fill=\"#000000\" fill-opacity=\"0.54\">95%</text><text x=\"103.5\" y=\"127.0\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"13\" font-weight=\"700\" fill=\"#B8BDC4\">95%</text><text x=\"132.9\" y=\"128.0\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"13\" font-weight=\"700\" fill=\"#000000\" fill-opacity=\"0.54\">3450</text><text x=\"132.9\" y=\"127.0\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"13\" font-weight=\"700\" fill=\"#FFFFFF\">3450</text></g></svg>", 
+      "bw": 193, 
+      "bh": 143
+    }, 
+    "hangar_barstyle4_customtext": {
+      "metrics": {
+        "astH": 15, 
+        "thrRowMinW": 0, 
+        "thrH": 14, 
+        "starGap": 7, 
+        "dmgLblText": "Суммарный урон", 
+        "sideBorderStars": false, 
+        "astIconSize": 14, 
+        "hSepY": 109, 
+        "starsCoords": [
+          [
+            66.5, 
+            17
+          ], 
+          [
+            95.5, 
+            17
+          ], 
+          [
+            124.5, 
+            17
+          ]
+        ], 
+        "tgt": 2890, 
+        "astItemGap": 18, 
+        "deltaIconW": 0, 
+        "astSize": 13, 
+        "astY": null, 
+        "cy": 33, 
+        "cx": 16, 
+        "deltaSize": 14, 
+        "thrY": null, 
+        "cw": 159, 
+        "hColGap": 16, 
+        "headerY": 33, 
+        "hRow2Y": 129, 
+        "starsSpan": 80, 
+        "deltaW": 0, 
+        "barY": 65, 
+        "isHangar": true, 
+        "starsPos": 0, 
+        "activeCh": null, 
+        "deltaText": "", 
+        "fx": 6, 
+        "astWidths": [], 
+        "starSize": 22, 
+        "showDelta": false, 
+        "dmgValStr": "2890", 
+        "maxAst": 0, 
+        "barH": 4, 
+        "hRows": [
+          [
+            {
+              "val": 2150, 
+              "text": "65% 2150", 
+              "pct": 65, 
+              "valStr": "2150", 
+              "done": true, 
+              "lbl": "65%"
+            }, 
+            {
+              "val": 2890, 
+              "text": "85% 2890", 
+              "pct": 85, 
+              "valStr": "2890", 
+              "done": true, 
+              "lbl": "85%"
+            }
+          ], 
+          [
+            {
+              "val": 3450, 
+              "text": "95% 3450", 
+              "pct": 95, 
+              "valStr": "3450", 
+              "done": false, 
+              "lbl": "95%"
+            }, 
+            {
+              "val": 3920, 
+              "text": "100% 3920", 
+              "pct": 100, 
+              "valStr": "3920", 
+              "done": false, 
+              "lbl": "100%"
+            }
+          ]
+        ], 
+        "dmgLblMode": 0, 
+        "dmgLblSize": 13, 
+        "altExp": false, 
+        "barTextW": 123.648, 
+        "thrIconSize": 0, 
+        "barBlockH": 19, 
+        "fw": 179, 
+        "astItems": [], 
+        "fy": 17, 
+        "headerH": 28, 
+        "divLine": null, 
+        "winW": 191, 
+        "barText": "THREE MARKS", 
+        "padY": 7, 
+        "winH": 156, 
+        "thrItemGap": 14, 
+        "tgtStr": "2890", 
+        "astRowMinW": 0, 
+        "fh": 133, 
+        "padX": 10, 
+        "deltaAccent": "#9AA3AE", 
+        "thrWidths": [], 
+        "barTextSize": 16, 
+        "dmgH": 16, 
+        "astInside": true, 
+        "kind": "zero", 
+        "dmg": 2890, 
+        "hCol1W": 66, 
+        "trackH": 2, 
+        "barStyle": 3, 
+        "hCol0W": 59, 
+        "pctSize": 24, 
+        "dmgStr": "2890", 
+        "dmgSize": 13, 
+        "dmgY": 88, 
+        "thrInside": true, 
+        "hRow1Y": 113, 
+        "thrSize": 12, 
+        "pctText": "85.47%", 
+        "pctW": 81.71520000000001, 
+        "remStr": "0", 
+        "thrItems": []
+      }, 
+      "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"191\" height=\"156\" viewBox=\"0 0 191 156\"><g opacity=\"1.000\"><rect x=\"6.0\" y=\"17.0\" width=\"179.0\" height=\"133.0\" rx=\"5\" fill=\"#131313\" fill-opacity=\"0.600\"/><path d=\"M 141.5 17.0 H 180.0 A 5.0 5.0 0 0 1 185.0 22.0 V 145.0 A 5.0 5.0 0 0 1 180.0 150.0 H 11.0 A 5.0 5.0 0 0 1 6.0 145.0 V 22.0 A 5.0 5.0 0 0 1 11.0 17.0 H 49.5\" fill=\"none\" stroke=\"#FFFFFF\" stroke-width=\"1.0\" stroke-opacity=\"0.200\"/><polygon points=\"66.50,6.00 69.28,13.17 76.96,13.60 71.00,18.46 72.97,25.90 66.50,21.73 60.03,25.90 62.00,18.46 56.04,13.60 63.72,13.17\" fill=\"#FFFFFF\" fill-opacity=\"0.24\" stroke=\"#FFFFFF\" stroke-width=\"2.0\" stroke-opacity=\"0.22\"/><polygon points=\"66.50,6.00 69.28,13.17 76.96,13.60 71.00,18.46 72.97,25.90 66.50,21.73 60.03,25.90 62.00,18.46 56.04,13.60 63.72,13.17\" fill=\"#FFFFFF\" fill-opacity=\"0.96\"/><polygon points=\"95.50,6.00 98.28,13.17 105.96,13.60 100.00,18.46 101.97,25.90 95.50,21.73 89.03,25.90 91.00,18.46 85.04,13.60 92.72,13.17\" fill=\"#FFFFFF\" fill-opacity=\"0.24\" stroke=\"#FFFFFF\" stroke-width=\"2.0\" stroke-opacity=\"0.22\"/><polygon points=\"95.50,6.00 98.28,13.17 105.96,13.60 100.00,18.46 101.97,25.90 95.50,21.73 89.03,25.90 91.00,18.46 85.04,13.60 92.72,13.17\" fill=\"#FFFFFF\" fill-opacity=\"0.96\"/><polygon points=\"124.50,6.00 127.28,13.17 134.96,13.60 129.00,18.46 130.97,25.90 124.50,21.73 118.03,25.90 120.00,18.46 114.04,13.60 121.72,13.17\" fill=\"#9AA3AE\" fill-opacity=\"0.10\" stroke=\"#9AA3AE\" stroke-width=\"1.15\" stroke-opacity=\"0.55\"/><text x=\"16.0\" y=\"54.6\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"24\" font-weight=\"700\" fill=\"#FFFFFF\">85.47%</text><defs><clipPath id=\"v3tb\" shape-rendering=\"optimizeSpeed\"><rect x=\"16.0\" y=\"63.0\" width=\"159.0\" height=\"25.0\"/></clipPath><clipPath id=\"v3tc\" shape-rendering=\"optimizeSpeed\"><rect x=\"33.0\" y=\"63.0\" width=\"106.0\" height=\"25.0\"/></clipPath></defs><g clip-path=\"url(#v3tb)\"><rect x=\"0.0\" y=\"63.0\" width=\"1.0\" height=\"25.0\" fill=\"#000000\" fill-opacity=\"0.01\"/><rect x=\"190.0\" y=\"63.0\" width=\"1.0\" height=\"25.0\" fill=\"#000000\" fill-opacity=\"0.01\"/><text x=\"95.5\" y=\"79.9\" text-anchor=\"middle\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"16\" font-weight=\"700\" fill=\"#FFFFFF\" fill-opacity=\"0.25\">THREE MARKS</text></g><g clip-path=\"url(#v3tc)\"><rect x=\"0.0\" y=\"63.0\" width=\"1.0\" height=\"25.0\" fill=\"#000000\" fill-opacity=\"0.01\"/><rect x=\"190.0\" y=\"63.0\" width=\"1.0\" height=\"25.0\" fill=\"#000000\" fill-opacity=\"0.01\"/><text x=\"95.5\" y=\"80.9\" text-anchor=\"middle\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"16\" font-weight=\"700\" fill=\"#000000\" fill-opacity=\"0.85\">THREE MARKS</text><text x=\"95.5\" y=\"79.9\" text-anchor=\"middle\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"16\" font-weight=\"700\" fill=\"#A7D080\">THREE MARKS</text></g><text x=\"16.0\" y=\"100.0\" text-anchor=\"start\" font-family=\"Warhelios\" font-size=\"13\" font-weight=\"400\" fill=\"#B8BDC4\">Суммарный урон</text><text x=\"175.0\" y=\"100.0\" text-anchor=\"end\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"13\" font-weight=\"700\" fill=\"#A7D080\">2890</text><line x1=\"16.0\" y1=\"109.0\" x2=\"175.0\" y2=\"109.0\" stroke=\"#FFFFFF\" stroke-width=\"1.0\" stroke-opacity=\"0.18\"/><text x=\"25.0\" y=\"124.0\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"12\" font-weight=\"700\" fill=\"#A7D080\">65%</text><text x=\"84.0\" y=\"124.0\" text-anchor=\"end\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"12\" font-weight=\"700\" fill=\"#A7D080\">2150</text><text x=\"100.0\" y=\"124.0\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"12\" font-weight=\"700\" fill=\"#A7D080\">85%</text><text x=\"166.0\" y=\"124.0\" text-anchor=\"end\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"12\" font-weight=\"700\" fill=\"#A7D080\">2890</text><text x=\"25.0\" y=\"140.0\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"12\" font-weight=\"700\" fill=\"#B8BDC4\">95%</text><text x=\"84.0\" y=\"140.0\" text-anchor=\"end\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"12\" font-weight=\"700\" fill=\"#FFFFFF\">3450</text><text x=\"100.0\" y=\"140.0\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"12\" font-weight=\"700\" fill=\"#B8BDC4\">100%</text><text x=\"166.0\" y=\"140.0\" text-anchor=\"end\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"12\" font-weight=\"700\" fill=\"#FFFFFF\">3920</text></g></svg>", 
+      "bw": 191, 
+      "bh": 156
+    }, 
+    "battle_hud_noframe_side_stars": {
+      "metrics": {
+        "astH": 17, 
+        "thrRowMinW": 0, 
+        "thrH": 15, 
+        "starGap": 7, 
+        "dmgLblText": "Сум. урон", 
+        "sideBorderStars": false, 
+        "astIconSize": 16, 
+        "hSepY": null, 
+        "starsCoords": [
+          [
+            14.0, 
+            32.0
+          ], 
+          [
+            14.0, 
+            55.0
+          ], 
+          [
+            14.0, 
+            78.0
+          ]
+        ], 
+        "tgt": 2890, 
+        "astItemGap": 18, 
+        "deltaIconW": 12, 
+        "astSize": 15, 
+        "astY": 80, 
+        "cy": 13, 
+        "cx": 46, 
+        "deltaSize": 14, 
+        "thrY": null, 
+        "cw": 156, 
+        "hColGap": 16, 
+        "headerY": 13, 
+        "hRow2Y": null, 
+        "starsSpan": 62, 
+        "deltaW": 56.827200000000005, 
+        "barY": 45, 
+        "isHangar": false, 
+        "starsPos": 2, 
+        "activeCh": null, 
+        "deltaText": "0.00%", 
+        "fx": 36, 
+        "astWidths": [
+          46.2, 
+          46.2
+        ], 
+        "starSize": 16, 
+        "showDelta": true, 
+        "dmgValStr": "2890 / 2890", 
+        "maxAst": 480, 
+        "barH": 4, 
+        "hRows": [], 
+        "dmgLblMode": 0, 
+        "dmgLblSize": 13, 
+        "altExp": false, 
+        "barTextW": 0.0, 
+        "thrIconSize": 0, 
+        "barBlockH": 10, 
+        "fw": 176, 
+        "astItems": [
+          {
+            "active": false, 
+            "text": "480", 
+            "ch": "spot", 
+            "val": 480
+          }, 
+          {
+            "active": false, 
+            "text": "480", 
+            "ch": "track", 
+            "val": 480
+          }
+        ], 
+        "fy": 6, 
+        "headerH": 28, 
+        "divLine": [
+          29.0, 
+          9.0, 
+          29.0, 
+          101.0
+        ], 
+        "winW": 218, 
+        "barText": "", 
+        "padY": 7, 
+        "winH": 110, 
+        "thrItemGap": 14, 
+        "tgtStr": "2890", 
+        "astRowMinW": 110.4, 
+        "fh": 98, 
+        "padX": 10, 
+        "deltaAccent": "#9AA3AE", 
+        "thrWidths": [], 
+        "barTextSize": 15, 
+        "dmgH": 16, 
+        "astInside": true, 
+        "kind": "zero", 
+        "dmg": 2890, 
+        "hCol1W": 0, 
+        "trackH": 2, 
+        "barStyle": 1, 
+        "hCol0W": 0, 
+        "pctSize": 24, 
+        "dmgStr": "2890", 
+        "dmgSize": 13, 
+        "dmgY": 59, 
+        "thrInside": true, 
+        "hRow1Y": null, 
+        "thrSize": 13, 
+        "pctText": "85.47%", 
+        "pctW": 81.71520000000001, 
+        "remStr": "0", 
+        "thrItems": []
+      }, 
+      "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"218\" height=\"110\" viewBox=\"0 0 218 110\"><g opacity=\"1.000\"><line x1=\"29.0\" y1=\"9.0\" x2=\"29.0\" y2=\"101.0\" stroke=\"#FFFFFF\" stroke-width=\"1.2\" stroke-opacity=\"0.45\"/><polygon points=\"14.00,24.00 16.02,29.22 21.61,29.53 17.27,33.06 18.70,38.47 14.00,35.44 9.30,38.47 10.73,33.06 6.39,29.53 11.98,29.22\" fill=\"#FFFFFF\" fill-opacity=\"0.24\" stroke=\"#FFFFFF\" stroke-width=\"2.0\" stroke-opacity=\"0.22\"/><polygon points=\"14.00,24.00 16.02,29.22 21.61,29.53 17.27,33.06 18.70,38.47 14.00,35.44 9.30,38.47 10.73,33.06 6.39,29.53 11.98,29.22\" fill=\"#FFFFFF\" fill-opacity=\"0.96\"/><polygon points=\"14.00,47.00 16.02,52.22 21.61,52.53 17.27,56.06 18.70,61.47 14.00,58.44 9.30,61.47 10.73,56.06 6.39,52.53 11.98,52.22\" fill=\"#FFFFFF\" fill-opacity=\"0.24\" stroke=\"#FFFFFF\" stroke-width=\"2.0\" stroke-opacity=\"0.22\"/><polygon points=\"14.00,47.00 16.02,52.22 21.61,52.53 17.27,56.06 18.70,61.47 14.00,58.44 9.30,61.47 10.73,56.06 6.39,52.53 11.98,52.22\" fill=\"#FFFFFF\" fill-opacity=\"0.96\"/><polygon points=\"14.00,70.00 16.02,75.22 21.61,75.53 17.27,79.06 18.70,84.47 14.00,81.44 9.30,84.47 10.73,79.06 6.39,75.53 11.98,75.22\" fill=\"#9AA3AE\" fill-opacity=\"0.10\" stroke=\"#9AA3AE\" stroke-width=\"1.15\" stroke-opacity=\"0.55\"/><text x=\"49.7\" y=\"35.6\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"24\" font-weight=\"700\" fill=\"#000000\" fill-opacity=\"0.85\">85.47%</text><text x=\"49.7\" y=\"34.6\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"24\" font-weight=\"700\" fill=\"#FFFFFF\">85.47%</text><path d=\"M 142.9 28.7 L 150.9 28.7 M 147.4 25.2 L 150.9 28.7 L 147.4 32.2\" fill=\"none\" stroke=\"#9AA3AE\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><text x=\"157.4\" y=\"34.2\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"14\" font-weight=\"700\" fill=\"#000000\" fill-opacity=\"0.85\">0.00%</text><text x=\"157.4\" y=\"33.2\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"14\" font-weight=\"700\" fill=\"#9AA3AE\">0.00%</text><rect x=\"46.0\" y=\"49.0\" width=\"97.5\" height=\"2.0\" rx=\"1\" fill=\"#FFFFFF\" fill-opacity=\"0.22\"/><rect x=\"46.0\" y=\"48.0\" width=\"97.5\" height=\"4.0\" rx=\"1\" fill=\"#A7D080\" stroke=\"#000000\" stroke-width=\"0.6\" stroke-opacity=\"0.60\"/><rect x=\"145.5\" y=\"49.0\" width=\"30.0\" height=\"2.0\" rx=\"1\" fill=\"#FFFFFF\" fill-opacity=\"0.22\"/><rect x=\"145.5\" y=\"48.0\" width=\"30.0\" height=\"4.0\" rx=\"1\" fill=\"#A7D080\" stroke=\"#000000\" stroke-width=\"0.6\" stroke-opacity=\"0.60\"/><rect x=\"177.5\" y=\"49.0\" width=\"15.0\" height=\"2.0\" rx=\"1\" fill=\"#FFFFFF\" fill-opacity=\"0.22\"/><rect x=\"177.5\" y=\"48.0\" width=\"1.0\" height=\"4.0\" rx=\"1\" fill=\"#A7D080\" stroke=\"#000000\" stroke-width=\"0.6\" stroke-opacity=\"0.60\"/><rect x=\"194.5\" y=\"49.0\" width=\"7.5\" height=\"2.0\" rx=\"1\" fill=\"#FFFFFF\" fill-opacity=\"0.22\"/><rect x=\"177.2\" y=\"45.0\" width=\"2.5\" height=\"10.0\" rx=\"0.8\" fill=\"#FFFFFF\" fill-opacity=\"0.95\"/><text x=\"46.0\" y=\"72.0\" text-anchor=\"start\" font-family=\"Warhelios\" font-size=\"13\" font-weight=\"400\" fill=\"#000000\" fill-opacity=\"0.85\">Сум. урон</text><text x=\"46.0\" y=\"71.0\" text-anchor=\"start\" font-family=\"Warhelios\" font-size=\"13\" font-weight=\"400\" fill=\"#B8BDC4\">Сум. урон</text><text x=\"159.9\" y=\"72.0\" text-anchor=\"end\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"13\" font-weight=\"700\" fill=\"#000000\" fill-opacity=\"0.85\">2890</text><text x=\"159.9\" y=\"71.0\" text-anchor=\"end\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"13\" font-weight=\"700\" fill=\"#9AA3AE\">2890</text><text x=\"202.0\" y=\"72.0\" text-anchor=\"end\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"13\" font-weight=\"700\" fill=\"#000000\" fill-opacity=\"0.85\">/ 2890</text><text x=\"202.0\" y=\"71.0\" text-anchor=\"end\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"13\" font-weight=\"700\" fill=\"#B8BDC4\">/ 2890</text><circle cx=\"76.80\" cy=\"88.50\" r=\"1.45\" fill=\"#B8BDC4\" fill-opacity=\"0.82\"/><path d=\"M 74.12 86.25 A 3.50 3.50 0 0 0 74.12 90.75 M 72.49 84.62 A 5.80 5.80 0 0 0 72.49 92.38 M 79.48 86.25 A 3.50 3.50 0 0 1 79.48 90.75 M 81.11 84.62 A 5.80 5.80 0 0 1 81.11 92.38\" fill=\"none\" stroke=\"#B8BDC4\" stroke-width=\"1.25\" stroke-linecap=\"round\" stroke-opacity=\"0.82\"/><text x=\"89.8\" y=\"94.8\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"15\" font-weight=\"700\" fill=\"#000000\" fill-opacity=\"0.85\">480</text><text x=\"89.8\" y=\"93.8\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"15\" font-weight=\"700\" fill=\"#B8BDC4\">480</text><path d=\"M 143.43 82.37 L 147.13 86.07 L 146.22 86.99 L 148.04 88.81 L 146.78 90.07 L 144.63 87.91 L 145.60 86.94 L 142.56 83.90 L 141.59 84.87 L 139.43 82.72 L 140.69 81.46 L 142.51 83.28 Z M 140.60 85.20 L 144.30 88.90 L 143.39 89.82 L 145.21 91.64 L 143.96 92.90 L 141.80 90.74 L 142.77 89.77 L 139.73 86.73 L 138.76 87.70 L 136.60 85.54 L 137.86 84.29 L 139.68 86.11 Z M 137.77 88.03 L 141.47 91.73 L 140.56 92.64 L 142.39 94.47 L 141.13 95.73 L 138.97 93.57 L 139.94 92.60 L 136.90 89.56 L 135.93 90.53 L 133.77 88.37 L 135.03 87.11 L 136.86 88.94 Z\" fill=\"#B8BDC4\" fill-opacity=\"0.82\"/><text x=\"154.0\" y=\"94.8\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"15\" font-weight=\"700\" fill=\"#000000\" fill-opacity=\"0.85\">480</text><text x=\"154.0\" y=\"93.8\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"15\" font-weight=\"700\" fill=\"#B8BDC4\">480</text></g></svg>", 
+      "bw": 218, 
+      "bh": 110
+    }, 
+    "hangar_default": {
+      "metrics": {
+        "astH": 15, 
+        "thrRowMinW": 0, 
+        "thrH": 14, 
+        "starGap": 7, 
+        "dmgLblText": "Суммарный урон", 
+        "sideBorderStars": false, 
+        "astIconSize": 14, 
+        "hSepY": 100, 
+        "starsCoords": [
+          [
+            66.5, 
+            17
+          ], 
+          [
+            95.5, 
+            17
+          ], 
+          [
+            124.5, 
+            17
+          ]
+        ], 
+        "tgt": 1480, 
+        "astItemGap": 18, 
+        "deltaIconW": 0, 
+        "astSize": 13, 
+        "astY": null, 
+        "cy": 33, 
+        "cx": 16, 
+        "deltaSize": 14, 
+        "thrY": null, 
+        "cw": 159, 
+        "hColGap": 16, 
+        "headerY": 33, 
+        "hRow2Y": 120, 
+        "starsSpan": 80, 
+        "deltaW": 0, 
+        "barY": 65, 
+        "isHangar": true, 
+        "starsPos": 0, 
+        "activeCh": null, 
+        "deltaText": "", 
+        "fx": 6, 
+        "astWidths": [], 
+        "starSize": 22, 
+        "showDelta": false, 
+        "dmgValStr": "1850", 
+        "maxAst": 0, 
+        "barH": 4, 
+        "hRows": [
+          [
+            {
+              "val": 2150, 
+              "text": "65% 2150", 
+              "pct": 65, 
+              "valStr": "2150", 
+              "done": false, 
+              "lbl": "65%"
+            }, 
+            {
+              "val": 2890, 
+              "text": "85% 2890", 
+              "pct": 85, 
+              "valStr": "2890", 
+              "done": false, 
+              "lbl": "85%"
+            }
+          ], 
+          [
+            {
+              "val": 3450, 
+              "text": "95% 3450", 
+              "pct": 95, 
+              "valStr": "3450", 
+              "done": false, 
+              "lbl": "95%"
+            }, 
+            {
+              "val": 3920, 
+              "text": "100% 3920", 
+              "pct": 100, 
+              "valStr": "3920", 
+              "done": false, 
+              "lbl": "100%"
+            }
+          ]
+        ], 
+        "dmgLblMode": 0, 
+        "dmgLblSize": 13, 
+        "altExp": false, 
+        "barTextW": 0.0, 
+        "thrIconSize": 0, 
+        "barBlockH": 10, 
+        "fw": 179, 
+        "astItems": [], 
+        "fy": 17, 
+        "headerH": 28, 
+        "divLine": null, 
+        "winW": 191, 
+        "barText": "", 
+        "padY": 7, 
+        "winH": 147, 
+        "thrItemGap": 14, 
+        "tgtStr": "1480", 
+        "astRowMinW": 0, 
+        "fh": 124, 
+        "padX": 10, 
+        "deltaAccent": "#9AA3AE", 
+        "thrWidths": [], 
+        "barTextSize": 15, 
+        "dmgH": 16, 
+        "astInside": true, 
+        "kind": "zero", 
+        "dmg": 1850, 
+        "hCol1W": 66, 
+        "trackH": 2, 
+        "barStyle": 0, 
+        "hCol0W": 59, 
+        "pctSize": 24, 
+        "dmgStr": "1850", 
+        "dmgSize": 13, 
+        "dmgY": 79, 
+        "thrInside": true, 
+        "hRow1Y": 104, 
+        "thrSize": 12, 
+        "pctText": "43.28%", 
+        "pctW": 81.71520000000001, 
+        "remStr": "0", 
+        "thrItems": []
+      }, 
+      "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"191\" height=\"147\" viewBox=\"0 0 191 147\"><g opacity=\"1.000\"><rect x=\"6.0\" y=\"17.0\" width=\"179.0\" height=\"124.0\" rx=\"5\" fill=\"#131313\" fill-opacity=\"0.600\"/><path d=\"M 141.5 17.0 H 180.0 A 5.0 5.0 0 0 1 185.0 22.0 V 136.0 A 5.0 5.0 0 0 1 180.0 141.0 H 11.0 A 5.0 5.0 0 0 1 6.0 136.0 V 22.0 A 5.0 5.0 0 0 1 11.0 17.0 H 49.5\" fill=\"none\" stroke=\"#FFFFFF\" stroke-width=\"1.0\" stroke-opacity=\"0.200\"/><polygon points=\"66.50,6.00 69.28,13.17 76.96,13.60 71.00,18.46 72.97,25.90 66.50,21.73 60.03,25.90 62.00,18.46 56.04,13.60 63.72,13.17\" fill=\"#9AA3AE\" fill-opacity=\"0.10\" stroke=\"#9AA3AE\" stroke-width=\"1.15\" stroke-opacity=\"0.55\"/><polygon points=\"95.50,6.00 98.28,13.17 105.96,13.60 100.00,18.46 101.97,25.90 95.50,21.73 89.03,25.90 91.00,18.46 85.04,13.60 92.72,13.17\" fill=\"#9AA3AE\" fill-opacity=\"0.10\" stroke=\"#9AA3AE\" stroke-width=\"1.15\" stroke-opacity=\"0.55\"/><polygon points=\"124.50,6.00 127.28,13.17 134.96,13.60 129.00,18.46 130.97,25.90 124.50,21.73 118.03,25.90 120.00,18.46 114.04,13.60 121.72,13.17\" fill=\"#9AA3AE\" fill-opacity=\"0.10\" stroke=\"#9AA3AE\" stroke-width=\"1.15\" stroke-opacity=\"0.55\"/><text x=\"16.0\" y=\"54.6\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"24\" font-weight=\"700\" fill=\"#FFFFFF\">43.28%</text><rect x=\"16.0\" y=\"69.0\" width=\"159.0\" height=\"2.0\" rx=\"1\" fill=\"#FFFFFF\" fill-opacity=\"0.22\"/><rect x=\"16.0\" y=\"66.0\" width=\"1.2\" height=\"8.0\" fill=\"#FFFFFF\" fill-opacity=\"0.45\"/><rect x=\"173.8\" y=\"66.0\" width=\"1.2\" height=\"8.0\" fill=\"#FFFFFF\" fill-opacity=\"0.45\"/><rect x=\"118.9\" y=\"66.5\" width=\"1.0\" height=\"7.0\" fill=\"#FFFFFF\" fill-opacity=\"0.40\"/><rect x=\"150.7\" y=\"66.5\" width=\"1.0\" height=\"7.0\" fill=\"#FFFFFF\" fill-opacity=\"0.40\"/><rect x=\"166.5\" y=\"66.5\" width=\"1.0\" height=\"7.0\" fill=\"#FFFFFF\" fill-opacity=\"0.40\"/><rect x=\"16.0\" y=\"68.0\" width=\"68.8\" height=\"4.0\" rx=\"1\" fill=\"#A7D080\"/><rect x=\"83.6\" y=\"65.0\" width=\"2.5\" height=\"10.0\" rx=\"0.8\" fill=\"#FFFFFF\" fill-opacity=\"0.95\"/><text x=\"16.0\" y=\"91.0\" text-anchor=\"start\" font-family=\"Warhelios\" font-size=\"13\" font-weight=\"400\" fill=\"#B8BDC4\">Суммарный урон</text><text x=\"175.0\" y=\"91.0\" text-anchor=\"end\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"13\" font-weight=\"700\" fill=\"#A7D080\">1850</text><line x1=\"16.0\" y1=\"100.0\" x2=\"175.0\" y2=\"100.0\" stroke=\"#FFFFFF\" stroke-width=\"1.0\" stroke-opacity=\"0.18\"/><text x=\"25.0\" y=\"115.0\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"12\" font-weight=\"700\" fill=\"#B8BDC4\">65%</text><text x=\"84.0\" y=\"115.0\" text-anchor=\"end\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"12\" font-weight=\"700\" fill=\"#FFFFFF\">2150</text><text x=\"100.0\" y=\"115.0\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"12\" font-weight=\"700\" fill=\"#B8BDC4\">85%</text><text x=\"166.0\" y=\"115.0\" text-anchor=\"end\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"12\" font-weight=\"700\" fill=\"#FFFFFF\">2890</text><text x=\"25.0\" y=\"131.0\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"12\" font-weight=\"700\" fill=\"#B8BDC4\">95%</text><text x=\"84.0\" y=\"131.0\" text-anchor=\"end\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"12\" font-weight=\"700\" fill=\"#FFFFFF\">3450</text><text x=\"100.0\" y=\"131.0\" text-anchor=\"start\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"12\" font-weight=\"700\" fill=\"#B8BDC4\">100%</text><text x=\"166.0\" y=\"131.0\" text-anchor=\"end\" font-family=\"ThreeMarksDINRound, DINRoundPro\" font-size=\"12\" font-weight=\"700\" fill=\"#FFFFFF\">3920</text></g></svg>", 
+      "bw": 191, 
+      "bh": 147
+    }
+  }, 
+  "payloads": {
+    "vh": {
+      "tm": "#FFFFFF", 
+      "dmgOn": true, 
+      "bts": 15, 
+      "anc": 0, 
+      "cc": "#FFFFFF", 
+      "ca": 0.0, 
+      "am": 0, 
+      "rad": 5, 
+      "ahz": false, 
+      "son": "#FFFFFF", 
+      "sof": "#9AA3AE", 
+      "ap": 0, 
+      "ddyn": true, 
+      "sgl": true, 
+      "bcur": true, 
+      "bgo": 0.6, 
+      "bth": 2, 
+      "zr": "#9AA3AE", 
+      "dlc": "Суммарный урон", 
+      "tmu": "#B8BDC4", 
+      "tsh": 3, 
+      "sep": 2, 
+      "tp": 0, 
+      "sz": 22, 
+      "tsz": 0, 
+      "h100": true, 
+      "bmk": true, 
+      "tmm": 0, 
+      "minW": 0, 
+      "dn": "#E57373", 
+      "dl": 0, 
+      "fs": 2, 
+      "ba": 0.2, 
+      "big": "#B07CFF", 
+      "di": 3, 
+      "asz": 0, 
+      "bh": 4, 
+      "dc": 0, 
+      "bt": "KIBERSPORT", 
+      "fnt": 2, 
+      "ho": 0, 
+      "bs": 0, 
+      "ash": 3, 
+      "bsc": 0, 
+      "bcm": 2, 
+      "bgc": "#131313", 
+      "ss": 0, 
+      "sp": 0, 
+      "up": "#A7D080", 
+      "bcc": "#A7D080", 
+      "hThr": true, 
+      "den": 0, 
+      "dec": 1, 
+      "sg": 7, 
+      "bet": true, 
+      "sd": false
+    }, 
+    "vh_to_v3": {
+      "v3DamageDynColor": true, 
+      "v3BarCustomColor": "#A7D080", 
+      "v3StarsSize": 22, 
+      "v3StarOffColor": "#9AA3AE", 
+      "v3BarColorMode": 2, 
+      "v3TempoPlace": 0, 
+      "v3ShowDamage": true, 
+      "v3StarsPos": 0, 
+      "v3BarTrackHeight": 2, 
+      "v3AssistShow": 3, 
+      "v3Radius": 5, 
+      "v3DeltaIcon": 3, 
+      "v3AssistHideZero": false, 
+      "v3StarsDivider": false, 
+      "v3TextMain": "#FFFFFF", 
+      "v3Anchor": 1, 
+      "v3AccentZero": "#9AA3AE", 
+      "v3BgOpacity": 0.6, 
+      "v3TextMuted": "#B8BDC4", 
+      "v3TempoSize": 0, 
+      "panelOpacity": 1.0, 
+      "v3StarsGap": 7, 
+      "v3BarTextSize": 15, 
+      "v3BorderAlpha": 0.2, 
+      "v3DamageLabel": 0, 
+      "v3BarEndTicks": true, 
+      "v3DamageCustomLabel": "Суммарный урон", 
+      "v3AccentMinus": "#E57373", 
+      "v3AssistSize": 0, 
+      "v3FrameStyle": 2, 
+      "v3AssistPlace": 0, 
+      "v3AssistMode": 0, 
+      "v3Font": 2, 
+      "v3TempoShow": 3, 
+      "v3StarsGlow": true, 
+      "v3BarHeight": 4, 
+      "v3StarsStyle": 0, 
+      "v3BgColor": "#131313", 
+      "v3CornerAlpha": 0.0, 
+      "v3AccentBig": "#B07CFF", 
+      "v3CornerColor": "#FFFFFF", 
+      "v3BarMarks": true, 
+      "v3AccentPlus": "#A7D080", 
+      "v3StarOnColor": "#FFFFFF", 
+      "v3DeltaColorMode": 0, 
+      "v3Density": 0, 
+      "vhShow100": true, 
+      "v3TempoMode": 0, 
+      "vhShowThresholds": true, 
+      "v3HeaderOrder": 0, 
+      "v3BarCursor": true, 
+      "v3BarStyle": 0, 
+      "v3PctDecimals": 1, 
+      "v3BarScale": 0, 
+      "v3ThousandsSep": 2, 
+      "v3MinWidth": 0, 
+      "v3BarCustomText": "KIBERSPORT"
+    }, 
+    "v3": {
+      "tm": "#FFFFFF", 
+      "dmgOn": true, 
+      "bts": 15, 
+      "anc": 1, 
+      "cc": "#FFFFFF", 
+      "ca": 0.5, 
+      "am": 0, 
+      "rad": 14, 
+      "ahz": false, 
+      "son": "#FFFFFF", 
+      "sof": "#9AA3AE", 
+      "ap": 0, 
+      "ddyn": true, 
+      "sgl": true, 
+      "bcur": true, 
+      "bgo": 0.2, 
+      "bth": 2, 
+      "zr": "#9AA3AE", 
+      "dlc": "Сум. урон", 
+      "tmu": "#B8BDC4", 
+      "tsh": 1, 
+      "sep": 2, 
+      "tp": 0, 
+      "sz": 16, 
+      "tsz": 13, 
+      "h100": true, 
+      "bmk": true, 
+      "tmm": 0, 
+      "minW": 0, 
+      "dn": "#E57373", 
+      "dl": 0, 
+      "fs": 0, 
+      "ba": 0.22, 
+      "big": "#B07CFF", 
+      "di": 1, 
+      "asz": 15, 
+      "bh": 4, 
+      "dc": 0, 
+      "bt": "KIBERSPORT", 
+      "fnt": 2, 
+      "ho": 2, 
+      "bs": 0, 
+      "ash": 0, 
+      "bsc": 0, 
+      "bcm": 0, 
+      "bgc": "#0B1016", 
+      "ss": 0, 
+      "sp": 0, 
+      "up": "#A7D080", 
+      "bcc": "#A7D080", 
+      "hThr": true, 
+      "den": 0, 
+      "dec": 1, 
+      "sg": 7, 
+      "bet": true, 
+      "sd": false
+    }, 
+    "ui": {
+      "bZr": "#DDE6EE", 
+      "vh": {
+        "tm": "#FFFFFF", 
+        "dmgOn": true, 
+        "bts": 15, 
+        "anc": 0, 
+        "cc": "#FFFFFF", 
+        "ca": 0.0, 
+        "am": 0, 
+        "rad": 5, 
+        "ahz": false, 
+        "son": "#FFFFFF", 
+        "sof": "#9AA3AE", 
+        "ap": 0, 
+        "ddyn": true, 
+        "sgl": true, 
+        "bcur": true, 
+        "bgo": 0.6, 
+        "bth": 2, 
+        "zr": "#9AA3AE", 
+        "dlc": "Суммарный урон", 
+        "tmu": "#B8BDC4", 
+        "tsh": 3, 
+        "sep": 2, 
+        "tp": 0, 
+        "sz": 22, 
+        "tsz": 0, 
+        "h100": true, 
+        "bmk": true, 
+        "tmm": 0, 
+        "minW": 0, 
+        "dn": "#E57373", 
+        "dl": 0, 
+        "fs": 2, 
+        "ba": 0.2, 
+        "big": "#B07CFF", 
+        "di": 3, 
+        "asz": 0, 
+        "bh": 4, 
+        "dc": 0, 
+        "bt": "KIBERSPORT", 
+        "fnt": 2, 
+        "ho": 0, 
+        "bs": 0, 
+        "ash": 3, 
+        "bsc": 0, 
+        "bcm": 2, 
+        "bgc": "#131313", 
+        "ss": 0, 
+        "sp": 0, 
+        "up": "#A7D080", 
+        "bcc": "#A7D080", 
+        "hThr": true, 
+        "den": 0, 
+        "dec": 1, 
+        "sg": 7, 
+        "bet": true, 
+        "sd": false
+      }, 
+      "bBig": "#B07CFF", 
+      "zr": "#EAEAEA", 
+      "bSign": false, 
+      "onlyPct": false, 
+      "pct": "#F4F4F4", 
+      "proj": "#EAEAEA", 
+      "big": "#B07CFF", 
+      "dn": "#FF6060", 
+      "bg": 0.82, 
+      "pctSign": false, 
+      "bigDmg": true, 
+      "hs": 1.1, 
+      "bDn": "#FF6060", 
+      "band": 0.02, 
+      "preset": 0, 
+      "alpha": 1.0, 
+      "tick": "#FFFFFF", 
+      "glow": true, 
+      "bStd": "#8FE37D", 
+      "trk": 0.1, 
+      "dmg": "#86EF6A", 
+      "bigFrom": 4.0, 
+      "bUp": "#8FE37D", 
+      "bH": "#F0F2F6", 
+      "up": "#86EF6A", 
+      "s": 0.9, 
+      "v3": {
+        "tm": "#FFFFFF", 
+        "dmgOn": true, 
+        "bts": 15, 
+        "anc": 1, 
+        "cc": "#FFFFFF", 
+        "ca": 0.5, 
+        "am": 0, 
+        "rad": 14, 
+        "ahz": false, 
+        "son": "#FFFFFF", 
+        "sof": "#9AA3AE", 
+        "ap": 0, 
+        "ddyn": true, 
+        "sgl": true, 
+        "bcur": true, 
+        "bgo": 0.2, 
+        "bth": 2, 
+        "zr": "#9AA3AE", 
+        "dlc": "Сум. урон", 
+        "tmu": "#B8BDC4", 
+        "tsh": 1, 
+        "sep": 2, 
+        "tp": 0, 
+        "sz": 16, 
+        "tsz": 13, 
+        "h100": true, 
+        "bmk": true, 
+        "tmm": 0, 
+        "minW": 0, 
+        "dn": "#E57373", 
+        "dl": 0, 
+        "fs": 0, 
+        "ba": 0.22, 
+        "big": "#B07CFF", 
+        "di": 1, 
+        "asz": 15, 
+        "bh": 4, 
+        "dc": 0, 
+        "bt": "KIBERSPORT", 
+        "fnt": 2, 
+        "ho": 2, 
+        "bs": 0, 
+        "ash": 0, 
+        "bsc": 0, 
+        "bcm": 0, 
+        "bgc": "#0B1016", 
+        "ss": 0, 
+        "sp": 0, 
+        "up": "#A7D080", 
+        "bcc": "#A7D080", 
+        "hThr": true, 
+        "den": 0, 
+        "dec": 1, 
+        "sg": 7, 
+        "bet": true, 
+        "sd": false
+      }, 
+      "dmgSign": true
+    }
+  }, 
+  "curve_non_exact": {
+    "damageOf": [
+      0.0, 
+      300.0, 
+      600.0, 
+      1366.0, 
+      1850.0, 
+      2143.6000000000004, 
+      2700.0, 
+      3300.0, 
+      3750.0, 
+      3800.0
+    ], 
+    "percentOf": [
+      0.0, 
+      10.0, 
+      20.0, 
+      40.0, 
+      65.0, 
+      78.33333333333333, 
+      85.0, 
+      95.0, 
+      100.0, 
+      100.0
+    ], 
+    "explains": [
+      true, 
+      false, 
+      true, 
+      false
+    ], 
+    "thresholds": [
+      1850.0, 
+      2700.0, 
+      3300.0, 
+      3800.0
+    ], 
+    "cell": [
+      0, 
+      1000, 
+      2000, 
+      4000, 
+      6500, 
+      7833, 
+      8500, 
+      9500, 
+      10000, 
+      10000
+    ], 
+    "points": [
+      [
+        20.0, 
+        600.0
+      ], 
+      [
+        30.0, 
+        850.0
+      ], 
+      [
+        40.0, 
+        1100.0
+      ], 
+      [
+        50.0, 
+        1366.0
+      ], 
+      [
+        55.0, 
+        1500.0
+      ], 
+      [
+        60.0, 
+        1675.0
+      ], 
+      [
+        65.0, 
+        1850.0
+      ], 
+      [
+        70.0, 
+        2050.0
+      ], 
+      [
+        75.0, 
+        2250.0
+      ], 
+      [
+        80.0, 
+        2475.0
+      ], 
+      [
+        85.0, 
+        2700.0
+      ], 
+      [
+        90.0, 
+        3000.0
+      ], 
+      [
+        95.0, 
+        3300.0
+      ], 
+      [
+        100.0, 
+        3800.0
+      ]
+    ], 
+    "bool": true, 
+    "wholeDamage": [
+      0.0, 
+      300.0, 
+      600.0, 
+      1366.0, 
+      1850.0, 
+      2144.0, 
+      2700.0, 
+      3300.0, 
+      3750.0, 
+      3800.0
+    ], 
+    "exact": false, 
+    "day": 739000
+  }, 
+  "nextAverage": [
+    [
+      0.0, 
+      0.0
+    ], 
+    [
+      1530.0, 
+      1529.7029702970297
+    ], 
+    [
+      1850.0, 
+      1850.0
+    ], 
+    [
+      2647.0, 
+      2646.5346534653463
+    ], 
+    [
+      3152.0, 
+      3151.5940594059407
+    ]
+  ], 
+  "curve_flat": {
+    "damageOf": [
+      0.0, 
+      333.3333333333333, 
+      666.6666666666666, 
+      1833.3333333333333, 
+      2500.0, 
+      2867.0, 
+      3500.0, 
+      4000.0, 
+      4450.0, 
+      4500.0
+    ], 
+    "percentOf": [
+      0.0, 
+      9.0, 
+      18.0, 
+      32.0, 
+      50.5, 
+      63.0, 
+      69.0, 
+      81.0, 
+      91.0, 
+      97.0
+    ], 
+    "explains": [
+      false, 
+      false, 
+      false, 
+      false
+    ], 
+    "thresholds": [
+      2500.0, 
+      3500.0, 
+      4000.0, 
+      4500.0
+    ], 
+    "cell": [
+      0, 
+      900, 
+      1800, 
+      3200, 
+      5050, 
+      6300, 
+      6900, 
+      8100, 
+      9100, 
+      9700
+    ], 
+    "points": [
+      [
+        30.0, 
+        1000.0
+      ], 
+      [
+        40.0, 
+        1500.0
+      ], 
+      [
+        55.0, 
+        2000.0
+      ], 
+      [
+        65.0, 
+        2500.0
+      ], 
+      [
+        75.0, 
+        3000.0
+      ], 
+      [
+        85.0, 
+        3500.0
+      ], 
+      [
+        95.0, 
+        4000.0
+      ], 
+      [
+        100.0, 
+        4500.0
+      ]
+    ], 
+    "bool": true, 
+    "wholeDamage": [
+      0.0, 
+      334.0, 
+      667.0, 
+      1834.0, 
+      2500.0, 
+      2867.0, 
+      3500.0, 
+      4000.0, 
+      4450.0, 
+      4500.0
+    ], 
+    "exact": false, 
+    "day": 739000
+  }, 
+  "floorPct": [
+    0.0, 
+    64.99, 
+    65.0, 
+    84.99, 
+    85.0, 
+    94.99, 
+    95.0, 
+    99.99, 
+    100.0
+  ]
+}

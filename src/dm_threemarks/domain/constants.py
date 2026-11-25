@@ -1,0 +1,24 @@
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
+EMA_K = 2.0 / 101.0
+KNOTS = (20, 40, 55, 65, 75, 85, 95, 100)
+ANCHORS = (20, 30, 40, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100)
+
+CURVE_TTL = 6 * 3600.0
+CURVE_RECHECK = 3600.0
+FETCH_RETRY = 120.0
+HISTORY_RETRY = 900.0
+HISTORY_DAYS = 40
+
+STALE_GAP = 0.15
+PCT_CELL = 0.01
+API_DAY_LAG = 2
+SERVER_HOUR = 9.0
+SERVER_LATE = 11.0
+LESTA_SERVER_HOUR = 3.0
+LESTA_SERVER_LATE = 5.0
+SERVER_HOLD = 2 * 3600.0
+EPOCH_DAY = 719163  # datetime.date(1970, 1, 1).toordinal()
+
+LEVELS = (2.0, 20.0, 40.0, 55.0, 65.0, 85.0, 95.0, 100.0)

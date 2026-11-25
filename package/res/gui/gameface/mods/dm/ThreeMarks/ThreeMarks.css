@@ -1,7 +1,93 @@
+@font-face {
+  font-family: "ThreeMarksPFDINMax";
+  font-weight: 400;
+  font-style: normal;
+  src: url(coui://gui/gameface/mods/dm/ThreeMarks/fonts/PFDINMax-CompressedRegular.ttf) format("truetype");
+}
+@font-face {
+  font-family: "ThreeMarksPFDINMax";
+  font-weight: 700;
+  font-style: normal;
+  src: url(coui://gui/gameface/mods/dm/ThreeMarks/fonts/PFDINMax-CompressedBold.ttf) format("truetype");
+}
+@font-face {
+  font-family: "ThreeMarksDINRound";
+  font-weight: 400;
+  font-style: normal;
+  src: url(coui://gui/gameface/mods/dm/ThreeMarks/fonts/DINRoundPro-Bold.ttf) format("truetype");
+}
+@font-face {
+  font-family: "ThreeMarksDINRound";
+  font-weight: 700;
+  font-style: normal;
+  src: url(coui://gui/gameface/mods/dm/ThreeMarks/fonts/DINRoundPro-Bold.ttf) format("truetype");
+}
+@font-face {
+  font-family: "ThreeMarksJura";
+  font-weight: 400;
+  font-style: normal;
+  src: url(coui://gui/gameface/mods/dm/ThreeMarks/fonts/Jura-Regular.ttf) format("truetype");
+}
+@font-face {
+  font-family: "ThreeMarksJura";
+  font-weight: 700;
+  font-style: normal;
+  src: url(coui://gui/gameface/mods/dm/ThreeMarks/fonts/Jura-Bold.ttf) format("truetype");
+}
+@font-face {
+  font-family: "ThreeMarksExo2";
+  font-weight: 500;
+  font-style: normal;
+  src: url(coui://gui/gameface/mods/dm/ThreeMarks/fonts/Exo2-Medium.ttf) format("truetype");
+}
+@font-face {
+  font-family: "ThreeMarksExo2";
+  font-weight: 700;
+  font-style: normal;
+  src: url(coui://gui/gameface/mods/dm/ThreeMarks/fonts/Exo2-Bold.ttf) format("truetype");
+}
+@font-face {
+  font-family: "ThreeMarksRubik";
+  font-weight: 500;
+  font-style: normal;
+  src: url(coui://gui/gameface/mods/dm/ThreeMarks/fonts/Rubik-Medium.ttf) format("truetype");
+}
+@font-face {
+  font-family: "ThreeMarksRubik";
+  font-weight: 700;
+  font-style: normal;
+  src: url(coui://gui/gameface/mods/dm/ThreeMarks/fonts/Rubik-Bold.ttf) format("truetype");
+}
+@font-face {
+  font-family: "ThreeMarksFiraCond";
+  font-weight: 500;
+  font-style: normal;
+  src: url(coui://gui/gameface/mods/dm/ThreeMarks/fonts/FiraSansCondensed-Medium.ttf) format("truetype");
+}
+@font-face {
+  font-family: "ThreeMarksFiraCond";
+  font-weight: 700;
+  font-style: normal;
+  src: url(coui://gui/gameface/mods/dm/ThreeMarks/fonts/FiraSansCondensed-Bold.ttf) format("truetype");
+}
+@font-face {
+  font-family: "ThreeMarksTektur";
+  font-weight: 500;
+  font-style: normal;
+  src: url(coui://gui/gameface/mods/dm/ThreeMarks/fonts/Tektur-Medium.ttf) format("truetype");
+}
+@font-face {
+  font-family: "ThreeMarksTektur";
+  font-weight: 700;
+  font-style: normal;
+  src: url(coui://gui/gameface/mods/dm/ThreeMarks/fonts/Tektur-Bold.ttf) format("truetype");
+}
+
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html, body { background: transparent; overflow: hidden; }
 
 #tm-panel {
+  display: none;
   position: absolute;
   left: 12px; top: 12px;
   width: 220px; height: 72px;
@@ -12,9 +98,9 @@ html, body { background: transparent; overflow: hidden; }
 }
 #tm-pct {
   position: absolute; top: 0px; left: 66px; height: 28px; line-height: 28px;
-  font-family: "WarheliosCondensedBold", "Warhelios Condensed Bold", sans-serif;
+  font-family: "ThreeMarksPFDINMax", PFDINMax, Warhelios;
   font-size: 22px; font-weight: 700; color: #f4f4f4;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.85);
+  text-shadow: 0 1px 0 rgba(0,0,0,0.85);
   white-space: nowrap;
 }
 #tm-arrow {
@@ -30,9 +116,9 @@ html, body { background: transparent; overflow: hidden; }
 }
 #tm-delta {
   top: 8px; left: 166px; line-height: 17px; white-space: nowrap;
-  font-family: "WarheliosCondensedBold", "Warhelios Condensed Bold", sans-serif;
+  font-family: "ThreeMarksPFDINMax", PFDINMax, Warhelios;
   font-size: 15px; font-weight: 700; color: #eaeaea;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.85);
+  text-shadow: 0 1px 0 rgba(0,0,0,0.85);
 }
 
 #tm-cap0 {
@@ -174,9 +260,9 @@ html, body { background: transparent; overflow: hidden; }
      percent explicitly visible with the same priority. */
   display: block !important; left: 0 !important; top: 10px;
   width: 220px; height: 28px; line-height: 28px;
-  font-family: "WarheliosCondensedBold", "Warhelios Condensed Bold", sans-serif;
+  font-family: PFDINMax, Warhelios;
   font-size: 22px; font-weight: 700; text-align: center;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.85);
+  text-shadow: 0 1px 0 rgba(0,0,0,0.85);
   white-space: nowrap;
 }
 #tm-panel.percent-only #tm-title { display: none !important; }
@@ -204,9 +290,9 @@ html, body { background: transparent; overflow: hidden; }
 #tm-panel.settings > * { display: none; }
 #tm-panel.settings > #tm-set { display: block; }
 .tm-live {
-  font-family: "WarheliosCondensedBold", "Warhelios Condensed Bold", sans-serif;
+  font-family: PFDINMax, Warhelios;
   font-size: 15px; font-weight: 700; line-height: 17px; white-space: nowrap;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.85);
+  text-shadow: 0 1px 0 rgba(0,0,0,0.85);
 }
 
 /* ================= строка «засвет / гусеница» под панелью в бою ================= */
@@ -227,20 +313,63 @@ html, body { background: transparent; overflow: hidden; }
 #tm-ast-rv, #tm-ast-tv { display: block; flex: 0 0 auto; }
 #tm-panel.hangar #tm-ast { display: none; }
 
+/* ================= кнопка свернуть/развернуть в бою ================= */
+#tm-btoggle {
+  position: absolute;
+  display: none;
+  z-index: 20;
+  box-sizing: border-box;
+  border: 1px solid rgba(255, 255, 255, 0.40);
+  border-radius: 6px;
+  background: rgba(11, 16, 22, 0.72);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  pointer-events: none;
+  user-select: none;
+}
+#tm-bt-h, #tm-bt-v {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  background: rgba(255, 255, 255, 0.94);
+  transform: translate(-50%, -50%);
+  border-radius: 1px;
+}
+#tm-bt-h { width: 12px; height: 2px; }
+#tm-bt-v { width: 2px; height: 12px; }
+#tm-btoggle.minus #tm-bt-v { display: none; }
+#tm-btoggle.plus #tm-bt-v { display: block; }
+
 /* ================= Вариант 3 — «Тактический / Pro» ================= */
 #tm-v3 {
   display: none;
   position: relative;
-  font-family: "WarheliosCondensedBold", "Warhelios Condensed Bold", Arial, sans-serif;
+  font-family: "ThreeMarksPFDINMax", PFDINMax, Warhelios;
   font-variant-numeric: tabular-nums;
   pointer-events: none;
   user-select: none;
+}
+#tm-v3.tm-ctrl-drag {
+  outline: 1px dashed rgba(255, 255, 255, 0.28);
+  outline-offset: -2px;
+  border-radius: 8px;
+}
+#tm-v3 .v3-bgfill {
+  position: absolute;
+  display: none;
+  pointer-events: none;
 }
 #tm-v3 .v3-bgimg {
   position: absolute;
   left: 0;
   top: 0;
   display: block;
+  pointer-events: none;
+}
+#tm-v3 .v3-stars {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: none;
   pointer-events: none;
 }
 #tm-v3 .v3-hdr {
@@ -254,7 +383,7 @@ html, body { background: transparent; overflow: hidden; }
   display: block;
   flex: 0 0 auto;
   font-weight: 700;
-  line-height: 1;
+  line-height: 1.22;
   white-space: nowrap;
 }
 #tm-v3 .v3-delwrap {
@@ -265,6 +394,8 @@ html, body { background: transparent; overflow: hidden; }
   align-items: center;
 }
 #tm-v3 .v3-delico {
+  position: relative;
+  top: 0.5px;
   display: block;
   flex: 0 0 auto;
   width: 11px;
@@ -275,8 +406,9 @@ html, body { background: transparent; overflow: hidden; }
   display: block;
   flex: 0 0 auto;
   font-weight: 700;
-  line-height: 1;
+  line-height: 1.2;
   white-space: nowrap;
+  transition: color 0.18s ease;
 }
 #tm-v3 .v3-barwrap {
   position: absolute;
@@ -290,11 +422,19 @@ html, body { background: transparent; overflow: hidden; }
   border-radius: 1px;
   transition: width 0.20s ease, background-color 0.18s ease;
 }
+#tm-v3 .v3-bar-tick {
+  position: absolute;
+  width: 1px;
+  pointer-events: none;
+  z-index: 2;
+}
 #tm-v3 .v3-bar-cur {
   position: absolute;
   width: 2.5px;
   border-radius: 1px;
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.45);
+  z-index: 3;
   transition: left 0.20s ease;
 }
 #tm-v3 .v3-seg-fill {
@@ -310,6 +450,7 @@ html, body { background: transparent; overflow: hidden; }
   flex-direction: row;
   justify-content: center;
   align-items: center;
+  overflow: visible;
   pointer-events: none;
 }
 #tm-v3 .v3-bartxt-box {
@@ -317,8 +458,9 @@ html, body { background: transparent; overflow: hidden; }
   display: block;
   flex: 0 0 auto;
   font-weight: 700;
-  line-height: 1.1;
+  line-height: 1.22;
   white-space: nowrap;
+  transform-origin: center center;
 }
 #tm-v3 .v3-bartxt-base {
   display: block;
@@ -352,6 +494,7 @@ html, body { background: transparent; overflow: hidden; }
   flex: 0 0 auto;
   font-weight: 700;
   white-space: nowrap;
+  transform-origin: left center;
 }
 #tm-v3 .v3-dmgvals {
   display: flex;
@@ -368,6 +511,7 @@ html, body { background: transparent; overflow: hidden; }
   flex: 0 0 auto;
   font-weight: 700;
   white-space: nowrap;
+  transition: color 0.18s ease;
 }
 #tm-v3 .v3-dmgsec {
   margin-left: 4px;
@@ -396,4 +540,29 @@ html, body { background: transparent; overflow: hidden; }
   flex: 0 0 auto;
   font-weight: 700;
   white-space: nowrap;
+  transition: color 0.18s ease;
 }
+
+#tm-v3.tm-font-0 { font-family: "ThreeMarksPFDINMax", PFDINMax, Warhelios; }
+#tm-v3.tm-font-0 .v3-dmglbl { font-weight: 700; }
+
+#tm-v3.tm-font-1 { font-family: Warhelios; }
+#tm-v3.tm-font-1 .v3-dmglbl { font-weight: 400; }
+
+#tm-v3.tm-font-2 { font-family: "ThreeMarksDINRound", DINRoundPro, Warhelios; }
+#tm-v3.tm-font-2 .v3-dmglbl { font-family: Warhelios; font-weight: 400; }
+
+#tm-v3.tm-font-3 { font-family: "ThreeMarksJura", Jura, Warhelios; }
+#tm-v3.tm-font-3 .v3-dmglbl { font-weight: 400; }
+
+#tm-v3.tm-font-4 { font-family: "ThreeMarksExo2", Warhelios; }
+#tm-v3.tm-font-4 .v3-dmglbl { font-weight: 500; }
+
+#tm-v3.tm-font-5 { font-family: "ThreeMarksRubik", Warhelios; }
+#tm-v3.tm-font-5 .v3-dmglbl { font-weight: 500; }
+
+#tm-v3.tm-font-6 { font-family: "ThreeMarksFiraCond", "ThreeMarksPFDINMax", PFDINMax, Warhelios; }
+#tm-v3.tm-font-6 .v3-dmglbl { font-weight: 500; }
+
+#tm-v3.tm-font-7 { font-family: "ThreeMarksTektur", Warhelios; }
+#tm-v3.tm-font-7 .v3-dmglbl { font-weight: 500; }
